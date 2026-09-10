@@ -10,6 +10,7 @@ node_modules/
 # test & tooling output
 /coverage/
 /report/
+apps/api/generated/
 
 # env
 .env

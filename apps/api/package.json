@@ -1,5 +1,10 @@
 {
   "name": "api",
   "version": "0.1.0",
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "@types/node": "^22",
+    "dotenv": "^17.4.2",
+    "prisma": "7.10.0"
+  }
 }

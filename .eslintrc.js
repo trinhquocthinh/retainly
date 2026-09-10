@@ -15,6 +15,7 @@ module.exports = {
             node: true
         }
     },
+    ignorePatterns: ['generated/', 'dist/'],
     rules: {
         'import/no-restricted-paths': [
             'error',

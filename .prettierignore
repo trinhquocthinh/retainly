@@ -5,3 +5,4 @@ coverage
 *.lock
 .yarn
 .pnp.*
+apps/api/generated
