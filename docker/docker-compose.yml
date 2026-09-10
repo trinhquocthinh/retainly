@@ -1,0 +1,27 @@
+name: retainly
+
+services:
+  postgres-app:
+    image: postgres:16-alpine
+    container_name: retainly-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_APP_USER:?thieu POSTGRES_APP_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_APP_PASSWORD:?thieu POSTGRES_APP_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_APP_DB:?thieu POSTGRES_APP_DB}
+    volumes:
+      - retainly-db-data:/var/lib/postgresql/data
+    networks:
+      - internal
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  retainly-db-data:
+
+networks:
+  internal:
+    name: retainly_internal

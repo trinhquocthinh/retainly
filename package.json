@@ -11,6 +11,8 @@
     "jscpd": "jscpd apps/",
     "knip": "knip --production",
     "test": "vitest run",
+    "db:up": "docker compose --project-directory . -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up -d",
+    "db:down": "docker compose --project-directory . -f docker/docker-compose.yml -f docker/docker-compose.dev.yml down",
     "prepare": "husky"
   },
   "devDependencies": {
