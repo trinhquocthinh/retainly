@@ -1,0 +1,11 @@
+{
+  "ignore": ["designs/**"],
+  "workspaces": {
+    "apps/api": {
+      "entry": "src/app.ts"
+    },
+    "apps/web": {
+      "entry": "src/main.tsx"
+    }
+  }
+}

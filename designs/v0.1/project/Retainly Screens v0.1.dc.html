@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  body { margin:0; background:#F3F4F1; font-family:Inter, system-ui, sans-serif; -webkit-font-smoothing:antialiased; }
+  a { color:#B45309; text-decoration:none; }
+  a:hover { color:#92400E; text-decoration:underline; }
+  *::selection { background:#FDE68A; }
+</style>
+</helmet>
+
+<div style="padding:56px 40px 96px; color:#1A1D23; font-family:Inter, system-ui, sans-serif;">
+
+  <div style="max-width:820px; margin-bottom:48px; display:flex; flex-direction:column; gap:10px;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <div style="width:24px; height:24px; border-radius:8px; background:#F59E0B;"></div>
+      <div style="font-size:12px; line-height:16px; color:#6B7280; letter-spacing:.1em; text-transform:uppercase;">Retainly · v0.1 · mobile 360×740</div>
+    </div>
+    <h1 style="margin:0; font-size:36px; line-height:44px; font-weight:700; letter-spacing:-.02em;">Bộ màn hình v0.1 — Mobile</h1>
+    <p style="margin:0; font-size:16px; line-height:24px; color:#6B7280; text-wrap:pretty;">Sáu màn hình trong kiểm kê design-criteria §5, mỗi màn hình đủ các trạng thái rỗng / đang tải / lỗi / có dữ liệu. Token và component lấy nguyên từ <strong style="color:#1A1D23; font-weight:600;">Retainly Style Guide</strong>.</p>
+  </div>
+
+  <!-- ================= 1 · TRANG CHỦ ================= -->
+  <div data-screen-label="Trang chủ" style="margin-bottom:64px;">
+    <div style="display:flex; align-items:baseline; gap:12px; padding-bottom:12px; border-bottom:1px solid #E5E7EB; margin-bottom:24px;">
+      <span style="font-size:24px; line-height:32px; font-weight:600; letter-spacing:-.01em;">1 · Trang chủ</span>
+      <span style="font-size:14px; line-height:20px; color:#6B7280;">US-004, US-006 — điểm vào chính: hôm nay cần làm gì</span>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:32px;">
+
+      <div style="width:360px;">
+        <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px;">Có dữ liệu</div>
+        <div style="width:360px; height:740px; background:#FAFAF8; border:1px solid #E5E7EB; border-radius:24px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,.07); display:flex; flex-direction:column;">
+          <div style="height:44px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; padding:0 20px; font-size:12px; font-weight:600; color:#1A1D23;"><span>9:41</span><span style="color:#6B7280; letter-spacing:.1em;">▮▮▮</span></div>
+          <div style="flex:1; padding:16px; display:flex; flex-direction:column; gap:24px; overflow:hidden;">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+              <div style="font-size:24px; line-height:32px; font-weight:600;">Hôm nay</div>
+              <div style="display:flex; align-items:center; gap:6px; height:32px; padding:0 12px; border-radius:16px; background:#FEF3C7;"><span style="width:8px; height:8px; border-radius:4px; background:#F59E0B;"></span><span style="font-size:14px; font-weight:600; color:#92400E;">7 ngày</span></div>
+            </div>
+            <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:16px; padding:24px; box-shadow:0 1px 2px rgba(0,0,0,.05); display:flex; flex-direction:column; gap:16px;">
+              <div style="display:flex; align-items:baseline; gap:8px;">
+                <div style="font-size:36px; line-height:44px; font-weight:700; letter-spacing:-.02em;">12</div>
+                <div style="font-size:16px; line-height:24px; color:#6B7280;">thẻ đến hạn</div>
+              </div>
+              <div style="height:44px; border-radius:8px; background:#F59E0B; color:#1A1D23; font-size:16px; font-weight:600; display:flex; align-items:center; justify-content:center;">Bắt đầu ôn tập</div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              <div style="font-size:18px; line-height:26px; font-weight:600;">Chuỗi ngày ôn tập</div>
+              <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:16px; display:flex; justify-content:space-between;">
+                <div style="display:flex; flex-direction:column; align-items:center; gap:6px;"><div style="width:32px; height:32px; border-radius:8px; background:#F59E0B;"></div><span style="font-size:12px; color:#6B7280;">T2</span></div>
+                <div style="display:flex; flex-direction:column; align-items:center; gap:6px;"><div style="width:32px; height:32px; border-radius:8px; background:#F59E0B;"></div><span style="font-size:12px; color:#6B7280;">T3</span></div>
+                <div style="display:flex; flex-direction:column; align-items:center; gap:6px;"><div style="width:32px; height:32px; border-radius:8px; background:#F59E0B;"></div><span style="font-size:12px; color:#6B7280;">T4</span></div>
+                <div style="display:flex; flex-direction:column; align-items:center; gap:6px;"><div style="width:32px; height:32px; border-radius:8px; background:#F59E0B;"></div><span style="font-size:12px; color:#6B7280;">T5</span></div>
+                <div style="display:flex; flex-direction:column; align-items:center; gap:6px;"><div style="width:32px; height:32px; border-radius:8px; background:#F59E0B;"></div><span style="font-size:12px; color:#6B7280;">T6</span></div>
+                <div style="display:flex; flex-direction:column; align-items:center; gap:6px;"><div style="width:32px; height:32px; border-radius:8px; background:#F59E0B;"></div><span style="font-size:12px; color:#6B7280;">T7</span></div>
+                <div style="display:flex; flex-direction:column; align-items:center; gap:6px;"><div style="width:32px; height:32px; border-radius:8px; border:1px dashed #E5E7EB;"></div><span style="font-size:12px; color:#1A1D23; font-weight:600;">CN</span></div>
+              </div>
+            </div>
+            <div style="height:44px; border-radius:8px; border:1px solid #E5E7EB; background:#FFFFFF; font-size:16px; font-weight:500; display:flex; align-items:center; justify-content:center; gap:8px;"><span style="color:#B45309; font-size:18px;">+</span>Tạo thẻ mới</div>
+          </div>
+          <div style="flex:0 0 auto; height:64px; border-top:1px solid #E5E7EB; background:#FFFFFF; display:grid; grid-template-columns:repeat(3,1fr);">
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:#B45309;"><div style="width:18px; height:18px; border:2px solid currentColor; border-radius:4px;"></div><span style="font-size:12px; font-weight:600;">Hôm nay</span></div>
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:#6B7280;"><div style="width:18px; height:18px; border:2px solid currentColor; border-radius:4px;"></div><span style="font-size:12px;">Thư viện</span></div>
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:#6B7280;"><div style="width:18px; height:18px; border:2px solid currentColor; border-radius:4px;"></div><span style="font-size:12px;">Thống kê</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:360px;">
+        <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px;">Rỗng — chưa có thẻ nào</div>
+        <div style="width:360px; height:740px; background:#FAFAF8; border:1px solid #E5E7EB; border-radius:24px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,.07); display:flex; flex-direction:column;">
+          <div style="height:44px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; padding:0 20px; font-size:12px; font-weight:600;"><span>9:41</span><span style="color:#6B7280; letter-spacing:.1em;">▮▮▮</span></div>
+          <div style="flex:1; padding:16px; display:flex; flex-direction:column;">
+            <div style="font-size:24px; line-height:32px; font-weight:600;">Hôm nay</div>
+            <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:24px; padding:0 24px; text-align:center;">
+              <div style="width:64px; height:64px; border-radius:16px; border:1px dashed #E5E7EB; background:#FFFFFF;"></div>
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                <div style="font-size:18px; line-height:26px; font-weight:600;">Chưa có thẻ nào</div>
+                <div style="font-size:14px; line-height:20px; color:#6B7280; text-wrap:pretty;">Dán một đường dẫn bài viết hoặc tự gõ câu hỏi — thẻ đầu tiên sẽ vào lịch ôn ngay hôm nay.</div>
+              </div>
+              <div style="width:100%; height:44px; border-radius:8px; background:#F59E0B; color:#1A1D23; font-size:16px; font-weight:600; display:flex; align-items:center; justify-content:center;">Tạo thẻ đầu tiên</div>
+            </div>
+          </div>
+          <div style="flex:0 0 auto; height:64px; border-top:1px solid #E5E7EB; background:#FFFFFF; display:grid; grid-template-columns:repeat(3,1fr);">
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:#B45309;"><div style="width:18px; height:18px; border:2px solid currentColor; border-radius:4px;"></div><span style="font-size:12px; font-weight:600;">Hôm nay</span></div>
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:#6B7280;"><div style="width:18px; height:18px; border:2px solid currentColor; border-radius:4px;"></div><span style="font-size:12px;">Thư viện</span></div>
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:#6B7280;"><div style="width:18px; height:18px; border:2px solid currentColor; border-radius:4px;"></div><span style="font-size:12px;">Thống kê</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:360px;">
+        <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px;">Đang tải</div>
+        <div style="width:360px; height:740px; background:#FAFAF8; border:1px solid #E5E7EB; border-radius:24px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,.07); display:flex; flex-direction:column;">
+          <div style="height:44px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; padding:0 20px; font-size:12px; font-weight:600;"><span>9:41</span><span style="color:#6B7280; letter-spacing:.1em;">▮▮▮</span></div>
+          <div style="flex:1; padding:16px; display:flex; flex-direction:column; gap:24px;">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+              <div style="font-size:24px; line-height:32px; font-weight:600;">Hôm nay</div>
+              <div style="width:88px; height:32px; border-radius:16px; background:#E5E7EB;"></div>
+            </div>
+            <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:16px; padding:24px; display:flex; flex-direction:column; gap:16px;">
+              <div style="display:flex; align-items:center; gap:12px;"><div style="width:64px; height:44px; border-radius:8px; background:#E5E7EB;"></div><div style="width:110px; height:20px; border-radius:4px; background:#E5E7EB;"></div></div>
+              <div style="height:44px; border-radius:8px; background:#E5E7EB;"></div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              <div style="width:160px; height:24px; border-radius:4px; background:#E5E7EB;"></div>
+              <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:16px; display:flex; justify-content:space-between;">
+                <div style="width:32px; height:32px; border-radius:8px; background:#E5E7EB;"></div><div style="width:32px; height:32px; border-radius:8px; background:#E5E7EB;"></div><div style="width:32px; height:32px; border-radius:8px; background:#E5E7EB;"></div><div style="width:32px; height:32px; border-radius:8px; background:#E5E7EB;"></div><div style="width:32px; height:32px; border-radius:8px; background:#E5E7EB;"></div><div style="width:32px; height:32px; border-radius:8px; background:#E5E7EB;"></div><div style="width:32px; height:32px; border-radius:8px; background:#E5E7EB;"></div>
+              </div>
+            </div>
+          </div>
+          <div style="flex:0 0 auto; height:64px; border-top:1px solid #E5E7EB; background:#FFFFFF; display:grid; grid-template-columns:repeat(3,1fr);">
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:#B45309;"><div style="width:18px; height:18px; border:2px solid currentColor; border-radius:4px;"></div><span style="font-size:12px; font-weight:600;">Hôm nay</span></div>
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:#6B7280;"><div style="width:18px; height:18px; border:2px solid currentColor; border-radius:4px;"></div><span style="font-size:12px;">Thư viện</span></div>
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:#6B7280;"><div style="width:18px; height:18px; border:2px solid currentColor; border-radius:4px;"></div><span style="font-size:12px;">Thống kê</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:360px;">
+        <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px;">Lỗi tải</div>
+        <div style="width:360px; height:740px; background:#FAFAF8; border:1px solid #E5E7EB; border-radius:24px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,.07); display:flex; flex-direction:column;">
+          <div style="height:44px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; padding:0 20px; font-size:12px; font-weight:600;"><span>9:41</span><span style="color:#6B7280; letter-spacing:.1em;">▮▮▮</span></div>
+          <div style="flex:1; padding:16px; display:flex; flex-direction:column; gap:16px;">
+            <div style="font-size:24px; line-height:32px; font-weight:600;">Hôm nay</div>
+            <div style="border:1px solid #FCA5A5; background:#FEF2F2; border-radius:8px; padding:12px 16px; display:flex; align-items:center; justify-content:space-between; gap:12px;">
+              <span style="font-size:14px; line-height:20px; color:#991B1B;">Không tải được số thẻ đến hạn.</span>
+              <span style="font-size:14px; font-weight:600; color:#991B1B; text-decoration:underline;">Thử lại</span>
+            </div>
+            <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; text-align:center; padding:0 24px;">
+              <div style="font-size:18px; line-height:26px; font-weight:600;">Mất kết nối tới máy chủ</div>
+              <div style="font-size:14px; line-height:20px; color:#6B7280;">Dữ liệu ôn tập của bạn vẫn an toàn. Kiểm tra mạng rồi thử lại.</div>
+              <div style="height:44px; padding:0 24px; border-radius:8px; border:1px solid #E5E7EB; background:#FFFFFF; font-size:16px; font-weight:500; display:flex; align-items:center;">Thử lại</div>
+            </div>
+          </div>
+          <div style="flex:0 0 auto; height:64px; border-top:1px solid #E5E7EB; background:#FFFFFF; display:grid; grid-template-columns:repeat(3,1fr);">
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:#B45309;"><div style="width:18px; height:18px; border:2px solid currentColor; border-radius:4px;"></div><span style="font-size:12px; font-weight:600;">Hôm nay</span></div>
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:#6B7280;"><div style="width:18px; height:18px; border:2px solid currentColor; border-radius:4px;"></div><span style="font-size:12px;">Thư viện</span></div>
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:#6B7280;"><div style="width:18px; height:18px; border:2px solid currentColor; border-radius:4px;"></div><span style="font-size:12px;">Thống kê</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= 2 · ÔN TẬP ================= -->
+  <div data-screen-label="Ôn tập" style="margin-bottom:64px;">
+    <div style="display:flex; align-items:baseline; gap:12px; padding-bottom:12px; border-bottom:1px solid #E5E7EB; margin-bottom:24px;">
+      <span style="font-size:24px; line-height:32px; font-weight:600; letter-spacing:-.01em;">2 · Ôn tập</span>
+      <span style="font-size:14px; line-height:20px; color:#6B7280;">US-005 — chạm để lật, vuốt để đánh giá; luôn có nút thay thế</span>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:32px;">
+
+      <div style="width:360px;">
+        <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px;">Mặt hỏi</div>
+        <div style="width:360px; height:740px; background:#FAFAF8; border:1px solid #E5E7EB; border-radius:24px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,.07); display:flex; flex-direction:column;">
+          <div style="height:44px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; padding:0 20px; font-size:12px; font-weight:600;"><span>9:41</span><span style="color:#6B7280; letter-spacing:.1em;">▮▮▮</span></div>
+          <div style="flex:0 0 auto; height:56px; padding:0 16px; display:flex; align-items:center; justify-content:space-between;">
+            <div style="width:44px; height:44px; display:flex; align-items:center; justify-content:center; font-size:20px; color:#1A1D23;">✕</div>
+            <div style="font-size:14px; color:#6B7280;">3 / 12</div>
+            <div style="width:44px;"></div>
+          </div>
+          <div style="flex:0 0 auto; padding:0 16px;"><div style="height:4px; border-radius:2px; background:#E5E7EB; overflow:hidden;"><div style="width:25%; height:4px; background:#F59E0B;"></div></div></div>
+          <div style="flex:1; padding:32px 16px; display:flex; align-items:center;">
+            <div style="width:100%; min-height:320px; background:#FFFFFF; border:1px solid #E5E7EB; border-radius:16px; box-shadow:0 4px 6px rgba(0,0,0,.07); padding:32px 24px; display:flex; flex-direction:column; gap:16px; justify-content:center; text-align:center;">
+              <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em;">Trí nhớ &amp; học tập</div>
+              <div style="font-size:16px; line-height:24px;">FSRS tính lại khoảng cách ôn tập dựa trên ba đại lượng nào?</div>
+              <div style="font-size:12px; line-height:16px; color:#6B7280; margin-top:8px;">Chạm để xem đáp án</div>
+            </div>
+          </div>
+          <div style="flex:0 0 auto; padding:0 16px 24px; display:flex; gap:12px;">
+            <div style="flex:1; height:44px; border-radius:8px; border:1px solid #E5E7EB; background:#FFFFFF; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:500; color:#9CA3AF;">Quên</div>
+            <div style="flex:1; height:44px; border-radius:8px; border:1px solid #E5E7EB; background:#FFFFFF; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:500; color:#9CA3AF;">Nhớ</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:360px;">
+        <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px;">Đã lật — sẵn sàng đánh giá</div>
+        <div style="width:360px; height:740px; background:#FAFAF8; border:1px solid #E5E7EB; border-radius:24px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,.07); display:flex; flex-direction:column;">
+          <div style="height:44px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; padding:0 20px; font-size:12px; font-weight:600;"><span>9:41</span><span style="color:#6B7280; letter-spacing:.1em;">▮▮▮</span></div>
+          <div style="flex:0 0 auto; height:56px; padding:0 16px; display:flex; align-items:center; justify-content:space-between;">
+            <div style="width:44px; height:44px; display:flex; align-items:center; justify-content:center; font-size:20px;">✕</div>
+            <div style="font-size:14px; color:#6B7280;">3 / 12</div>
+            <div style="width:44px;"></div>
+          </div>
+          <div style="flex:0 0 auto; padding:0 16px;"><div style="height:4px; border-radius:2px; background:#E5E7EB; overflow:hidden;"><div style="width:25%; height:4px; background:#F59E0B;"></div></div></div>
+          <div style="flex:1; padding:32px 16px; display:flex; align-items:center;">
+            <div style="width:100%; min-height:320px; background:#FFFFFF; border:1px solid #E5E7EB; border-radius:16px; box-shadow:0 4px 6px rgba(0,0,0,.07); padding:24px; display:flex; flex-direction:column; gap:16px;">
+              <div style="font-size:14px; line-height:20px; color:#6B7280;">FSRS tính lại khoảng cách ôn tập dựa trên ba đại lượng nào?</div>
+              <div style="height:1px; background:#E5E7EB;"></div>
+              <div style="font-size:16px; line-height:24px;">Độ khó (difficulty), độ bền trí nhớ (stability) và khả năng nhớ lại tại thời điểm ôn (retrievability).</div>
+              <div style="margin-top:auto; font-size:12px; line-height:16px; color:#6B7280;">Ôn lần cuối 3 ngày trước · lần tới +6 ngày nếu Nhớ</div>
+            </div>
+          </div>
+          <div style="flex:0 0 auto; padding:0 16px 24px; display:flex; gap:12px;">
+            <div style="flex:1; height:44px; border-radius:8px; border:1px solid #DC2626; color:#DC2626; background:#FFFFFF; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:600;">← Quên</div>
+            <div style="flex:1; height:44px; border-radius:8px; border:1px solid #16A34A; color:#16A34A; background:#FFFFFF; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:600;">Nhớ →</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:360px;">
+        <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px;">Đang vuốt phải — phản hồi Nhớ</div>
+        <div style="width:360px; height:740px; background:#FAFAF8; border:1px solid #E5E7EB; border-radius:24px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,.07); display:flex; flex-direction:column;">
+          <div style="height:44px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; padding:0 20px; font-size:12px; font-weight:600;"><span>9:41</span><span style="color:#6B7280; letter-spacing:.1em;">▮▮▮</span></div>
+          <div style="flex:0 0 auto; height:56px; padding:0 16px; display:flex; align-items:center; justify-content:space-between;">
+            <div style="width:44px; height:44px; display:flex; align-items:center; justify-content:center; font-size:20px;">✕</div>
+            <div style="font-size:14px; color:#6B7280;">3 / 12</div>
+            <div style="width:44px;"></div>
+          </div>
+          <div style="flex:0 0 auto; padding:0 16px;"><div style="height:4px; border-radius:2px; background:#E5E7EB; overflow:hidden;"><div style="width:25%; height:4px; background:#F59E0B;"></div></div></div>
+          <div style="flex:1; padding:32px 16px; display:flex; align-items:center; position:relative;">
+            <div style="position:absolute; inset:32px 16px; border-radius:16px; background:#F0FDF4;"></div>
+            <div style="position:relative; width:100%; min-height:320px; background:#FFFFFF; border:1px solid #16A34A; border-radius:16px; box-shadow:0 4px 6px rgba(0,0,0,.07); padding:24px; display:flex; flex-direction:column; gap:16px; transform:translateX(40px) rotate(5deg);">
+              <div style="align-self:flex-start; padding:4px 12px; border-radius:4px; border:2px solid #16A34A; color:#16A34A; font-size:14px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; transform:rotate(-8deg);">Nhớ</div>
+              <div style="font-size:14px; line-height:20px; color:#6B7280;">FSRS tính lại khoảng cách ôn tập dựa trên ba đại lượng nào?</div>
+              <div style="height:1px; background:#E5E7EB;"></div>
+              <div style="font-size:16px; line-height:24px;">Độ khó, độ bền trí nhớ và khả năng nhớ lại tại thời điểm ôn.</div>
+            </div>
+          </div>
+          <div style="flex:0 0 auto; padding:0 16px 24px; display:flex; gap:12px;">
+            <div style="flex:1; height:44px; border-radius:8px; border:1px solid #E5E7EB; color:#9CA3AF; background:#FFFFFF; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:500;">← Quên</div>
+            <div style="flex:1; height:44px; border-radius:8px; background:#16A34A; color:#FFFFFF; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:600;">Nhớ →</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:360px;">
+        <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px;">Lỗi lưu kết quả — NFR#2</div>
+        <div style="width:360px; height:740px; background:#FAFAF8; border:1px solid #E5E7EB; border-radius:24px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,.07); display:flex; flex-direction:column;">
+          <div style="height:44px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; padding:0 20px; font-size:12px; font-weight:600;"><span>9:41</span><span style="color:#6B7280; letter-spacing:.1em;">▮▮▮</span></div>
+          <div style="flex:0 0 auto; height:56px; padding:0 16px; display:flex; align-items:center; justify-content:space-between;">
+            <div style="width:44px; height:44px; display:flex; align-items:center; justify-content:center; font-size:20px;">✕</div>
+            <div style="font-size:14px; color:#6B7280;">3 / 12</div>
+            <div style="width:44px;"></div>
+          </div>
+          <div style="flex:0 0 auto; padding:8px 16px 0;">
+            <div style="border:1px solid #FCA5A5; background:#FEF2F2; border-radius:8px; padding:12px 16px; display:flex; align-items:center; justify-content:space-between; gap:12px;">
+              <span style="font-size:14px; line-height:20px; color:#991B1B;">Chưa lưu được — thẻ được giữ nguyên.</span>
+              <span style="font-size:14px; font-weight:600; color:#991B1B; text-decoration:underline;">Thử lại</span>
+            </div>
+          </div>
+          <div style="flex:1; padding:24px 16px; display:flex; align-items:center;">
+            <div style="width:100%; min-height:300px; background:#FFFFFF; border:1px solid #E5E7EB; border-radius:16px; box-shadow:0 4px 6px rgba(0,0,0,.07); padding:24px; display:flex; flex-direction:column; gap:16px;">
+              <div style="font-size:14px; line-height:20px; color:#6B7280;">FSRS tính lại khoảng cách ôn tập dựa trên ba đại lượng nào?</div>
+              <div style="height:1px; background:#E5E7EB;"></div>
+              <div style="font-size:16px; line-height:24px;">Độ khó, độ bền trí nhớ và khả năng nhớ lại tại thời điểm ôn.</div>
+            </div>
+          </div>
+          <div style="flex:0 0 auto; padding:0 16px 24px; display:flex; gap:12px;">
+            <div style="flex:1; height:44px; border-radius:8px; border:1px solid #DC2626; color:#DC2626; background:#FFFFFF; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:600; opacity:.4;">← Quên</div>
+            <div style="flex:1; height:44px; border-radius:8px; border:1px solid #16A34A; color:#16A34A; background:#FFFFFF; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:600; opacity:.4;">Nhớ →</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:360px;">
+        <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px;">Rỗng — xong phiên</div>
+        <div style="width:360px; height:740px; background:#FAFAF8; border:1px solid #E5E7EB; border-radius:24px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,.07); display:flex; flex-direction:column;">
+          <div style="height:44px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; padding:0 20px; font-size:12px; font-weight:600;"><span>9:41</span><span style="color:#6B7280; letter-spacing:.1em;">▮▮▮</span></div>
+          <div style="flex:1; padding:16px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:24px; text-align:center;">
+            <div style="width:56px; height:56px; border-radius:16px; background:#FEF3C7; display:flex; align-items:center; justify-content:center; color:#B45309; font-size:24px;">✓</div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <div style="font-size:24px; line-height:32px; font-weight:600;">Xong rồi!</div>
+              <div style="font-size:16px; line-height:24px; color:#6B7280;">Không còn thẻ cần ôn hôm nay.</div>
+            </div>
+            <div style="width:100%; background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:16px; display:flex; justify-content:space-around;">
+              <div><div style="font-size:24px; line-height:32px; font-weight:600;">12</div><div style="font-size:12px; color:#6B7280;">đã ôn</div></div>
+              <div><div style="font-size:24px; line-height:32px; font-weight:600;">8</div><div style="font-size:12px; color:#6B7280;">nhớ</div></div>
+              <div><div style="font-size:24px; line-height:32px; font-weight:600;">4</div><div style="font-size:12px; color:#6B7280;">quên</div></div>
+            </div>
+            <div style="width:100%; display:flex; flex-direction:column; gap:12px;">
+              <div style="height:44px; border-radius:8px; background:#F59E0B; color:#1A1D23; font-size:16px; font-weight:600; display:flex; align-items:center; justify-content:center;">Về Trang chủ</div>
+              <div style="height:44px; border-radius:8px; border:1px solid #E5E7EB; background:#FFFFFF; font-size:16px; font-weight:500; display:flex; align-items:center; justify-content:center;">Tạo thẻ mới</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= 3 · TẠO / SỬA THẺ ================= -->
+  <div data-screen-label="Tạo / sửa thẻ" style="margin-bottom:64px;">
+    <div style="display:flex; align-items:baseline; gap:12px; padding-bottom:12px; border-bottom:1px solid #E5E7EB; margin-bottom:24px;">
+      <span style="font-size:24px; line-height:32px; font-weight:600; letter-spacing:-.01em;">3 · Tạo / sửa thẻ</span>
+      <span style="font-size:14px; line-height:20px; color:#6B7280;">US-001, US-002, US-003, US-009</span>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:32px;">
+
+      <div style="width:360px;">
+        <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px;">Rỗng — gõ tay, nút Lưu disabled</div>
+        <div style="width:360px; height:740px; background:#FAFAF8; border:1px solid #E5E7EB; border-radius:24px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,.07); display:flex; flex-direction:column;">
+          <div style="height:44px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; padding:0 20px; font-size:12px; font-weight:600;"><span>9:41</span><span style="color:#6B7280; letter-spacing:.1em;">▮▮▮</span></div>
+          <div style="flex:0 0 auto; height:56px; padding:0 16px; display:flex; align-items:center; gap:8px; border-bottom:1px solid #E5E7EB;">
+            <div style="width:44px; height:44px; display:flex; align-items:center; justify-content:center; font-size:20px;">←</div>
+            <div style="font-size:18px; line-height:26px; font-weight:600;">Thẻ mới</div>
+          </div>
+          <div style="flex:1; padding:16px; display:flex; flex-direction:column; gap:24px;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px; padding:4px; background:#F3F4F6; border-radius:8px;">
+              <div style="height:36px; border-radius:4px; background:#FFFFFF; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:600; box-shadow:0 1px 2px rgba(0,0,0,.05);">Gõ tay</div>
+              <div style="height:36px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:14px; color:#6B7280;">Từ URL</div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <label style="font-size:14px; line-height:20px; font-weight:500;">Mặt hỏi</label>
+              <div style="min-height:88px; border:1px solid #E5E7EB; border-radius:8px; background:#FFFFFF; padding:12px; font-size:16px; line-height:24px; color:#9CA3AF;">Câu hỏi bạn muốn nhớ được…</div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <label style="font-size:14px; line-height:20px; font-weight:500;">Mặt trả lời</label>
+              <div style="min-height:120px; border:1px solid #E5E7EB; border-radius:8px; background:#FFFFFF; padding:12px; font-size:16px; line-height:24px; color:#9CA3AF;">Câu trả lời ngắn gọn…</div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <label style="font-size:14px; line-height:20px; font-weight:500;">Nhánh kiến thức <span style="color:#6B7280; font-weight:400;">— không bắt buộc</span></label>
+              <div style="height:44px; border:1px solid #E5E7EB; border-radius:8px; background:#FFFFFF; padding:0 12px; display:flex; align-items:center; justify-content:space-between; font-size:16px; color:#9CA3AF;"><span>Chưa gán</span><span style="color:#6B7280;">▾</span></div>
+            </div>
+          </div>
+          <div style="flex:0 0 auto; padding:16px; border-top:1px solid #E5E7EB; background:#FFFFFF; display:flex; gap:12px;">
+            <div style="flex:0 0 auto; width:96px; height:44px; border-radius:8px; border:1px solid #E5E7EB; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:500;">Huỷ</div>
+            <div style="flex:1; height:44px; border-radius:8px; background:#F59E0B; color:#1A1D23; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:600; opacity:.4;">Lưu thẻ</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:360px;">
+        <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px;">Đang bóc tách URL</div>
+        <div style="width:360px; height:740px; background:#FAFAF8; border:1px solid #E5E7EB; border-radius:24px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,.07); display:flex; flex-direction:column;">
+          <div style="height:44px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; padding:0 20px; font-size:12px; font-weight:600;"><span>9:41</span><span style="color:#6B7280; letter-spacing:.1em;">▮▮▮</span></div>
+          <div style="flex:0 0 auto; height:56px; padding:0 16px; display:flex; align-items:center; gap:8px; border-bottom:1px solid #E5E7EB;">
+            <div style="width:44px; height:44px; display:flex; align-items:center; justify-content:center; font-size:20px;">←</div>
+            <div style="font-size:18px; line-height:26px; font-weight:600;">Thẻ mới</div>
+          </div>
+          <div style="flex:1; padding:16px; display:flex; flex-direction:column; gap:24px;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px; padding:4px; background:#F3F4F6; border-radius:8px;">
+              <div style="height:36px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:14px; color:#6B7280;">Gõ tay</div>
+              <div style="height:36px; border-radius:4px; background:#FFFFFF; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:600; box-shadow:0 1px 2px rgba(0,0,0,.05);">Từ URL</div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <label style="font-size:14px; line-height:20px; font-weight:500;">Đường dẫn bài viết</label>
+              <div style="display:flex; gap:8px;">
+                <div style="flex:1; min-width:0; box-sizing:border-box; height:44px; border:1px solid #E5E7EB; border-radius:8px; background:#FFFFFF; padding:0 12px; display:flex; align-items:center; font-size:16px; overflow:hidden;"><span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">example.com/spaced-repetition</span></div>
+                <div style="width:72px; height:44px; border-radius:8px; background:#F59E0B; color:#1A1D23; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:600;">Nạp</div>
+              </div>
+            </div>
+            <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:12px;">
+              <div style="font-size:14px; line-height:20px; color:#6B7280;">Đang tải nội dung…</div>
+              <div style="height:16px; width:80%; border-radius:4px; background:#E5E7EB;"></div>
+              <div style="height:16px; width:100%; border-radius:4px; background:#E5E7EB;"></div>
+              <div style="height:16px; width:92%; border-radius:4px; background:#E5E7EB;"></div>
+              <div style="height:16px; width:64%; border-radius:4px; background:#E5E7EB;"></div>
+              <div style="height:16px; width:88%; border-radius:4px; background:#E5E7EB;"></div>
+              <div style="height:16px; width:45%; border-radius:4px; background:#E5E7EB;"></div>
+            </div>
+          </div>
+          <div style="flex:0 0 auto; padding:16px; border-top:1px solid #E5E7EB; background:#FFFFFF; display:flex; gap:12px;">
+            <div style="flex:0 0 auto; width:96px; height:44px; border-radius:8px; border:1px solid #E5E7EB; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:500;">Huỷ</div>
+            <div style="flex:1; height:44px; border-radius:8px; background:#F59E0B; color:#1A1D23; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:600; opacity:.4;">Lưu thẻ</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:360px;">
+        <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px;">Đã bóc tách + lỗi từng ô</div>
+        <div style="width:360px; height:740px; background:#FAFAF8; border:1px solid #E5E7EB; border-radius:24px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,.07); display:flex; flex-direction:column;">
+          <div style="height:44px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; padding:0 20px; font-size:12px; font-weight:600;"><span>9:41</span><span style="color:#6B7280; letter-spacing:.1em;">▮▮▮</span></div>
+          <div style="flex:0 0 auto; height:56px; padding:0 16px; display:flex; align-items:center; gap:8px; border-bottom:1px solid #E5E7EB;">
+            <div style="width:44px; height:44px; display:flex; align-items:center; justify-content:center; font-size:20px;">←</div>
+            <div style="font-size:18px; line-height:26px; font-weight:600;">Thẻ mới</div>
+          </div>
+          <div style="flex:1; padding:16px; display:flex; flex-direction:column; gap:16px; overflow:hidden;">
+            <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:8px; max-height:220px; overflow:hidden;">
+              <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em;">Nguồn đã bóc tách</div>
+              <div style="font-size:16px; line-height:24px; font-weight:600;">Spaced repetition hoạt động thế nào</div>
+              <div style="font-size:16px; line-height:24px; color:#1A1D23;">Trí nhớ suy giảm theo đường cong quên của Ebbinghaus. Ôn lại đúng lúc sắp quên sẽ kéo dài độ bền của dấu vết trí nhớ, nên khoảng cách giữa các lần ôn có thể giãn dần…</div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <label style="font-size:14px; line-height:20px; font-weight:500;">Mặt hỏi</label>
+              <div style="min-height:60px; border:1px solid #F59E0B; border-radius:8px; background:#FFFFFF; padding:12px; font-size:16px; line-height:24px;">Đường cong quên do ai mô tả?</div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <label style="font-size:14px; line-height:20px; font-weight:500;">Mặt trả lời</label>
+              <div style="min-height:60px; border:1px solid #DC2626; border-radius:8px; background:#FFFFFF; padding:12px; font-size:16px; line-height:24px; color:#9CA3AF;">Nhập câu trả lời…</div>
+              <div style="font-size:14px; line-height:20px; color:#DC2626;">Mặt trả lời không được để trống</div>
+            </div>
+          </div>
+          <div style="flex:0 0 auto; padding:16px; border-top:1px solid #E5E7EB; background:#FFFFFF; display:flex; gap:12px;">
+            <div style="flex:0 0 auto; width:96px; height:44px; border-radius:8px; border:1px solid #E5E7EB; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:500;">Huỷ</div>
+            <div style="flex:1; height:44px; border-radius:8px; background:#F59E0B; color:#1A1D23; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:600; opacity:.4;">Lưu thẻ</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:360px;">
+        <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px;">Sửa thẻ — điền sẵn (US-009)</div>
+        <div style="width:360px; height:740px; background:#FAFAF8; border:1px solid #E5E7EB; border-radius:24px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,.07); display:flex; flex-direction:column;">
+          <div style="height:44px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; padding:0 20px; font-size:12px; font-weight:600;"><span>9:41</span><span style="color:#6B7280; letter-spacing:.1em;">▮▮▮</span></div>
+          <div style="flex:0 0 auto; height:56px; padding:0 16px; display:flex; align-items:center; gap:8px; border-bottom:1px solid #E5E7EB;">
+            <div style="width:44px; height:44px; display:flex; align-items:center; justify-content:center; font-size:20px;">←</div>
+            <div style="font-size:18px; line-height:26px; font-weight:600;">Sửa thẻ</div>
+          </div>
+          <div style="flex:1; min-height:0; padding:16px; display:flex; flex-direction:column; gap:16px;">
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <label style="font-size:14px; line-height:20px; font-weight:500;">Mặt hỏi</label>
+              <div style="min-height:88px; border:1px solid #E5E7EB; border-radius:8px; background:#FFFFFF; padding:12px; font-size:16px; line-height:24px;">FSRS tính lại khoảng cách ôn tập dựa trên ba đại lượng nào?</div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <label style="font-size:14px; line-height:20px; font-weight:500;">Mặt trả lời</label>
+              <div style="min-height:120px; border:1px solid #E5E7EB; border-radius:8px; background:#FFFFFF; padding:12px; font-size:16px; line-height:24px;">Độ khó, độ bền trí nhớ và khả năng nhớ lại tại thời điểm ôn.</div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <label style="font-size:14px; line-height:20px; font-weight:500;">Nhánh kiến thức</label>
+              <div style="height:44px; border:1px solid #E5E7EB; border-radius:8px; background:#FFFFFF; padding:0 12px; display:flex; align-items:center; justify-content:space-between; font-size:16px;"><span>Trí nhớ &amp; học tập</span><span style="color:#6B7280;">▾</span></div>
+            </div>
+            <div style="font-size:12px; line-height:16px; color:#6B7280;">Sửa nội dung không làm thay đổi lịch ôn hiện tại của thẻ.</div>
+            <div style="margin-top:auto; height:44px; border-radius:8px; border:1px solid #DC2626; color:#DC2626; background:#FFFFFF; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:500;">Xoá thẻ này</div>
+          </div>
+          <div style="flex:0 0 auto; padding:16px; border-top:1px solid #E5E7EB; background:#FFFFFF; display:flex; gap:12px;">
+            <div style="flex:0 0 auto; width:96px; height:44px; border-radius:8px; border:1px solid #E5E7EB; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:500;">Huỷ</div>
+            <div style="flex:1; height:44px; border-radius:8px; background:#F59E0B; color:#1A1D23; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:600;">Lưu thay đổi</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= 4 · THƯ VIỆN THẺ ================= -->
+  <div data-screen-label="Thư viện thẻ" style="margin-bottom:64px;">
+    <div style="display:flex; align-items:baseline; gap:12px; padding-bottom:12px; border-bottom:1px solid #E5E7EB; margin-bottom:24px;">
+      <span style="font-size:24px; line-height:32px; font-weight:600; letter-spacing:-.01em;">4 · Thư viện thẻ</span>
+      <span style="font-size:14px; line-height:20px; color:#6B7280;">US-009 — xem, sửa, xoá; xoá bắt buộc qua dialog</span>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:32px;">
+
+      <div style="width:360px;">
+        <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px;">Có dữ liệu</div>
+        <div style="width:360px; height:740px; background:#FAFAF8; border:1px solid #E5E7EB; border-radius:24px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,.07); display:flex; flex-direction:column;">
+          <div style="height:44px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; padding:0 20px; font-size:12px; font-weight:600;"><span>9:41</span><span style="color:#6B7280; letter-spacing:.1em;">▮▮▮</span></div>
+          <div style="flex:1; padding:16px; display:flex; flex-direction:column; gap:16px; overflow:hidden;">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+              <div style="font-size:24px; line-height:32px; font-weight:600;">Thư viện</div>
+              <div style="font-size:14px; color:#6B7280;">38 thẻ</div>
+            </div>
+            <div style="height:44px; border:1px solid #E5E7EB; border-radius:8px; background:#FFFFFF; padding:0 12px; display:flex; align-items:center; font-size:16px; color:#9CA3AF;">Tìm trong thẻ…</div>
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:16px; display:flex; gap:12px; align-items:flex-start;">
+                <div style="flex:1; display:flex; flex-direction:column; gap:6px;">
+                  <div style="font-size:16px; line-height:24px;">FSRS tính lại khoảng cách ôn tập dựa trên…</div>
+                  <div style="display:flex; align-items:center; gap:8px;"><span style="font-size:12px; line-height:16px; color:#92400E; background:#FEF3C7; padding:2px 8px; border-radius:4px;">Trí nhớ &amp; học tập</span><span style="font-size:12px; color:#6B7280;">đến hạn hôm nay</span></div>
+                </div>
+                <div style="display:flex; gap:4px;">
+                  <div style="width:44px; height:44px; border-radius:8px; border:1px solid #E5E7EB; display:flex; align-items:center; justify-content:center; font-size:14px;">✎</div>
+                  <div style="width:44px; height:44px; border-radius:8px; border:1px solid #E5E7EB; color:#DC2626; display:flex; align-items:center; justify-content:center; font-size:16px;">✕</div>
+                </div>
+              </div>
+              <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:16px; display:flex; gap:12px; align-items:flex-start;">
+                <div style="flex:1; display:flex; flex-direction:column; gap:6px;">
+                  <div style="font-size:16px; line-height:24px;">Đường cong quên do ai mô tả?</div>
+                  <div style="display:flex; align-items:center; gap:8px;"><span style="font-size:12px; line-height:16px; color:#92400E; background:#FEF3C7; padding:2px 8px; border-radius:4px;">Trí nhớ &amp; học tập</span><span style="font-size:12px; color:#6B7280;">còn 3 ngày</span></div>
+                </div>
+                <div style="display:flex; gap:4px;">
+                  <div style="width:44px; height:44px; border-radius:8px; border:1px solid #E5E7EB; display:flex; align-items:center; justify-content:center; font-size:14px;">✎</div>
+                  <div style="width:44px; height:44px; border-radius:8px; border:1px solid #E5E7EB; color:#DC2626; display:flex; align-items:center; justify-content:center; font-size:16px;">✕</div>
+                </div>
+              </div>
+              <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:16px; display:flex; gap:12px; align-items:flex-start;">
+                <div style="flex:1; display:flex; flex-direction:column; gap:6px;">
+                  <div style="font-size:16px; line-height:24px;">Kỹ thuật Pomodoro chia thời gian như thế nào?</div>
+                  <div style="display:flex; align-items:center; gap:8px;"><span style="font-size:12px; line-height:16px; color:#6B7280; background:#F3F4F6; padding:2px 8px; border-radius:4px;">Chưa gán nhánh</span><span style="font-size:12px; color:#6B7280;">còn 9 ngày</span></div>
+                </div>
+                <div style="display:flex; gap:4px;">
+                  <div style="width:44px; height:44px; border-radius:8px; border:1px solid #E5E7EB; display:flex; align-items:center; justify-content:center; font-size:14px;">✎</div>
+                  <div style="width:44px; height:44px; border-radius:8px; border:1px solid #E5E7EB; color:#DC2626; display:flex; align-items:center; justify-content:center; font-size:16px;">✕</div>
+                </div>
+              </div>
+              <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:16px; display:flex; gap:12px; align-items:flex-start;">
+                <div style="flex:1; display:flex; flex-direction:column; gap:6px;">
+                  <div style="font-size:16px; line-height:24px;">Interleaving khác blocked practice ở điểm nào?</div>
+                  <div style="display:flex; align-items:center; gap:8px;"><span style="font-size:12px; line-height:16px; color:#92400E; background:#FEF3C7; padding:2px 8px; border-radius:4px;">Phương pháp học</span><span style="font-size:12px; color:#6B7280;">còn 14 ngày</span></div>
+                </div>
+                <div style="display:flex; gap:4px;">
+                  <div style="width:44px; height:44px; border-radius:8px; border:1px solid #E5E7EB; display:flex; align-items:center; justify-content:center; font-size:14px;">✎</div>
+                  <div style="width:44px; height:44px; border-radius:8px; border:1px solid #E5E7EB; color:#DC2626; display:flex; align-items:center; justify-content:center; font-size:16px;">✕</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="flex:0 0 auto; height:64px; border-top:1px solid #E5E7EB; background:#FFFFFF; display:grid; grid-template-columns:repeat(3,1fr);">
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:#6B7280;"><div style="width:18px; height:18px; border:2px solid currentColor; border-radius:4px;"></div><span style="font-size:12px;">Hôm nay</span></div>
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:#B45309;"><div style="width:18px; height:18px; border:2px solid currentColor; border-radius:4px;"></div><span style="font-size:12px; font-weight:600;">Thư viện</span></div>
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:#6B7280;"><div style="width:18px; height:18px; border:2px solid currentColor; border-radius:4px;"></div><span style="font-size:12px;">Thống kê</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:360px;">
+        <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px;">Dialog xác nhận xoá</div>
+        <div style="width:360px; height:740px; background:#FAFAF8; border:1px solid #E5E7EB; border-radius:24px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,.07); display:flex; flex-direction:column; position:relative;">
+          <div style="height:44px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; padding:0 20px; font-size:12px; font-weight:600;"><span>9:41</span><span style="color:#6B7280; letter-spacing:.1em;">▮▮▮</span></div>
+          <div style="flex:1; padding:16px; display:flex; flex-direction:column; gap:16px; overflow:hidden;">
+            <div style="font-size:24px; line-height:32px; font-weight:600;">Thư viện</div>
+            <div style="height:44px; border:1px solid #E5E7EB; border-radius:8px; background:#FFFFFF;"></div>
+            <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:16px; font-size:16px; line-height:24px;">FSRS tính lại khoảng cách ôn tập dựa trên…</div>
+            <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:16px; font-size:16px; line-height:24px;">Đường cong quên do ai mô tả?</div>
+          </div>
+          <div style="position:absolute; inset:0; background:rgba(26,29,35,.4); display:flex; align-items:center; justify-content:center; padding:24px;">
+            <div style="width:100%; background:#FFFFFF; border-radius:16px; padding:24px; box-shadow:0 4px 6px rgba(0,0,0,.07);">
+              <div style="font-size:18px; line-height:26px; font-weight:600;">Xoá thẻ này?</div>
+              <p style="margin:8px 0 0; font-size:14px; line-height:20px; color:#6B7280;">“Đường cong quên do ai mô tả?” cùng toàn bộ lịch ôn và lịch sử của nó sẽ bị xoá. Không hoàn tác được.</p>
+              <div style="margin-top:24px; display:flex; gap:32px;">
+                <div style="flex:1; height:44px; border-radius:8px; border:1px solid #E5E7EB; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:500;">Huỷ</div>
+                <div style="flex:1; height:44px; border-radius:8px; background:#DC2626; color:#FFFFFF; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:500;">Xoá</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:360px;">
+        <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px;">Đang tải</div>
+        <div style="width:360px; height:740px; background:#FAFAF8; border:1px solid #E5E7EB; border-radius:24px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,.07); display:flex; flex-direction:column;">
+          <div style="height:44px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; padding:0 20px; font-size:12px; font-weight:600;"><span>9:41</span><span style="color:#6B7280; letter-spacing:.1em;">▮▮▮</span></div>
+          <div style="flex:1; padding:16px; display:flex; flex-direction:column; gap:16px;">
+            <div style="font-size:24px; line-height:32px; font-weight:600;">Thư viện</div>
+            <div style="height:44px; border-radius:8px; background:#E5E7EB;"></div>
+            <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:8px;"><div style="height:16px; width:85%; border-radius:4px; background:#E5E7EB;"></div><div style="height:16px; width:45%; border-radius:4px; background:#E5E7EB;"></div></div>
+            <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:8px;"><div style="height:16px; width:70%; border-radius:4px; background:#E5E7EB;"></div><div style="height:16px; width:40%; border-radius:4px; background:#E5E7EB;"></div></div>
+            <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:8px;"><div style="height:16px; width:92%; border-radius:4px; background:#E5E7EB;"></div><div style="height:16px; width:50%; border-radius:4px; background:#E5E7EB;"></div></div>
+            <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:8px;"><div style="height:16px; width:60%; border-radius:4px; background:#E5E7EB;"></div><div style="height:16px; width:38%; border-radius:4px; background:#E5E7EB;"></div></div>
+          </div>
+          <div style="flex:0 0 auto; height:64px; border-top:1px solid #E5E7EB; background:#FFFFFF; display:grid; grid-template-columns:repeat(3,1fr);">
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:#6B7280;"><div style="width:18px; height:18px; border:2px solid currentColor; border-radius:4px;"></div><span style="font-size:12px;">Hôm nay</span></div>
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:#B45309;"><div style="width:18px; height:18px; border:2px solid currentColor; border-radius:4px;"></div><span style="font-size:12px; font-weight:600;">Thư viện</span></div>
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:#6B7280;"><div style="width:18px; height:18px; border:2px solid currentColor; border-radius:4px;"></div><span style="font-size:12px;">Thống kê</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:360px;">
+        <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px;">Rỗng / Lỗi tải danh sách</div>
+        <div style="width:360px; height:740px; background:#FAFAF8; border:1px solid #E5E7EB; border-radius:24px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,.07); display:flex; flex-direction:column;">
+          <div style="height:44px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; padding:0 20px; font-size:12px; font-weight:600;"><span>9:41</span><span style="color:#6B7280; letter-spacing:.1em;">▮▮▮</span></div>
+          <div style="flex:1; padding:16px; display:flex; flex-direction:column; gap:16px;">
+            <div style="font-size:24px; line-height:32px; font-weight:600;">Thư viện</div>
+            <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; text-align:center; padding:0 16px;">
+              <div style="width:64px; height:64px; border-radius:16px; border:1px dashed #E5E7EB; background:#FFFFFF;"></div>
+              <div style="font-size:18px; line-height:26px; font-weight:600;">Chưa có thẻ nào</div>
+              <div style="font-size:14px; line-height:20px; color:#6B7280;">Thẻ bạn tạo sẽ nằm ở đây để sửa hoặc xoá.</div>
+              <div style="height:44px; padding:0 24px; border-radius:8px; background:#F59E0B; color:#1A1D23; font-size:16px; font-weight:600; display:flex; align-items:center;">Tạo thẻ đầu tiên</div>
+            </div>
+            <div style="border:1px solid #FCA5A5; background:#FEF2F2; border-radius:8px; padding:12px 16px; display:flex; align-items:center; justify-content:space-between; gap:12px;">
+              <span style="font-size:14px; line-height:20px; color:#991B1B;">Biến thể lỗi: không tải được danh sách.</span>
+              <span style="font-size:14px; font-weight:600; color:#991B1B; text-decoration:underline;">Thử lại</span>
+            </div>
+          </div>
+          <div style="flex:0 0 auto; height:64px; border-top:1px solid #E5E7EB; background:#FFFFFF; display:grid; grid-template-columns:repeat(3,1fr);">
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:#6B7280;"><div style="width:18px; height:18px; border:2px solid currentColor; border-radius:4px;"></div><span style="font-size:12px;">Hôm nay</span></div>
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:#B45309;"><div style="width:18px; height:18px; border:2px solid currentColor; border-radius:4px;"></div><span style="font-size:12px; font-weight:600;">Thư viện</span></div>
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:#6B7280;"><div style="width:18px; height:18px; border:2px solid currentColor; border-radius:4px;"></div><span style="font-size:12px;">Thống kê</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= 5 · ĐĂNG NHẬP ================= -->
+  <div data-screen-label="Đăng nhập" style="margin-bottom:64px;">
+    <div style="display:flex; align-items:baseline; gap:12px; padding-bottom:12px; border-bottom:1px solid #E5E7EB; margin-bottom:24px;">
+      <span style="font-size:24px; line-height:32px; font-weight:600; letter-spacing:-.01em;">5 · Đăng nhập</span>
+      <span style="font-size:14px; line-height:20px; color:#6B7280;">US-008, US-010 — Authentik hoặc tài khoản nội bộ, giới hạn 6 user</span>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:32px;">
+
+      <div style="width:360px;">
+        <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px;">Mặc định</div>
+        <div style="width:360px; height:740px; background:#FAFAF8; border:1px solid #E5E7EB; border-radius:24px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,.07); display:flex; flex-direction:column;">
+          <div style="height:44px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; padding:0 20px; font-size:12px; font-weight:600;"><span>9:41</span><span style="color:#6B7280; letter-spacing:.1em;">▮▮▮</span></div>
+          <div style="flex:1; padding:32px 24px; display:flex; flex-direction:column; gap:32px; justify-content:center;">
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <div style="width:40px; height:40px; border-radius:12px; background:#F59E0B;"></div>
+              <div style="font-size:24px; line-height:32px; font-weight:600; margin-top:8px;">Retainly</div>
+              <div style="font-size:16px; line-height:24px; color:#6B7280;">Đọc rồi nhớ. Ôn đúng lúc sắp quên.</div>
+            </div>
+            <div style="height:44px; border-radius:8px; border:1px solid #E5E7EB; background:#FFFFFF; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:500;">Đăng nhập bằng Authentik</div>
+            <div style="display:flex; align-items:center; gap:12px;"><div style="flex:1; height:1px; background:#E5E7EB;"></div><span style="font-size:12px; color:#6B7280;">hoặc</span><div style="flex:1; height:1px; background:#E5E7EB;"></div></div>
+            <div style="display:flex; flex-direction:column; gap:16px;">
+              <div style="display:flex; flex-direction:column; gap:4px;"><label style="font-size:14px; line-height:20px; font-weight:500;">Email</label><div style="height:44px; border:1px solid #E5E7EB; border-radius:8px; background:#FFFFFF; padding:0 12px; display:flex; align-items:center; font-size:16px; color:#9CA3AF;">ban@vidu.com</div></div>
+              <div style="display:flex; flex-direction:column; gap:4px;"><label style="font-size:14px; line-height:20px; font-weight:500;">Mật khẩu</label><div style="height:44px; border:1px solid #E5E7EB; border-radius:8px; background:#FFFFFF; padding:0 12px; display:flex; align-items:center; font-size:16px; color:#9CA3AF;">••••••••</div></div>
+              <div style="height:44px; border-radius:8px; background:#F59E0B; color:#1A1D23; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:600;">Đăng nhập</div>
+              <div style="text-align:center; font-size:14px; line-height:20px; color:#6B7280;">Chưa có tài khoản? <a href="#">Đăng ký</a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:360px;">
+        <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px;">Đang chờ Authentik</div>
+        <div style="width:360px; height:740px; background:#FAFAF8; border:1px solid #E5E7EB; border-radius:24px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,.07); display:flex; flex-direction:column;">
+          <div style="height:44px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; padding:0 20px; font-size:12px; font-weight:600;"><span>9:41</span><span style="color:#6B7280; letter-spacing:.1em;">▮▮▮</span></div>
+          <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; padding:24px; text-align:center;">
+            <div style="width:32px; height:32px; border-radius:16px; border:3px solid #E5E7EB; border-top-color:#F59E0B;"></div>
+            <div style="font-size:16px; line-height:24px;">Đang chuyển tới Authentik…</div>
+            <div style="font-size:14px; line-height:20px; color:#6B7280;">Nếu quá 10 giây chưa chuyển, hãy quay lại và thử lại.</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:360px;">
+        <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px;">Đăng ký + lỗi giới hạn 6 user</div>
+        <div style="width:360px; height:740px; background:#FAFAF8; border:1px solid #E5E7EB; border-radius:24px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,.07); display:flex; flex-direction:column;">
+          <div style="height:44px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; padding:0 20px; font-size:12px; font-weight:600;"><span>9:41</span><span style="color:#6B7280; letter-spacing:.1em;">▮▮▮</span></div>
+          <div style="flex:1; padding:32px 24px; display:flex; flex-direction:column; gap:24px; justify-content:center;">
+            <div style="font-size:24px; line-height:32px; font-weight:600;">Tạo tài khoản</div>
+            <div style="border:1px solid #FCA5A5; background:#FEF2F2; border-radius:8px; padding:12px 16px; font-size:14px; line-height:20px; color:#991B1B;">Đã đủ 6 tài khoản hoạt động — không thể đăng ký thêm. Liên hệ chủ dự án nếu bạn cần một chỗ.</div>
+            <div style="display:flex; flex-direction:column; gap:4px;"><label style="font-size:14px; line-height:20px; font-weight:500;">Email</label><div style="height:44px; border:1px solid #E5E7EB; border-radius:8px; background:#FFFFFF; padding:0 12px; display:flex; align-items:center; font-size:16px;">ban@vidu.com</div></div>
+            <div style="display:flex; flex-direction:column; gap:4px;"><label style="font-size:14px; line-height:20px; font-weight:500;">Mật khẩu</label><div style="height:44px; border:1px solid #E5E7EB; border-radius:8px; background:#FFFFFF; padding:0 12px; display:flex; align-items:center; font-size:16px;">••••••••••</div><div style="font-size:12px; line-height:16px; color:#6B7280;">Tối thiểu 12 ký tự.</div></div>
+            <div style="height:44px; border-radius:8px; background:#F59E0B; color:#1A1D23; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:600; opacity:.4;">Đăng ký</div>
+            <div style="text-align:center; font-size:14px; line-height:20px; color:#6B7280;">Đã có tài khoản? <a href="#">Đăng nhập</a></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= 6 · THỐNG KÊ ================= -->
+  <div data-screen-label="Thống kê">
+    <div style="display:flex; align-items:baseline; gap:12px; padding-bottom:12px; border-bottom:1px solid #E5E7EB; margin-bottom:24px;">
+      <span style="font-size:24px; line-height:32px; font-weight:600; letter-spacing:-.01em;">6 · Thống kê</span>
+      <span style="font-size:14px; line-height:20px; color:#6B7280;">US-007 (Could) — tỷ lệ quên theo nhánh, sắp xếp cao → thấp</span>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:32px;">
+
+      <div style="width:360px;">
+        <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px;">Có dữ liệu</div>
+        <div style="width:360px; height:740px; background:#FAFAF8; border:1px solid #E5E7EB; border-radius:24px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,.07); display:flex; flex-direction:column;">
+          <div style="height:44px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; padding:0 20px; font-size:12px; font-weight:600;"><span>9:41</span><span style="color:#6B7280; letter-spacing:.1em;">▮▮▮</span></div>
+          <div style="flex:1; padding:16px; display:flex; flex-direction:column; gap:24px;">
+            <div style="font-size:24px; line-height:32px; font-weight:600;">Thống kê</div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <div style="font-size:18px; line-height:26px; font-weight:600;">Tỷ lệ quên theo nhánh</div>
+              <div style="font-size:14px; line-height:20px; color:#6B7280;">30 ngày gần nhất · nhánh cao nhất nên được ôn kỹ hơn.</div>
+            </div>
+            <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:16px;">
+              <div style="display:flex; flex-direction:column; gap:6px;">
+                <div style="display:flex; justify-content:space-between; font-size:14px; line-height:20px;"><span>Kiến trúc phần mềm</span><span style="font-weight:600;">42%</span></div>
+                <div style="height:8px; border-radius:4px; background:#F3F4F6; overflow:hidden;"><div style="width:42%; height:8px; background:#F59E0B;"></div></div>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:6px;">
+                <div style="display:flex; justify-content:space-between; font-size:14px; line-height:20px;"><span>Trí nhớ &amp; học tập</span><span style="font-weight:600;">31%</span></div>
+                <div style="height:8px; border-radius:4px; background:#F3F4F6; overflow:hidden;"><div style="width:31%; height:8px; background:#F59E0B;"></div></div>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:6px;">
+                <div style="display:flex; justify-content:space-between; font-size:14px; line-height:20px;"><span>Phương pháp học</span><span style="font-weight:600;">18%</span></div>
+                <div style="height:8px; border-radius:4px; background:#F3F4F6; overflow:hidden;"><div style="width:18%; height:8px; background:#F59E0B;"></div></div>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:6px;">
+                <div style="display:flex; justify-content:space-between; font-size:14px; line-height:20px;"><span>Kinh tế học hành vi</span><span style="font-weight:600;">9%</span></div>
+                <div style="height:8px; border-radius:4px; background:#F3F4F6; overflow:hidden;"><div style="width:9%; height:8px; background:#F59E0B;"></div></div>
+              </div>
+            </div>
+            <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:16px; display:flex; justify-content:space-between;">
+              <div><div style="font-size:24px; line-height:32px; font-weight:600;">86%</div><div style="font-size:12px; color:#6B7280;">ngày có ôn</div></div>
+              <div><div style="font-size:24px; line-height:32px; font-weight:600;">19</div><div style="font-size:12px; color:#6B7280;">chuỗi dài nhất</div></div>
+              <div><div style="font-size:24px; line-height:32px; font-weight:600;">3</div><div style="font-size:12px; color:#6B7280;">thẻ quá hạn</div></div>
+            </div>
+          </div>
+          <div style="flex:0 0 auto; height:64px; border-top:1px solid #E5E7EB; background:#FFFFFF; display:grid; grid-template-columns:repeat(3,1fr);">
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:#6B7280;"><div style="width:18px; height:18px; border:2px solid currentColor; border-radius:4px;"></div><span style="font-size:12px;">Hôm nay</span></div>
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:#6B7280;"><div style="width:18px; height:18px; border:2px solid currentColor; border-radius:4px;"></div><span style="font-size:12px;">Thư viện</span></div>
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:#B45309;"><div style="width:18px; height:18px; border:2px solid currentColor; border-radius:4px;"></div><span style="font-size:12px; font-weight:600;">Thống kê</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:360px;">
+        <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px;">Rỗng — chưa gán nhánh</div>
+        <div style="width:360px; height:740px; background:#FAFAF8; border:1px solid #E5E7EB; border-radius:24px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,.07); display:flex; flex-direction:column;">
+          <div style="height:44px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; padding:0 20px; font-size:12px; font-weight:600;"><span>9:41</span><span style="color:#6B7280; letter-spacing:.1em;">▮▮▮</span></div>
+          <div style="flex:1; padding:16px; display:flex; flex-direction:column; gap:16px;">
+            <div style="font-size:24px; line-height:32px; font-weight:600;">Thống kê</div>
+            <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; text-align:center; padding:0 16px;">
+              <div style="width:64px; height:64px; border-radius:16px; border:1px dashed #E5E7EB; background:#FFFFFF;"></div>
+              <div style="font-size:18px; line-height:26px; font-weight:600;">Chưa có gì để so sánh</div>
+              <div style="font-size:14px; line-height:20px; color:#6B7280;">Gán thẻ vào nhánh kiến thức để xem tỷ lệ quên ở đây.</div>
+              <div style="height:44px; padding:0 24px; border-radius:8px; border:1px solid #E5E7EB; background:#FFFFFF; font-size:16px; font-weight:500; display:flex; align-items:center;">Mở thư viện thẻ</div>
+            </div>
+          </div>
+          <div style="flex:0 0 auto; height:64px; border-top:1px solid #E5E7EB; background:#FFFFFF; display:grid; grid-template-columns:repeat(3,1fr);">
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:#6B7280;"><div style="width:18px; height:18px; border:2px solid currentColor; border-radius:4px;"></div><span style="font-size:12px;">Hôm nay</span></div>
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:#6B7280;"><div style="width:18px; height:18px; border:2px solid currentColor; border-radius:4px;"></div><span style="font-size:12px;">Thư viện</span></div>
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:#B45309;"><div style="width:18px; height:18px; border:2px solid currentColor; border-radius:4px;"></div><span style="font-size:12px; font-weight:600;">Thống kê</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================================================================= -->
+  <!-- ======================= DESKTOP ≥ 1024px ======================== -->
+  <!-- ================================================================= -->
+
+  <div style="margin:96px 0 48px; padding-top:48px; border-top:2px solid #1A1D23; max-width:820px; display:flex; flex-direction:column; gap:10px;">
+    <div style="font-size:12px; line-height:16px; color:#6B7280; letter-spacing:.1em; text-transform:uppercase;">Desktop · 1280×800</div>
+    <h1 style="margin:0; font-size:36px; line-height:44px; font-weight:700; letter-spacing:-.02em;">Bộ màn hình v0.1 — Desktop</h1>
+    <p style="margin:0; font-size:16px; line-height:24px; color:#6B7280; text-wrap:pretty;">Cùng token, cùng component. Ba khác biệt duy nhất so với mobile: điều hướng chuyển từ tab đáy sang sidebar trái 240px; nội dung căn giữa trong cột tối đa 720px thay vì kéo giãn hết chiều ngang; vùng thẻ ôn giữ nguyên cỡ tablet (560px) và <strong style="color:#1A1D23; font-weight:600;">nút Nhớ/Quên là thao tác chính</strong> — vuốt bằng chuột chỉ là tuỳ chọn (design-criteria §7, §8).</p>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:64px;">
+
+    <!-- D1 · Trang chủ -->
+    <div data-screen-label="Desktop — Trang chủ">
+      <div style="display:flex; align-items:baseline; gap:12px; padding-bottom:12px; border-bottom:1px solid #E5E7EB; margin-bottom:24px;">
+        <span style="font-size:24px; line-height:32px; font-weight:600; letter-spacing:-.01em;">D1 · Trang chủ</span>
+        <span style="font-size:14px; line-height:20px; color:#6B7280;">Sidebar cố định + cột nội dung 720px</span>
+      </div>
+      <div style="width:1280px; height:800px; background:#FAFAF8; border:1px solid #E5E7EB; border-radius:12px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,.07); display:flex;">
+        <div style="flex:0 0 240px; background:#FFFFFF; border-right:1px solid #E5E7EB; padding:24px 16px; display:flex; flex-direction:column; gap:32px;">
+          <div style="display:flex; align-items:center; gap:12px; padding:0 8px;">
+            <div style="width:28px; height:28px; border-radius:8px; background:#F59E0B;"></div>
+            <span style="font-size:18px; line-height:26px; font-weight:600;">Retainly</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <div style="height:44px; border-radius:8px; background:#FEF3C7; color:#92400E; display:flex; align-items:center; gap:12px; padding:0 12px; font-size:16px; font-weight:600;"><span style="width:18px; height:18px; border:2px solid currentColor; border-radius:4px;"></span>Hôm nay<span style="margin-left:auto; font-size:14px;">12</span></div>
+            <div style="height:44px; border-radius:8px; display:flex; align-items:center; gap:12px; padding:0 12px; font-size:16px; color:#1A1D23;"><span style="width:18px; height:18px; border:2px solid #6B7280; border-radius:4px;"></span>Thư viện</div>
+            <div style="height:44px; border-radius:8px; display:flex; align-items:center; gap:12px; padding:0 12px; font-size:16px; color:#1A1D23;"><span style="width:18px; height:18px; border:2px solid #6B7280; border-radius:4px;"></span>Thống kê</div>
+          </div>
+          <div style="height:44px; border-radius:8px; background:#F59E0B; color:#1A1D23; display:flex; align-items:center; justify-content:center; gap:8px; font-size:16px; font-weight:600;">+ Tạo thẻ mới</div>
+          <div style="margin-top:auto; display:flex; align-items:center; gap:12px; padding:12px 8px; border-top:1px solid #E5E7EB;">
+            <div style="width:32px; height:32px; border-radius:16px; background:#E5E7EB;"></div>
+            <div style="display:flex; flex-direction:column;"><span style="font-size:14px; font-weight:500;">Toni</span><span style="font-size:12px; color:#6B7280;">ban@vidu.com</span></div>
+          </div>
+        </div>
+        <div style="flex:1; overflow:hidden; padding:48px;">
+          <div style="max-width:720px; display:flex; flex-direction:column; gap:32px;">
+            <div style="display:flex; align-items:flex-end; justify-content:space-between;">
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <div style="font-size:24px; line-height:32px; font-weight:600;">Hôm nay</div>
+                <div style="font-size:14px; line-height:20px; color:#6B7280;">Thứ ba, 8 tháng 9</div>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px; height:32px; padding:0 12px; border-radius:16px; background:#FEF3C7;"><span style="width:8px; height:8px; border-radius:4px; background:#F59E0B;"></span><span style="font-size:14px; font-weight:600; color:#92400E;">Chuỗi 7 ngày</span></div>
+            </div>
+            <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:16px; padding:32px; box-shadow:0 1px 2px rgba(0,0,0,.05); display:flex; align-items:center; justify-content:space-between; gap:32px;">
+              <div style="display:flex; align-items:baseline; gap:12px;">
+                <div style="font-size:36px; line-height:44px; font-weight:700; letter-spacing:-.02em;">12</div>
+                <div style="font-size:16px; line-height:24px; color:#6B7280;">thẻ đến hạn — khoảng 6 phút</div>
+              </div>
+              <div style="height:44px; padding:0 32px; border-radius:8px; background:#F59E0B; color:#1A1D23; font-size:16px; font-weight:600; display:flex; align-items:center;">Bắt đầu ôn tập</div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              <div style="font-size:18px; line-height:26px; font-weight:600;">Chuỗi ngày ôn tập</div>
+              <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:20px; display:flex; gap:8px;">
+                <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:8px;"><div style="width:100%; height:40px; border-radius:8px; background:#F59E0B;"></div><span style="font-size:12px; color:#6B7280;">T2</span></div>
+                <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:8px;"><div style="width:100%; height:40px; border-radius:8px; background:#F59E0B;"></div><span style="font-size:12px; color:#6B7280;">T3</span></div>
+                <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:8px;"><div style="width:100%; height:40px; border-radius:8px; background:#F59E0B;"></div><span style="font-size:12px; color:#6B7280;">T4</span></div>
+                <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:8px;"><div style="width:100%; height:40px; border-radius:8px; background:#F59E0B;"></div><span style="font-size:12px; color:#6B7280;">T5</span></div>
+                <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:8px;"><div style="width:100%; height:40px; border-radius:8px; background:#F59E0B;"></div><span style="font-size:12px; color:#6B7280;">T6</span></div>
+                <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:8px;"><div style="width:100%; height:40px; border-radius:8px; background:#F59E0B;"></div><span style="font-size:12px; color:#6B7280;">T7</span></div>
+                <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:8px;"><div style="width:100%; height:40px; border-radius:8px; border:1px dashed #E5E7EB;"></div><span style="font-size:12px; font-weight:600;">CN</span></div>
+              </div>
+            </div>
+            <div style="display:flex; gap:16px;">
+              <div style="flex:1; background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:20px;"><div style="font-size:24px; line-height:32px; font-weight:600;">38</div><div style="font-size:14px; color:#6B7280;">tổng số thẻ</div></div>
+              <div style="flex:1; background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:20px;"><div style="font-size:24px; line-height:32px; font-weight:600;">3</div><div style="font-size:14px; color:#6B7280;">thẻ quá hạn</div></div>
+              <div style="flex:1; background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:20px;"><div style="font-size:24px; line-height:32px; font-weight:600;">86%</div><div style="font-size:14px; color:#6B7280;">ngày có ôn</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- D2 · Ôn tập -->
+    <div data-screen-label="Desktop — Ôn tập">
+      <div style="display:flex; align-items:baseline; gap:12px; padding-bottom:12px; border-bottom:1px solid #E5E7EB; margin-bottom:24px;">
+        <span style="font-size:24px; line-height:32px; font-weight:600; letter-spacing:-.01em;">D2 · Ôn tập</span>
+        <span style="font-size:14px; line-height:20px; color:#6B7280;">Toàn màn hình không sidebar — thẻ giữ 560px, nút là thao tác chính, có phím tắt</span>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; gap:32px;">
+        <div>
+          <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px;">Đã lật</div>
+          <div style="width:1280px; height:800px; background:#FAFAF8; border:1px solid #E5E7EB; border-radius:12px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,.07); display:flex; flex-direction:column;">
+            <div style="flex:0 0 auto; height:64px; border-bottom:1px solid #E5E7EB; background:#FFFFFF; padding:0 24px; display:flex; align-items:center; justify-content:space-between;">
+              <div style="height:44px; display:flex; align-items:center; gap:8px; font-size:16px; font-weight:500;">✕ Kết thúc phiên</div>
+              <div style="flex:1; max-width:480px; margin:0 32px; display:flex; align-items:center; gap:12px;">
+                <div style="flex:1; height:4px; border-radius:2px; background:#E5E7EB; overflow:hidden;"><div style="width:25%; height:4px; background:#F59E0B;"></div></div>
+                <span style="font-size:14px; color:#6B7280; white-space:nowrap;">3 / 12</span>
+              </div>
+              <div style="width:140px;"></div>
+            </div>
+            <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:32px; padding:48px;">
+              <div style="width:560px; min-height:320px; background:#FFFFFF; border:1px solid #E5E7EB; border-radius:16px; box-shadow:0 4px 6px rgba(0,0,0,.07); padding:32px; display:flex; flex-direction:column; gap:20px;">
+                <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em;">Trí nhớ &amp; học tập</div>
+                <div style="font-size:16px; line-height:24px; color:#6B7280;">FSRS tính lại khoảng cách ôn tập dựa trên ba đại lượng nào?</div>
+                <div style="height:1px; background:#E5E7EB;"></div>
+                <div style="font-size:16px; line-height:24px;">Độ khó (difficulty), độ bền trí nhớ (stability) và khả năng nhớ lại tại thời điểm ôn (retrievability).</div>
+                <div style="margin-top:auto; font-size:12px; line-height:16px; color:#6B7280;">Ôn lần cuối 3 ngày trước · lần tới +6 ngày nếu Nhớ</div>
+              </div>
+              <div style="width:560px; display:flex; gap:16px;">
+                <div style="flex:1; height:44px; border-radius:8px; border:1px solid #DC2626; color:#DC2626; background:#FFFFFF; display:flex; align-items:center; justify-content:center; gap:8px; font-size:16px; font-weight:600;">Quên <span style="font-size:12px; font-weight:400; color:#6B7280;">←</span></div>
+                <div style="flex:1; height:44px; border-radius:8px; border:1px solid #16A34A; color:#16A34A; background:#FFFFFF; display:flex; align-items:center; justify-content:center; gap:8px; font-size:16px; font-weight:600;">Nhớ <span style="font-size:12px; font-weight:400; color:#6B7280;">→</span></div>
+              </div>
+              <div style="font-size:12px; line-height:16px; color:#6B7280;">Phím tắt: Space lật thẻ · ← Quên · → Nhớ · Esc kết thúc</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px;">Mặt hỏi · lỗi lưu (NFR#2)</div>
+          <div style="width:1280px; height:800px; background:#FAFAF8; border:1px solid #E5E7EB; border-radius:12px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,.07); display:flex; flex-direction:column;">
+            <div style="flex:0 0 auto; height:64px; border-bottom:1px solid #E5E7EB; background:#FFFFFF; padding:0 24px; display:flex; align-items:center; justify-content:space-between;">
+              <div style="height:44px; display:flex; align-items:center; gap:8px; font-size:16px; font-weight:500;">✕ Kết thúc phiên</div>
+              <div style="flex:1; max-width:480px; margin:0 32px; display:flex; align-items:center; gap:12px;">
+                <div style="flex:1; height:4px; border-radius:2px; background:#E5E7EB; overflow:hidden;"><div style="width:25%; height:4px; background:#F59E0B;"></div></div>
+                <span style="font-size:14px; color:#6B7280; white-space:nowrap;">3 / 12</span>
+              </div>
+              <div style="width:140px;"></div>
+            </div>
+            <div style="flex:0 0 auto; padding:16px 48px 0; display:flex; justify-content:center;">
+              <div style="width:560px; border:1px solid #FCA5A5; background:#FEF2F2; border-radius:8px; padding:12px 16px; display:flex; align-items:center; justify-content:space-between; gap:12px;">
+                <span style="font-size:14px; line-height:20px; color:#991B1B;">Chưa lưu được kết quả — thẻ được giữ nguyên, không mất dữ liệu.</span>
+                <span style="font-size:14px; font-weight:600; color:#991B1B; text-decoration:underline;">Thử lại</span>
+              </div>
+            </div>
+            <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:32px; padding:32px 48px 48px;">
+              <div style="width:560px; min-height:320px; background:#FFFFFF; border:1px solid #E5E7EB; border-radius:16px; box-shadow:0 4px 6px rgba(0,0,0,.07); padding:48px 32px; display:flex; flex-direction:column; gap:16px; align-items:center; justify-content:center; text-align:center;">
+                <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em;">Trí nhớ &amp; học tập</div>
+                <div style="font-size:16px; line-height:24px; max-width:400px;">FSRS tính lại khoảng cách ôn tập dựa trên ba đại lượng nào?</div>
+                <div style="font-size:12px; line-height:16px; color:#6B7280; margin-top:8px;">Nhấn Space hoặc bấm vào thẻ để xem đáp án</div>
+              </div>
+              <div style="width:560px; display:flex; gap:16px;">
+                <div style="flex:1; height:44px; border-radius:8px; border:1px solid #E5E7EB; color:#9CA3AF; background:#FFFFFF; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:500;">Quên</div>
+                <div style="flex:1; height:44px; border-radius:8px; border:1px solid #E5E7EB; color:#9CA3AF; background:#FFFFFF; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:500;">Nhớ</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- D3 · Tạo thẻ -->
+    <div data-screen-label="Desktop — Tạo thẻ">
+      <div style="display:flex; align-items:baseline; gap:12px; padding-bottom:12px; border-bottom:1px solid #E5E7EB; margin-bottom:24px;">
+        <span style="font-size:24px; line-height:32px; font-weight:600; letter-spacing:-.01em;">D3 · Tạo thẻ từ URL</span>
+        <span style="font-size:14px; line-height:20px; color:#6B7280;">Hai cột — nguồn đã bóc tách bên trái, form bên phải (tham chiếu Readwise Reader)</span>
+      </div>
+      <div style="width:1280px; height:800px; background:#FAFAF8; border:1px solid #E5E7EB; border-radius:12px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,.07); display:flex;">
+        <div style="flex:0 0 240px; background:#FFFFFF; border-right:1px solid #E5E7EB; padding:24px 16px; display:flex; flex-direction:column; gap:32px;">
+          <div style="display:flex; align-items:center; gap:12px; padding:0 8px;">
+            <div style="width:28px; height:28px; border-radius:8px; background:#F59E0B;"></div>
+            <span style="font-size:18px; line-height:26px; font-weight:600;">Retainly</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <div style="height:44px; border-radius:8px; display:flex; align-items:center; gap:12px; padding:0 12px; font-size:16px;"><span style="width:18px; height:18px; border:2px solid #6B7280; border-radius:4px;"></span>Hôm nay<span style="margin-left:auto; font-size:14px; color:#6B7280;">12</span></div>
+            <div style="height:44px; border-radius:8px; display:flex; align-items:center; gap:12px; padding:0 12px; font-size:16px;"><span style="width:18px; height:18px; border:2px solid #6B7280; border-radius:4px;"></span>Thư viện</div>
+            <div style="height:44px; border-radius:8px; display:flex; align-items:center; gap:12px; padding:0 12px; font-size:16px;"><span style="width:18px; height:18px; border:2px solid #6B7280; border-radius:4px;"></span>Thống kê</div>
+          </div>
+          <div style="height:44px; border-radius:8px; background:#F59E0B; color:#1A1D23; display:flex; align-items:center; justify-content:center; gap:8px; font-size:16px; font-weight:600;">+ Tạo thẻ mới</div>
+        </div>
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="flex:0 0 auto; padding:32px 48px 24px; display:flex; flex-direction:column; gap:16px;">
+            <div style="font-size:24px; line-height:32px; font-weight:600;">Thẻ mới</div>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px; padding:4px; background:#F3F4F6; border-radius:8px; width:240px;">
+                <div style="height:36px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:14px; color:#6B7280;">Gõ tay</div>
+                <div style="height:36px; border-radius:4px; background:#FFFFFF; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:600; box-shadow:0 1px 2px rgba(0,0,0,.05);">Từ URL</div>
+              </div>
+              <div style="flex:1; min-width:0; box-sizing:border-box; height:44px; border:1px solid #E5E7EB; border-radius:8px; background:#FFFFFF; padding:0 12px; display:flex; align-items:center; font-size:16px; overflow:hidden;"><span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">https://example.com/spaced-repetition-explained</span></div>
+              <div style="flex:0 0 auto; height:44px; padding:0 24px; border-radius:8px; background:#F59E0B; color:#1A1D23; display:flex; align-items:center; font-size:16px; font-weight:600;">Nạp</div>
+            </div>
+          </div>
+          <div style="flex:1; min-height:0; padding:0 48px 24px; display:grid; grid-template-columns:1fr 400px; gap:32px;">
+            <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:32px; overflow:hidden; display:flex; flex-direction:column; gap:16px;">
+              <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em;">Nguồn đã bóc tách</div>
+              <div style="font-size:24px; line-height:32px; font-weight:600;">Spaced repetition hoạt động thế nào</div>
+              <div style="font-size:16px; line-height:24px; max-width:60ch; text-wrap:pretty;">Trí nhớ suy giảm theo đường cong quên của Ebbinghaus: sau một lần đọc, tỷ lệ nội dung còn nhớ rơi rất nhanh trong vài ngày đầu rồi chậm dần.</div>
+              <div style="font-size:16px; line-height:24px; max-width:60ch; text-wrap:pretty;">Ôn lại đúng lúc sắp quên sẽ kéo dài độ bền của dấu vết trí nhớ, nên khoảng cách giữa các lần ôn có thể giãn dần — một ngày, ba ngày, một tuần, một tháng. Thuật toán FSRS ước lượng thời điểm đó cho từng thẻ riêng biệt thay vì áp một lịch cố định cho tất cả.</div>
+              <div style="font-size:16px; line-height:24px; max-width:60ch; color:#6B7280; text-wrap:pretty;">Bôi đen một đoạn để tự động điền vào mặt trả lời.</div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:16px; overflow:hidden;">
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <label style="font-size:14px; line-height:20px; font-weight:500;">Mặt hỏi</label>
+                <div style="min-height:72px; border:1px solid #F59E0B; border-radius:8px; background:#FFFFFF; padding:12px; font-size:16px; line-height:24px;">Đường cong quên do ai mô tả?</div>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <label style="font-size:14px; line-height:20px; font-weight:500;">Mặt trả lời</label>
+                <div style="min-height:120px; border:1px solid #E5E7EB; border-radius:8px; background:#FFFFFF; padding:12px; font-size:16px; line-height:24px;">Hermann Ebbinghaus.</div>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <label style="font-size:14px; line-height:20px; font-weight:500;">Nhánh kiến thức <span style="color:#6B7280; font-weight:400;">— không bắt buộc</span></label>
+                <div style="height:44px; border:1px solid #E5E7EB; border-radius:8px; background:#FFFFFF; padding:0 12px; display:flex; align-items:center; justify-content:space-between; font-size:16px;"><span>Trí nhớ &amp; học tập</span><span style="color:#6B7280;">▾</span></div>
+              </div>
+              <div style="margin-top:auto; display:flex; gap:12px;">
+                <div style="flex:0 0 auto; width:96px; height:44px; border-radius:8px; border:1px solid #E5E7EB; background:#FFFFFF; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:500;">Huỷ</div>
+                <div style="flex:1; height:44px; border-radius:8px; background:#F59E0B; color:#1A1D23; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:600;">Lưu thẻ</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- D4 · Thư viện -->
+    <div data-screen-label="Desktop — Thư viện">
+      <div style="display:flex; align-items:baseline; gap:12px; padding-bottom:12px; border-bottom:1px solid #E5E7EB; margin-bottom:24px;">
+        <span style="font-size:24px; line-height:32px; font-weight:600; letter-spacing:-.01em;">D4 · Thư viện thẻ</span>
+        <span style="font-size:14px; line-height:20px; color:#6B7280;">Bảng dữ liệu + dialog xác nhận xoá</span>
+      </div>
+      <div style="width:1280px; height:800px; background:#FAFAF8; border:1px solid #E5E7EB; border-radius:12px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,.07); display:flex; position:relative;">
+        <div style="flex:0 0 240px; background:#FFFFFF; border-right:1px solid #E5E7EB; padding:24px 16px; display:flex; flex-direction:column; gap:32px;">
+          <div style="display:flex; align-items:center; gap:12px; padding:0 8px;">
+            <div style="width:28px; height:28px; border-radius:8px; background:#F59E0B;"></div>
+            <span style="font-size:18px; line-height:26px; font-weight:600;">Retainly</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <div style="height:44px; border-radius:8px; display:flex; align-items:center; gap:12px; padding:0 12px; font-size:16px;"><span style="width:18px; height:18px; border:2px solid #6B7280; border-radius:4px;"></span>Hôm nay<span style="margin-left:auto; font-size:14px; color:#6B7280;">12</span></div>
+            <div style="height:44px; border-radius:8px; background:#FEF3C7; color:#92400E; display:flex; align-items:center; gap:12px; padding:0 12px; font-size:16px; font-weight:600;"><span style="width:18px; height:18px; border:2px solid currentColor; border-radius:4px;"></span>Thư viện</div>
+            <div style="height:44px; border-radius:8px; display:flex; align-items:center; gap:12px; padding:0 12px; font-size:16px;"><span style="width:18px; height:18px; border:2px solid #6B7280; border-radius:4px;"></span>Thống kê</div>
+          </div>
+          <div style="height:44px; border-radius:8px; background:#F59E0B; color:#1A1D23; display:flex; align-items:center; justify-content:center; gap:8px; font-size:16px; font-weight:600;">+ Tạo thẻ mới</div>
+          <div style="display:flex; flex-direction:column; gap:8px; padding:0 8px;">
+            <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em;">Nhánh kiến thức</div>
+            <div style="font-size:14px; line-height:20px; color:#1A1D23;">Tất cả <span style="color:#6B7280;">38</span></div>
+            <div style="font-size:14px; line-height:20px; color:#1A1D23;">Trí nhớ &amp; học tập <span style="color:#6B7280;">14</span></div>
+            <div style="font-size:14px; line-height:20px; color:#1A1D23;">Kiến trúc phần mềm <span style="color:#6B7280;">11</span></div>
+            <div style="font-size:14px; line-height:20px; color:#1A1D23;">Phương pháp học <span style="color:#6B7280;">8</span></div>
+            <div style="font-size:14px; line-height:20px; color:#6B7280;">Chưa gán <span>5</span></div>
+          </div>
+        </div>
+        <div style="flex:1; padding:32px 48px; display:flex; flex-direction:column; gap:24px; overflow:hidden;">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:24px;">
+            <div style="font-size:24px; line-height:32px; font-weight:600;">Thư viện <span style="font-size:16px; font-weight:400; color:#6B7280;">38 thẻ</span></div>
+            <div style="width:320px; box-sizing:border-box; height:44px; border:1px solid #E5E7EB; border-radius:8px; background:#FFFFFF; padding:0 12px; display:flex; align-items:center; font-size:16px; color:#9CA3AF;">Tìm trong thẻ…</div>
+          </div>
+          <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; overflow:hidden;">
+            <div style="display:grid; grid-template-columns:1fr 200px 140px 108px; gap:16px; padding:12px 20px; background:#FAFAF8; border-bottom:1px solid #E5E7EB; font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em;"><div>Mặt hỏi</div><div>Nhánh</div><div>Lần ôn tới</div><div></div></div>
+            <div style="display:grid; grid-template-columns:1fr 200px 140px 108px; gap:16px; padding:12px 20px; border-bottom:1px solid #E5E7EB; align-items:center; font-size:16px; line-height:24px;">
+              <div>FSRS tính lại khoảng cách ôn tập dựa trên ba đại lượng nào?</div>
+              <div style="font-size:14px; color:#6B7280;">Trí nhớ &amp; học tập</div>
+              <div style="font-size:14px; color:#B45309; font-weight:600;">Hôm nay</div>
+              <div style="display:flex; gap:4px; justify-content:flex-end;"><div style="width:44px; height:44px; border-radius:8px; border:1px solid #E5E7EB; display:flex; align-items:center; justify-content:center; font-size:16px;">✎</div><div style="width:44px; height:44px; border-radius:8px; border:1px solid #E5E7EB; color:#DC2626; display:flex; align-items:center; justify-content:center; font-size:16px;">✕</div></div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 200px 140px 108px; gap:16px; padding:12px 20px; border-bottom:1px solid #E5E7EB; align-items:center; font-size:16px; line-height:24px;">
+              <div>Đường cong quên do ai mô tả?</div>
+              <div style="font-size:14px; color:#6B7280;">Trí nhớ &amp; học tập</div>
+              <div style="font-size:14px; color:#6B7280;">còn 3 ngày</div>
+              <div style="display:flex; gap:4px; justify-content:flex-end;"><div style="width:44px; height:44px; border-radius:8px; border:1px solid #E5E7EB; display:flex; align-items:center; justify-content:center; font-size:16px;">✎</div><div style="width:44px; height:44px; border-radius:8px; border:1px solid #E5E7EB; color:#DC2626; display:flex; align-items:center; justify-content:center; font-size:16px;">✕</div></div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 200px 140px 108px; gap:16px; padding:12px 20px; border-bottom:1px solid #E5E7EB; align-items:center; font-size:16px; line-height:24px;">
+              <div>Kỹ thuật Pomodoro chia thời gian như thế nào?</div>
+              <div style="font-size:14px; color:#6B7280;">Chưa gán</div>
+              <div style="font-size:14px; color:#6B7280;">còn 9 ngày</div>
+              <div style="display:flex; gap:4px; justify-content:flex-end;"><div style="width:44px; height:44px; border-radius:8px; border:1px solid #E5E7EB; display:flex; align-items:center; justify-content:center; font-size:16px;">✎</div><div style="width:44px; height:44px; border-radius:8px; border:1px solid #E5E7EB; color:#DC2626; display:flex; align-items:center; justify-content:center; font-size:16px;">✕</div></div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 200px 140px 108px; gap:16px; padding:12px 20px; border-bottom:1px solid #E5E7EB; align-items:center; font-size:16px; line-height:24px;">
+              <div>Interleaving khác blocked practice ở điểm nào?</div>
+              <div style="font-size:14px; color:#6B7280;">Phương pháp học</div>
+              <div style="font-size:14px; color:#6B7280;">còn 14 ngày</div>
+              <div style="display:flex; gap:4px; justify-content:flex-end;"><div style="width:44px; height:44px; border-radius:8px; border:1px solid #E5E7EB; display:flex; align-items:center; justify-content:center; font-size:16px;">✎</div><div style="width:44px; height:44px; border-radius:8px; border:1px solid #E5E7EB; color:#DC2626; display:flex; align-items:center; justify-content:center; font-size:16px;">✕</div></div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 200px 140px 108px; gap:16px; padding:12px 20px; align-items:center; font-size:16px; line-height:24px;">
+              <div>Ba tầng của kiến trúc hexagonal là gì?</div>
+              <div style="font-size:14px; color:#6B7280;">Kiến trúc phần mềm</div>
+              <div style="font-size:14px; color:#6B7280;">còn 21 ngày</div>
+              <div style="display:flex; gap:4px; justify-content:flex-end;"><div style="width:44px; height:44px; border-radius:8px; border:1px solid #E5E7EB; display:flex; align-items:center; justify-content:center; font-size:16px;">✎</div><div style="width:44px; height:44px; border-radius:8px; border:1px solid #E5E7EB; color:#DC2626; display:flex; align-items:center; justify-content:center; font-size:16px;">✕</div></div>
+            </div>
+          </div>
+        </div>
+        <div style="position:absolute; inset:0; background:rgba(26,29,35,.4); display:flex; align-items:center; justify-content:center;">
+          <div style="width:440px; background:#FFFFFF; border-radius:16px; padding:32px; box-shadow:0 4px 6px rgba(0,0,0,.07);">
+            <div style="font-size:18px; line-height:26px; font-weight:600;">Xoá thẻ này?</div>
+            <p style="margin:8px 0 0; font-size:14px; line-height:20px; color:#6B7280;">“Đường cong quên do ai mô tả?” cùng toàn bộ lịch ôn và lịch sử của nó sẽ bị xoá. Không hoàn tác được.</p>
+            <div style="margin-top:32px; display:flex; justify-content:space-between; gap:48px;">
+              <div style="flex:1; height:44px; border-radius:8px; border:1px solid #E5E7EB; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:500;">Huỷ</div>
+              <div style="flex:1; height:44px; border-radius:8px; background:#DC2626; color:#FFFFFF; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:500;">Xoá</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- D5 · Thống kê -->
+    <div data-screen-label="Desktop — Thống kê">
+      <div style="display:flex; align-items:baseline; gap:12px; padding-bottom:12px; border-bottom:1px solid #E5E7EB; margin-bottom:24px;">
+        <span style="font-size:24px; line-height:32px; font-weight:600; letter-spacing:-.01em;">D5 · Thống kê</span>
+        <span style="font-size:14px; line-height:20px; color:#6B7280;">Biểu đồ thanh ngang, sắp xếp cao → thấp</span>
+      </div>
+      <div style="width:1280px; height:800px; background:#FAFAF8; border:1px solid #E5E7EB; border-radius:12px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,.07); display:flex;">
+        <div style="flex:0 0 240px; background:#FFFFFF; border-right:1px solid #E5E7EB; padding:24px 16px; display:flex; flex-direction:column; gap:32px;">
+          <div style="display:flex; align-items:center; gap:12px; padding:0 8px;">
+            <div style="width:28px; height:28px; border-radius:8px; background:#F59E0B;"></div>
+            <span style="font-size:18px; line-height:26px; font-weight:600;">Retainly</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <div style="height:44px; border-radius:8px; display:flex; align-items:center; gap:12px; padding:0 12px; font-size:16px;"><span style="width:18px; height:18px; border:2px solid #6B7280; border-radius:4px;"></span>Hôm nay<span style="margin-left:auto; font-size:14px; color:#6B7280;">12</span></div>
+            <div style="height:44px; border-radius:8px; display:flex; align-items:center; gap:12px; padding:0 12px; font-size:16px;"><span style="width:18px; height:18px; border:2px solid #6B7280; border-radius:4px;"></span>Thư viện</div>
+            <div style="height:44px; border-radius:8px; background:#FEF3C7; color:#92400E; display:flex; align-items:center; gap:12px; padding:0 12px; font-size:16px; font-weight:600;"><span style="width:18px; height:18px; border:2px solid currentColor; border-radius:4px;"></span>Thống kê</div>
+          </div>
+          <div style="height:44px; border-radius:8px; background:#F59E0B; color:#1A1D23; display:flex; align-items:center; justify-content:center; gap:8px; font-size:16px; font-weight:600;">+ Tạo thẻ mới</div>
+        </div>
+        <div style="flex:1; padding:48px; overflow:hidden;">
+          <div style="max-width:720px; display:flex; flex-direction:column; gap:32px;">
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <div style="font-size:24px; line-height:32px; font-weight:600;">Thống kê</div>
+              <div style="font-size:14px; line-height:20px; color:#6B7280;">30 ngày gần nhất</div>
+            </div>
+            <div style="display:flex; gap:16px;">
+              <div style="flex:1; background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:20px;"><div style="font-size:36px; line-height:44px; font-weight:700; letter-spacing:-.02em;">86%</div><div style="font-size:14px; color:#6B7280;">ngày có ôn tập</div></div>
+              <div style="flex:1; background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:20px;"><div style="font-size:36px; line-height:44px; font-weight:700; letter-spacing:-.02em;">19</div><div style="font-size:14px; color:#6B7280;">chuỗi dài nhất</div></div>
+              <div style="flex:1; background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:20px;"><div style="font-size:36px; line-height:44px; font-weight:700; letter-spacing:-.02em;">3</div><div style="font-size:14px; color:#6B7280;">thẻ quá hạn</div></div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              <div style="font-size:18px; line-height:26px; font-weight:600;">Tỷ lệ quên theo nhánh</div>
+              <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:24px; display:flex; flex-direction:column; gap:20px;">
+                <div style="display:grid; grid-template-columns:180px 1fr 48px; gap:16px; align-items:center;">
+                  <div style="font-size:14px; line-height:20px;">Kiến trúc phần mềm</div>
+                  <div style="height:12px; border-radius:4px; background:#F3F4F6; overflow:hidden;"><div style="width:42%; height:12px; background:#F59E0B;"></div></div>
+                  <div style="font-size:14px; font-weight:600; text-align:right;">42%</div>
+                </div>
+                <div style="display:grid; grid-template-columns:180px 1fr 48px; gap:16px; align-items:center;">
+                  <div style="font-size:14px; line-height:20px;">Trí nhớ &amp; học tập</div>
+                  <div style="height:12px; border-radius:4px; background:#F3F4F6; overflow:hidden;"><div style="width:31%; height:12px; background:#F59E0B;"></div></div>
+                  <div style="font-size:14px; font-weight:600; text-align:right;">31%</div>
+                </div>
+                <div style="display:grid; grid-template-columns:180px 1fr 48px; gap:16px; align-items:center;">
+                  <div style="font-size:14px; line-height:20px;">Phương pháp học</div>
+                  <div style="height:12px; border-radius:4px; background:#F3F4F6; overflow:hidden;"><div style="width:18%; height:12px; background:#F59E0B;"></div></div>
+                  <div style="font-size:14px; font-weight:600; text-align:right;">18%</div>
+                </div>
+                <div style="display:grid; grid-template-columns:180px 1fr 48px; gap:16px; align-items:center;">
+                  <div style="font-size:14px; line-height:20px;">Kinh tế học hành vi</div>
+                  <div style="height:12px; border-radius:4px; background:#F3F4F6; overflow:hidden;"><div style="width:9%; height:12px; background:#F59E0B;"></div></div>
+                  <div style="font-size:14px; font-weight:600; text-align:right;">9%</div>
+                </div>
+              </div>
+              <div style="font-size:12px; line-height:16px; color:#6B7280;">Chỉ tính nhánh đã có ít nhất một thẻ được ôn. Nhánh trên cùng nên được ôn kỹ hơn.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- D6 · Đăng nhập -->
+    <div data-screen-label="Desktop — Đăng nhập">
+      <div style="display:flex; align-items:baseline; gap:12px; padding-bottom:12px; border-bottom:1px solid #E5E7EB; margin-bottom:24px;">
+        <span style="font-size:24px; line-height:32px; font-weight:600; letter-spacing:-.01em;">D6 · Đăng nhập</span>
+        <span style="font-size:14px; line-height:20px; color:#6B7280;">Khối căn giữa 400px — không sidebar khi chưa xác thực</span>
+      </div>
+      <div style="box-sizing:border-box; width:1282px; height:802px; background:#FAFAF8; border:1px solid #E5E7EB; border-radius:12px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,.07); display:flex; align-items:center; justify-content:center; padding:48px;">
+        <div style="width:400px; display:flex; flex-direction:column; gap:32px;">
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <div style="width:40px; height:40px; border-radius:12px; background:#F59E0B;"></div>
+            <div style="font-size:24px; line-height:32px; font-weight:600; margin-top:8px;">Retainly</div>
+            <div style="font-size:16px; line-height:24px; color:#6B7280;">Đọc rồi nhớ. Ôn đúng lúc sắp quên.</div>
+          </div>
+          <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:16px; padding:32px; box-shadow:0 1px 2px rgba(0,0,0,.05); display:flex; flex-direction:column; gap:24px;">
+            <div style="height:44px; border-radius:8px; border:1px solid #E5E7EB; background:#FFFFFF; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:500;">Đăng nhập bằng Authentik</div>
+            <div style="display:flex; align-items:center; gap:12px;"><div style="flex:1; height:1px; background:#E5E7EB;"></div><span style="font-size:12px; color:#6B7280;">hoặc</span><div style="flex:1; height:1px; background:#E5E7EB;"></div></div>
+            <div style="border:1px solid #FCA5A5; background:#FEF2F2; border-radius:8px; padding:12px 16px; font-size:14px; line-height:20px; color:#991B1B;">Email hoặc mật khẩu không đúng.</div>
+            <div style="display:flex; flex-direction:column; gap:4px;"><label style="font-size:14px; line-height:20px; font-weight:500;">Email</label><div style="box-sizing:border-box; width:100%; height:44px; border:1px solid #E5E7EB; border-radius:8px; padding:0 12px; display:flex; align-items:center; font-size:16px;">ban@vidu.com</div></div>
+            <div style="display:flex; flex-direction:column; gap:4px;"><label style="font-size:14px; line-height:20px; font-weight:500;">Mật khẩu</label><div style="box-sizing:border-box; width:100%; height:44px; border:1px solid #DC2626; border-radius:8px; padding:0 12px; display:flex; align-items:center; font-size:16px;">••••••••</div></div>
+            <div style="height:44px; border-radius:8px; background:#F59E0B; color:#1A1D23; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:600;">Đăng nhập</div>
+            <div style="text-align:center; font-size:14px; line-height:20px; color:#6B7280;">Chưa có tài khoản? <a href="#">Đăng ký</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+</x-dc>
+</body>
+</html>
