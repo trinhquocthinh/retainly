@@ -2,9 +2,21 @@
   "name": "api",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "dev": "tsx watch --env-file=.env src/server.ts",
+    "start": "node dist/server.js",
+    "build": "tsc",
+    "prisma:generate": "prisma generate",
+    "prisma:push": "prisma db push",
+    "prisma:studio": "prisma studio"
+  },
   "devDependencies": {
     "@types/node": "^22",
     "dotenv": "^17.4.2",
-    "prisma": "7.10.0"
+    "prisma": "7.10.0",
+    "tsx": "4.23.13"
+  },
+  "dependencies": {
+    "fastify": "5.12.3"
   }
 }

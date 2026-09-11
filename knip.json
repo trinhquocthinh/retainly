@@ -2,10 +2,10 @@
   "ignore": ["designs/**"],
   "workspaces": {
     "apps/api": {
-      "entry": "src/app.ts"
+      "entry": ["src/server.ts!", "prisma7.config.ts!"]
     },
     "apps/web": {
-      "entry": "src/main.tsx"
+      "entry": ["src/main.tsx!"]
     }
   }
 }
