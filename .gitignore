@@ -7,6 +7,9 @@ node_modules/
 !.yarn/releases
 !.yarn/versions
 
+# build output
+dist/
+
 # test & tooling output
 /coverage/
 /report/
