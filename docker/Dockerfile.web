@@ -1,0 +1,16 @@
+# syntax=docker/dockerfile:1
+
+FROM node:24-alpine AS build
+WORKDIR /app
+RUN corepack enable
+COPY .yarnrc.yml yarn.lock package.json ./
+COPY apps/api/package.json ./apps/api/
+COPY apps/web/package.json ./apps/web/
+RUN yarn workspaces focus web
+COPY tsconfig.json ./
+COPY apps/web ./apps/web
+RUN yarn workspace web build
+
+FROM nginxinc/nginx-unprivileged:alpine AS runtime
+COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/apps/web/dist /usr/share/nginx/html
