@@ -39,7 +39,7 @@ services:
       - no-new-privileges:true
   api:
     build:
-      context: ..
+      context: .
       dockerfile: docker/Dockerfile.api
     container_name: retainly-${STACK}-api
     restart: unless-stopped
