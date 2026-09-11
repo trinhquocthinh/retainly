@@ -1,0 +1,50 @@
+name: Deploy
+
+on:
+  push:
+    branches: [sit]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.ref_name == 'sit' || github.ref_name == 'prod'
+    runs-on: [self-hosted, retainly-deploy]
+    environment: ${{ github.ref_name == 'prod' && 'production' || 'sit' }}
+    timeout-minutes: 20
+    env:
+      STACK: ${{ github.ref_name }}
+      DEPLOY_DIR: /home/toni/homelab/project/retainly-${{ github.ref_name }}
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Đồng bộ mã nguồn sang thư mục triển khai
+        run: |
+          mkdir -p "$DEPLOY_DIR"
+          rsync -a --delete \
+            --exclude '.git/' \
+            --exclude 'node_modules/' \
+            --exclude '.env' \
+            ./ "$DEPLOY_DIR/"
+
+      - name: Dựng và khởi động stack
+        run: |
+          cd "$DEPLOY_DIR"
+          docker compose -p "retainly-$STACK" --project-directory . \
+            -f docker/docker-compose.yml up -d --build --remove-orphans
+
+      - name: Kiểm tra health
+        run: |
+          for i in $(seq 1 20); do
+            if docker exec "retainly-$STACK-api" node -e "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"; then
+              echo "health OK"; exit 0
+            fi
+            sleep 3
+          done
+          echo "health FAIL"
+          cd "$DEPLOY_DIR" && docker compose -p "retainly-$STACK" logs --tail=50
+          exit 1

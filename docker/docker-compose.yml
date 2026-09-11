@@ -3,7 +3,7 @@ name: retainly
 services:
   db:
     image: postgres:16-alpine
-    container_name: retainly-db
+    container_name: retainly-${STACK}-db
     restart: unless-stopped
     environment:
       TZ: Asia/Ho_Chi_Minh
@@ -20,8 +20,45 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  migrate:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+      target: build
+    container_name: retainly-${STACK}-migrate
+    command: yarn workspace api prisma migrate deploy
+    environment:
+      TZ: Asia/Ho_Chi_Minh
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@retainly-${STACK}-db:5432/${DB_NAME}?schema=public
+    depends_on:
+      db:
+        condition: service_healthy
+    networks: [internal]
+    restart: 'no'
+    security_opt:
+      - no-new-privileges:true
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.api
+    container_name: retainly-${STACK}-api
+    restart: unless-stopped
+    environment:
+      TZ: Asia/Ho_Chi_Minh
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@retainly-${STACK}-db:5432/${DB_NAME}?schema=public
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    networks: [edge, internal]
+    security_opt:
+      - no-new-privileges:true
 
 networks:
+  edge:
+    name: edge
+    external: true
   internal:
     internal: true
 

@@ -1,0 +1,29 @@
+# syntax=docker/dockerfile:1
+FROM node:24-alpine AS deps
+WORKDIR /app
+RUN corepack enable
+COPY .yarnrc.yml yarn.lock package.json ./
+COPY .yarn/ ./.yarn/
+COPY apps/api/package.json ./apps/api/
+COPY apps/web/package.json ./apps/web/
+RUN yarn workspaces focus api
+
+FROM deps AS build
+COPY tsconfig.json ./
+COPY apps/api/ ./apps/api/
+RUN yarn workspace api build
+
+FROM node:24-alpine AS runtime
+WORKDIR /app
+ENV NODE_ENV=production
+RUN corepack enable \
+ && addgroup -g 10001 -S retainly \
+ && adduser -u 10001 -S retainly -G retainly
+COPY .yarnrc.yml yarn.lock package.json ./
+COPY .yarn/ ./.yarn/
+COPY apps/api/package.json ./apps/api/
+COPY apps/web/package.json ./apps/web/
+RUN yarn workspaces focus api --production && yarn cache clean
+COPY --from=build /app/apps/api/dist ./apps/api/dist
+USER retainly
+CMD ["node", "apps/api/dist/server.js"]
