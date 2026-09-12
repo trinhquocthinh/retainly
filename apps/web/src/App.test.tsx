@@ -17,7 +17,7 @@ describe('E0-S2-T4 — khung định tuyến', () => {
     ['/', 'Trang chủ'],
     ['/review', 'Ôn tập'],
     ['/cards', 'Thư viện thẻ'],
-    ['/cards/new', 'Tạo thẻ'],
+    ['/cards/new', 'Thẻ mới'],
     ['/login', 'Đăng nhập'],
   ])('route %s render màn hình "%s"', (duongDan, tieuDe) => {
     renderTai(duongDan);

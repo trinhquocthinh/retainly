@@ -1,7 +1,57 @@
 :root {
   color-scheme: light;
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  line-height: 1.5;
+
+  /* Màu — design-criteria §3 */
+  --color-bg: #fafaf8;
+  --color-surface: #ffffff;
+  --color-text: #1a1d23;
+  --color-text-secondary: #6b7280;
+  --color-placeholder: #9ca3af;
+  --color-border: #e5e7eb;
+
+  --color-accent: #f59e0b;
+  --color-accent-hover: #d97706;
+  --color-accent-active: #b45309;
+  --color-accent-soft: #fef3c7;
+  --color-accent-strong: #92400e;
+
+  --color-danger: #dc2626;
+  --color-success: #16a34a;
+
+  --color-secondary-hover-bg: #f9fafb;
+  --color-secondary-hover-border: #d1d5db;
+  --color-secondary-active-bg: #f3f4f6;
+
+  /* Bo góc */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* Bóng — đúng 2 mức, dùng để phân tầng chứ không trang trí (§2) */
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 5%);
+  --shadow-md: 0 4px 6px rgb(0 0 0 / 7%);
+
+  /* Khoảng cách — bội số của 4 */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Kích thước bố cục */
+  --sidebar-width: 240px;
+  --content-max: 720px;
+  --control-height: 44px;
+
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
 }
 
 *,
@@ -12,16 +62,42 @@
 
 body {
   margin: 0;
+  background: var(--color-bg);
 }
 
-.app-container {
-  width: 100%;
-  padding: 16px;
+/* Vòng focus dùng chung — style guide §7: outline mực 2px, offset 2px */
+:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
 }
 
-@media (min-width: 640px) {
-  .app-container {
-    max-width: 640px;
-    margin: 0 auto;
-  }
+/* Thang chữ §4 */
+.text-display {
+  font-size: 36px;
+  line-height: 44px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.text-h1 {
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.text-h2 {
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: 600;
+}
+
+.text-small {
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.text-caption {
+  font-size: 12px;
+  line-height: 16px;
 }
