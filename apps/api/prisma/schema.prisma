@@ -6,3 +6,73 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum ReviewState {
+  new
+  learning
+  review
+  relearning
+}
+
+enum ReviewOutcomeValue {
+  remembered
+  forgotten
+}
+
+model User {
+  id          String   @id @default(uuid()) @db.Uuid
+  displayName String   @map("display_name")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  cards Card[]
+
+  @@map("users")
+}
+
+model Card {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  front     String
+  back      String
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  schedule ReviewSchedule?
+  outcomes ReviewOutcome[]
+
+  @@index([userId])
+  @@map("cards")
+}
+
+model ReviewSchedule {
+  id             String      @id @default(uuid()) @db.Uuid
+  cardId         String      @unique @map("card_id") @db.Uuid
+  state          ReviewState @default(new)
+  dueDate        DateTime    @map("due_date") @db.Timestamptz(3)
+  intervalDays   Int         @default(0) @map("interval_days")
+  stability      Float       @default(0)
+  difficulty     Float       @default(0)
+  elapsedDays    Int         @default(0) @map("elapsed_days")
+  scheduledDays  Int         @default(0) @map("scheduled_days")
+  reps           Int         @default(0)
+  lapses         Int         @default(0)
+  lastReviewedAt DateTime?   @map("last_reviewed_at") @db.Timestamptz(3)
+  updatedAt      DateTime    @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  card Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@index([dueDate])
+  @@map("review_schedules")
+}
+
+model ReviewOutcome {
+  id         String             @id @default(uuid()) @db.Uuid
+  cardId     String             @map("card_id") @db.Uuid
+  outcome    ReviewOutcomeValue
+  reviewedAt DateTime           @default(now()) @map("reviewed_at") @db.Timestamptz(3)
+
+  card Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@index([cardId, reviewedAt])
+  @@map("review_outcomes")
+}

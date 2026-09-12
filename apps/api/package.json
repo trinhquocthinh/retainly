@@ -5,8 +5,9 @@
   "scripts": {
     "dev": "tsx watch --env-file=.env src/server.ts",
     "start": "node dist/server.js",
-    "build": "tsc -p tsconfig.build.json",
+    "build": "prisma generate && tsc -p tsconfig.build.json",
     "prisma:generate": "prisma generate",
+    "prisma:seed": "prisma db seed",
     "prisma:push": "prisma db push",
     "prisma:studio": "prisma studio",
     "typecheck": "tsc --noEmit -p tsconfig.json"
@@ -19,6 +20,8 @@
     "typescript": "5.9.3"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "^7.10.0",
+    "@prisma/client": "7.10.0",
     "fastify": "5.12.3"
   }
 }

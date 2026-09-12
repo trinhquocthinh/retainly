@@ -2,7 +2,8 @@
   "ignore": ["designs/**"],
   "workspaces": {
     "apps/api": {
-      "entry": ["src/server.ts!", "prisma7.config.ts!"]
+      "entry": ["src/server.ts!", "prisma7.config.ts!", "prisma/seed.ts!"],
+      "ignoreDependencies": ["@prisma/client"]
     },
     "apps/web": {
       "entry": ["src/main.tsx!", "src/test-setup.ts"]
