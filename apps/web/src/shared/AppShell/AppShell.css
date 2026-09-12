@@ -1,151 +1,151 @@
 .shell {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Mobile — tab bar đáy 64px, 3 cột đều nhau (mockup 360×740) */
 .shell__nav {
-    position: fixed;
-    inset: auto 0 0 0;
-    z-index: 10;
-    height: 64px;
-    background: var(--color-surface);
-    border-top: 1px solid var(--color-border);
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 10;
+  height: 64px;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
 }
 
 .shell__brand {
-    display: none;
-    align-items: center;
-    gap: var(--space-3);
-    color: inherit;
-    text-decoration: none;
+  display: none;
+  align-items: center;
+  gap: var(--space-3);
+  color: inherit;
+  text-decoration: none;
 }
 
 .shell__mark {
-    width: 28px;
-    height: 28px;
-    border-radius: var(--radius-md);
-    background: var(--color-accent);
-    flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-md);
+  background: var(--color-accent);
+  flex: 0 0 auto;
 }
 
 .shell__links {
-    height: 100%;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
 }
 
 .shell__link {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-1);
-    font-size: 12px;
-    line-height: 16px;
-    color: var(--color-text-secondary);
-    text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--color-text-secondary);
+  text-decoration: none;
 }
 
 .shell__icon {
-    width: 18px;
-    height: 18px;
-    border: 2px solid currentcolor;
-    border-radius: var(--radius-sm);
+  width: 18px;
+  height: 18px;
+  border: 2px solid currentcolor;
+  border-radius: var(--radius-sm);
 }
 
 .shell__link.active {
-    color: var(--color-accent-active);
-    font-weight: 600;
+  color: var(--color-accent-active);
+  font-weight: 600;
 }
 
 .shell__main {
-    flex: 1;
-    padding: var(--space-4);
-    /* chừa chỗ cho tab bar cố định, cộng khoảng thở */
-    padding-bottom: calc(64px + var(--space-6));
+  flex: 1;
+  padding: var(--space-4);
+  /* chừa chỗ cho tab bar cố định, cộng khoảng thở */
+  padding-bottom: calc(64px + var(--space-6));
 }
 
 .shell__content {
-    max-width: var(--content-max);
-    margin: 0 auto;
+  max-width: var(--content-max);
+  margin: 0 auto;
 }
 
 /* Desktop ≥1024px — sidebar trái 240px, nội dung cột 720px căn trái */
 @media (min-width: 1024px) {
-    .shell {
-        flex-direction: row;
-    }
+  .shell {
+    flex-direction: row;
+  }
 
-    .shell__nav {
-        position: static;
-        height: auto;
-        flex: 0 0 var(--sidebar-width);
-        border-top: none;
-        border-right: 1px solid var(--color-border);
-        display: flex;
-        flex-direction: column;
-        gap: var(--space-8);
-        padding: var(--space-6) var(--space-4);
-    }
+  .shell__nav {
+    position: static;
+    height: auto;
+    flex: 0 0 var(--sidebar-width);
+    border-top: none;
+    border-right: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+    padding: var(--space-6) var(--space-4);
+  }
 
-    .shell__brand {
-        display: flex;
-        padding: 0 var(--space-2);
-    }
+  .shell__brand {
+    display: flex;
+    padding: 0 var(--space-2);
+  }
 
-    .shell__links {
-        height: auto;
-        display: flex;
-        flex-direction: column;
-        gap: var(--space-1);
-    }
+  .shell__links {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
 
-    .shell__link {
-        flex-direction: row;
-        justify-content: flex-start;
-        gap: var(--space-3);
-        height: var(--control-height);
-        padding: 0 var(--space-3);
-        border-radius: var(--radius-md);
-        font-size: 16px;
-        line-height: 24px;
-        color: var(--color-text);
-    }
+  .shell__link {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: var(--space-3);
+    height: var(--control-height);
+    padding: 0 var(--space-3);
+    border-radius: var(--radius-md);
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--color-text);
+  }
 
-    .shell__link:hover {
-        background: var(--color-secondary-hover-bg);
-    }
+  .shell__link:hover {
+    background: var(--color-secondary-hover-bg);
+  }
 
-    .shell__link.active {
-        background: var(--color-accent-soft);
-        color: var(--color-accent-strong);
-    }
+  .shell__link.active {
+    background: var(--color-accent-soft);
+    color: var(--color-accent-strong);
+  }
 
-    .shell__link--cta {
-        margin-top: var(--space-6);
-        justify-content: center;
-        background: var(--color-accent);
-        color: var(--color-text);
-        font-weight: 600;
-    }
+  .shell__link--cta {
+    margin-top: var(--space-6);
+    justify-content: center;
+    background: var(--color-accent);
+    color: var(--color-text);
+    font-weight: 600;
+  }
 
-    .shell__link--cta .shell__icon {
-        display: none;
-    }
+  .shell__link--cta .shell__icon {
+    display: none;
+  }
 
-    .shell__link--cta:hover,
-    .shell__link--cta.active {
-        background: var(--color-accent-hover);
-        color: #ffffff;
-    }
+  .shell__link--cta:hover,
+  .shell__link--cta.active {
+    background: var(--color-accent-hover);
+    color: #ffffff;
+  }
 
-    .shell__main {
-        padding: var(--space-12);
-    }
+  .shell__main {
+    padding: var(--space-12);
+  }
 
-    .shell__content {
-        margin: 0;
-    }
+  .shell__content {
+    margin: 0;
+  }
 }

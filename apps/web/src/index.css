@@ -47,7 +47,13 @@
   --content-max: 720px;
   --control-height: 44px;
 
-  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
   font-size: 16px;
   line-height: 24px;
   color: var(--color-text);

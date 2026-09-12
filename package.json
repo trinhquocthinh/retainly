@@ -6,7 +6,8 @@
     "apps/*"
   ],
   "scripts": {
-    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "lint": "eslint \"apps/**/*.{ts,tsx}\"",
     "jscpd": "jscpd apps/",
     "knip": "knip",
@@ -15,7 +16,7 @@
     "db:up": "docker compose --project-directory . -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up -d db",
     "db:down": "docker compose --project-directory . -f docker/docker-compose.yml -f docker/docker-compose.dev.yml down",
     "prepare": "husky",
-    "verify": "yarn workspace api prisma generate && yarn typecheck && yarn lint && yarn test && yarn jscpd && yarn knip && yarn build",
+    "verify": "yarn workspace api prisma generate && yarn typecheck && yarn lint && yarn format:check && yarn test && yarn jscpd && yarn knip && yarn build",
     "typecheck": "yarn workspace api typecheck && yarn workspace web typecheck",
     "dev": "yarn workspaces foreach -A -pi --include api --include web run dev",
     "build": "yarn workspace web build"

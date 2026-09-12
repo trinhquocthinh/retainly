@@ -6,3 +6,4 @@ coverage
 .yarn
 .pnp.*
 apps/api/generated
+designs

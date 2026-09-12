@@ -1,65 +1,65 @@
 .btn {
-    height: var(--control-height);
-    min-width: var(--control-height);
-    padding: 0 var(--space-6);
-    border-radius: var(--radius-md);
-    border: 1px solid transparent;
-    font-family: inherit;
-    font-size: 16px;
-    line-height: 24px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-2);
+  height: var(--control-height);
+  min-width: var(--control-height);
+  padding: 0 var(--space-6);
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 24px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
 }
 
 .btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .btn--primary {
-    background: var(--color-accent);
-    color: var(--color-text);
-    font-weight: 600;
+  background: var(--color-accent);
+  color: var(--color-text);
+  font-weight: 600;
 }
 
 .btn--primary:hover:not(:disabled) {
-    background: var(--color-accent-hover);
-    color: #ffffff;
+  background: var(--color-accent-hover);
+  color: #ffffff;
 }
 
 .btn--primary:active:not(:disabled) {
-    background: var(--color-accent-active);
-    color: #ffffff;
+  background: var(--color-accent-active);
+  color: #ffffff;
 }
 
 .btn--secondary {
-    background: var(--color-surface);
-    border-color: var(--color-border);
-    color: var(--color-text);
-    font-weight: 500;
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text);
+  font-weight: 500;
 }
 
 .btn--secondary:hover:not(:disabled) {
-    background: var(--color-secondary-hover-bg);
-    border-color: var(--color-secondary-hover-border);
+  background: var(--color-secondary-hover-bg);
+  border-color: var(--color-secondary-hover-border);
 }
 
 .btn--secondary:active:not(:disabled) {
-    background: var(--color-secondary-active-bg);
-    border-color: var(--color-secondary-hover-border);
+  background: var(--color-secondary-active-bg);
+  border-color: var(--color-secondary-hover-border);
 }
 
 .btn--danger {
-    background: var(--color-surface);
-    border-color: var(--color-danger);
-    color: var(--color-danger);
-    font-weight: 500;
+  background: var(--color-surface);
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+  font-weight: 500;
 }
 
 .btn--danger:hover:not(:disabled) {
-    background: var(--color-danger);
-    color: #ffffff;
+  background: var(--color-danger);
+  color: #ffffff;
 }
