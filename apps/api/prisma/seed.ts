@@ -2,7 +2,7 @@ import { PrismaPg } from '@prisma/adapter-pg';
 
 import { PrismaClient } from '../generated/prisma/client';
 
-export const DEFAULT_USER_ID = '00000000-0000-0000-0000-000000000001';
+import { DEFAULT_USER_ID } from '../src/shared/default-user';
 
 const connectionString = process.env['DATABASE_URL'];
 if (connectionString === undefined) {

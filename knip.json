@@ -3,8 +3,7 @@
   "workspaces": {
     "apps/api": {
       "entry": ["src/server.ts!", "prisma7.config.ts!", "prisma/seed.ts!"],
-      "ignoreDependencies": ["@prisma/client", "ts-fsrs"],
-      "ignore": ["src/features/review/domain/review-scheduler.ts"]
+      "ignoreDependencies": ["@prisma/client"]
     },
     "apps/web": {
       "entry": ["src/main.tsx!", "src/test-setup.ts"]

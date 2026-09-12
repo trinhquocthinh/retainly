@@ -1,7 +1,7 @@
 import { createEmptyCard, fsrs, generatorParameters, Rating, State, type Card } from 'ts-fsrs';
 
 export type ReviewOutcome = 'remembered' | 'forgotten';
-export type ScheduleState = 'new' | 'learning' | 'review' | 'relearning';
+type ScheduleState = 'new' | 'learning' | 'review' | 'relearning';
 
 export type Schedule = {
   /**
