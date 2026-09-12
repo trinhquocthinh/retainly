@@ -1,6 +1,9 @@
 import { createEmptyCard, fsrs, generatorParameters, Rating, State, type Card } from 'ts-fsrs';
+import { AppError } from '../../../shared/errors';
 
-export type ReviewOutcome = 'remembered' | 'forgotten';
+const OUTCOMES = ['remembered', 'forgotten'] as const;
+
+export type ReviewOutcome = (typeof OUTCOMES)[number];
 type ScheduleState = 'new' | 'learning' | 'review' | 'relearning';
 
 export type Schedule = {
@@ -116,4 +119,17 @@ export function createInitialSchedule(now: Date): Schedule {
 
 export function applyOutcome(current: Schedule, outcome: ReviewOutcome, now: Date): Schedule {
   return toSchedule(scheduler.next(toCard(current), now, RATING[outcome]).card);
+}
+
+/**
+ * Kiểm giá trị outcome đến từ HTTP (SPEC-004).
+ * Không giao cho JSON schema của Fastify: schema sai chỉ trả ERR_BAD_REQUEST,
+ * còn SDD yêu cầu đúng mã ERR_INVALID_OUTCOME.
+ */
+export function parseOutcome(value: unknown): ReviewOutcome {
+  if (typeof value !== 'string' || !OUTCOMES.includes(value as ReviewOutcome)) {
+    throw new AppError('ERR_INVALID_OUTCOME');
+  }
+
+  return value as ReviewOutcome;
 }

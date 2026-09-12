@@ -3,6 +3,7 @@ import { describe, it, expect } from 'vitest';
 import { buildApp } from '../../../app';
 import { registerReviewRoutes } from './review-routes';
 import type { DueCard, DueCardQuery } from '../application/list-due-cards';
+import type { ReviewRepository } from '../application/record-outcome';
 
 const NOW = new Date('2026-09-12T13:49:00Z');
 
@@ -12,8 +13,20 @@ function appWith(rows: DueCard[]) {
       return rows;
     },
   };
+
+  // GET /api/cards/due không được chạm tới cổng này. Ném lỗi thay vì trả giá trị
+  // rỗng: nếu route lỡ gọi tới, test phải đỏ chứ không im lặng đi tiếp.
+  const reviews: ReviewRepository = {
+    findScheduleFor() {
+      throw new Error('GET /api/cards/due không được đọc lịch ôn');
+    },
+    save() {
+      throw new Error('GET /api/cards/due không được ghi gì');
+    },
+  };
+
   const app = buildApp();
-  registerReviewRoutes(app, { schedules, now: () => NOW });
+  registerReviewRoutes(app, { schedules, reviews, now: () => NOW });
   return app;
 }
 

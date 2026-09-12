@@ -1,6 +1,11 @@
 import { describe, it, expect } from 'vitest';
 
-import { applyOutcome, createInitialSchedule, type Schedule } from './review-scheduler';
+import {
+  applyOutcome,
+  createInitialSchedule,
+  parseOutcome,
+  type Schedule,
+} from './review-scheduler';
 
 const NOW = new Date('2026-06-15T09:00:00Z');
 const DAY = 86_400_000;
@@ -51,5 +56,16 @@ describe('E1-S1-T2 — lịch ôn tập FSRS', () => {
     const next = applyOutcome(createInitialSchedule(NOW), 'remembered', NOW);
     expect(next.intervalDays).toBe(3);
     expect(next.state).toBe('review');
+  });
+
+  it('TC-014: outcome không phải remembered/forgotten thì trả ERR_INVALID_OUTCOME', () => {
+    expect(() => parseOutcome('maybe')).toThrow('ERR_INVALID_OUTCOME');
+    expect(() => parseOutcome('')).toThrow('ERR_INVALID_OUTCOME');
+    expect(() => parseOutcome(undefined)).toThrow('ERR_INVALID_OUTCOME');
+  });
+
+  it('chấp nhận đúng hai giá trị hợp lệ', () => {
+    expect(parseOutcome('remembered')).toBe('remembered');
+    expect(parseOutcome('forgotten')).toBe('forgotten');
   });
 });

@@ -1,7 +1,7 @@
 import { makeCardContent } from '../domain/card';
 import { createInitialSchedule, type Schedule } from '../../review/domain/review-scheduler';
 
-export type NewCard = { userId: string; front: string; back: string; schedule: Schedule };
+type NewCard = { userId: string; front: string; back: string; schedule: Schedule };
 export type CreatedCard = NewCard & { id: string; createdAt: Date };
 
 /** Cổng lưu trữ thẻ. Hiện thực thật nằm ở tầng infrastructure. */

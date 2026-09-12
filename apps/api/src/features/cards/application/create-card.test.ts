@@ -1,12 +1,14 @@
 import { describe, it, expect } from 'vitest';
 
-import { createCard, type CardRepository, type NewCard } from './create-card';
+import { createCard, type CardRepository } from './create-card';
 
 const NOW = new Date('2026-06-15T09:00:00Z');
 const USER = '00000000-0000-0000-0000-000000000001';
 
-function fakeRepository(): CardRepository & { saved: NewCard[] } {
-  const saved: NewCard[] = [];
+type SavedCard = Parameters<CardRepository['create']>[0];
+
+function fakeRepository(): CardRepository & { saved: SavedCard[] } {
+  const saved: SavedCard[] = [];
   return {
     saved,
     async create(card) {
