@@ -29,7 +29,7 @@ services:
     command: sh -c "yarn workspace api prisma migrate deploy && yarn workspace api prisma db seed"
     environment:
       TZ: Asia/Ho_Chi_Minh
-      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@retainly-${STACK}-db:5432/${DB_NAME}?schema=public
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@retainly-${STACK}-db:5432/${DB_NAME}?schema=public&options=-c%20timezone%3DUTC
     depends_on:
       db:
         condition: service_healthy
@@ -47,7 +47,7 @@ services:
       TZ: Asia/Ho_Chi_Minh
       NODE_ENV: production
       PORT: 3000
-      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@retainly-${STACK}-db:5432/${DB_NAME}?schema=public
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@retainly-${STACK}-db:5432/${DB_NAME}?schema=public&options=-c%20timezone%3DUTC
     depends_on:
       migrate:
         condition: service_completed_successfully
