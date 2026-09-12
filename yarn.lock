@@ -2393,6 +2393,7 @@ __metadata:
     dotenv: "npm:^17.4.2"
     fastify: "npm:5.12.3"
     prisma: "npm:7.10.0"
+    ts-fsrs: "npm:^5.4.2"
     tsx: "npm:4.23.13"
     typescript: "npm:5.9.3"
   languageName: unknown
@@ -6812,6 +6813,13 @@ __metadata:
   peerDependencies:
     typescript: ">=4.8.4"
   checksum: 10c0/767849383c114e7f1971fa976b20e73ac28fd0c70d8d65c0004790bf4d8f89888c7e4cf6d5949f9c1beae9bc3c64835bef77bbe27fddf45a3c7b60cebcf85c8c
+  languageName: node
+  linkType: hard
+
+"ts-fsrs@npm:^5.4.2":
+  version: 5.4.2
+  resolution: "ts-fsrs@npm:5.4.2"
+  checksum: 10c0/e682a039ed1645666537bf0b32b7ca6c1a956075bb48124bd375ff9b769b7ab034df6ebcba99453ab6f741426eeaa7feb9ddd2d1bc641e79807b91e2cbb51024
   languageName: node
   linkType: hard
 
