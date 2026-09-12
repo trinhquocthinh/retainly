@@ -48,13 +48,6 @@
   text-decoration: none;
 }
 
-.shell__icon {
-  width: 18px;
-  height: 18px;
-  border: 2px solid currentcolor;
-  border-radius: var(--radius-sm);
-}
-
 .shell__link.active {
   color: var(--color-accent-active);
   font-weight: 600;
@@ -133,6 +126,18 @@
 
   .shell__link--cta .shell__icon {
     display: none;
+  }
+
+  .shell__link--cta svg {
+    display: none;
+  }
+
+  .shell__link svg {
+    color: var(--color-text-secondary);
+  }
+
+  .shell__link.active svg {
+    color: currentcolor;
   }
 
   .shell__link--cta:hover,

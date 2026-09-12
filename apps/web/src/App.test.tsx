@@ -1,15 +1,11 @@
-import { render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router';
+import { screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
+import { renderWithProviders } from './test-utils';
 
 import { App } from './App';
 
-function renderTai(duongDan: string) {
-  render(
-    <MemoryRouter initialEntries={[duongDan]}>
-      <App />
-    </MemoryRouter>,
-  );
+function renderAt(path: string) {
+  renderWithProviders(<App />, { route: path });
 }
 
 describe('E0-S2-T4 — khung định tuyến', () => {
@@ -19,13 +15,13 @@ describe('E0-S2-T4 — khung định tuyến', () => {
     ['/cards', 'Thư viện thẻ'],
     ['/cards/new', 'Thẻ mới'],
     ['/login', 'Đăng nhập'],
-  ])('route %s render màn hình "%s"', (duongDan, tieuDe) => {
-    renderTai(duongDan);
-    expect(screen.getByRole('heading', { name: tieuDe })).toBeTruthy();
+  ])('route %s render màn hình "%s"', (path, title) => {
+    renderAt(path);
+    expect(screen.getByRole('heading', { name: title })).toBeTruthy();
   });
 
   it('đường dẫn lạ rơi vào màn hình không tìm thấy', () => {
-    renderTai('/duong-dan-khong-ton-tai');
+    renderAt('/duong-dan-khong-ton-tai');
     expect(screen.getByRole('heading', { name: 'Không tìm thấy trang' })).toBeTruthy();
   });
 });

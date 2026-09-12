@@ -1,5 +1,6 @@
 import { Link, NavLink } from 'react-router';
 import type { ReactNode } from 'react';
+import { IconToday, IconLibrary, IconNewCard } from '../Icons/Icons';
 
 import './AppShell.css';
 
@@ -14,15 +15,15 @@ export function AppShell({ children }: { children: ReactNode }) {
 
         <div className="shell__links">
           <NavLink to="/" end className="shell__link">
-            <span className="shell__icon" aria-hidden="true" />
+            <IconToday />
             Hôm nay
           </NavLink>
           <NavLink to="/cards" end className="shell__link">
-            <span className="shell__icon" aria-hidden="true" />
+            <IconLibrary />
             Thư viện
           </NavLink>
           <NavLink to="/cards/new" className="shell__link shell__link--cta">
-            <span className="shell__icon" aria-hidden="true" />
+            <IconNewCard />
             Tạo thẻ
           </NavLink>
         </div>

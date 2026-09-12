@@ -22,10 +22,10 @@ describe('E0-S2-T3 — Fastify skeleton', () => {
 
   it('AppError được ánh xạ đúng mã HTTP và thông điệp người dùng', async () => {
     const app = buildApp();
-    app.get('/api/test-loi', async () => {
+    app.get('/api/test-error', async () => {
       throw new AppError('ERR_CARD_NOT_FOUND');
     });
-    const res = await app.inject({ method: 'GET', url: '/api/test-loi' });
+    const res = await app.inject({ method: 'GET', url: '/api/test-error' });
     expect(res.statusCode).toBe(404);
     expect(res.json().error).toEqual({
       code: 'ERR_CARD_NOT_FOUND',

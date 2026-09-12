@@ -1,72 +1,71 @@
-import { ChangeEvent, useState, type FormEvent } from 'react';
+import { useState, type ChangeEvent, type FormEvent } from 'react';
 import { useNavigate } from 'react-router';
+import { useMutation } from '@tanstack/react-query';
 
 import { Button } from '../../shared/Button/Button';
 import { Field } from '../../shared/Field/Field';
-import { ApiRequestError, postJson } from '../../shared/api';
+import { ApiError, NetworkError, api } from '../../shared/api';
 
 import './CreateCardPage.css';
 
-type FieldErrors = { front?: string; back?: string };
+type CardField = 'front' | 'back';
 
-const FIELD_BY_CODE: Record<string, keyof FieldErrors> = {
+const FIELD_BY_CODE: Record<string, CardField> = {
   ERR_EMPTY_FRONT: 'front',
   ERR_EMPTY_BACK: 'back',
 };
 
-export const CreateCardPage = () => {
+/** Lỗi nghiệp vụ gắn được vào một ô nhập cụ thể thì gắn xuống đó. */
+function fieldOf(error: unknown): CardField | undefined {
+  return error instanceof ApiError ? FIELD_BY_CODE[error.code] : undefined;
+}
+
+/** Phần còn lại hiện thành banner chung phía trên form. */
+function bannerOf(error: unknown): string | null {
+  if (!error || fieldOf(error)) return null;
+  if (error instanceof NetworkError) return 'Không lưu được thẻ, kiểm tra mạng rồi thử lại';
+  return error instanceof Error ? error.message : 'Không lưu được thẻ, thử lại sau';
+}
+
+export function CreateCardPage() {
   const navigate = useNavigate();
   const [front, setFront] = useState('');
   const [back, setBack] = useState('');
-  const [errors, setErrors] = useState<FieldErrors>({});
-  const [banner, setBanner] = useState<string | null>(null);
-  const [dangLuu, setDangLuu] = useState(false);
-  const [vuaLuu, setVuaLuu] = useState(false);
+  const [justSaved, setJustSaved] = useState(false);
 
-  const luuDuoc = front.trim().length > 0 && back.trim().length > 0 && !dangLuu;
+  const createCard = useMutation({
+    mutationFn: (input: { front: string; back: string }) => api.post('/cards', input),
+    onSuccess: () => {
+      setFront('');
+      setBack('');
+      setJustSaved(true);
+    },
+  });
 
-  function soanLai(datGiaTri: (value: string) => void) {
+  const canSave = front.trim().length > 0 && back.trim().length > 0 && !createCard.isPending;
+  const failedField = fieldOf(createCard.error);
+  const banner = bannerOf(createCard.error);
+
+  function handleChange(setValue: (value: string) => void) {
     return (event: ChangeEvent<HTMLTextAreaElement>) => {
-      datGiaTri(event.target.value);
-      setVuaLuu(false);
+      setValue(event.target.value);
+      setJustSaved(false);
     };
   }
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!luuDuoc) return;
+    if (!canSave) return;
 
-    setDangLuu(true);
-    setErrors({});
-    setBanner(null);
-    setVuaLuu(false);
-
-    try {
-      await postJson('/cards', { front, back });
-      setFront('');
-      setBack('');
-      setBanner(null);
-      setVuaLuu(true);
-    } catch (error) {
-      const field = error instanceof ApiRequestError ? FIELD_BY_CODE[error.code] : undefined;
-
-      if (field) {
-        setErrors({ [field]: (error as ApiRequestError).message });
-      } else {
-        setBanner(
-          error instanceof ApiRequestError ? error.message : 'Không lưu được thẻ, thử lại sau',
-        );
-      }
-    } finally {
-      setDangLuu(false);
-    }
+    setJustSaved(false);
+    createCard.mutate({ front, back });
   }
 
   return (
     <form className="create-card" onSubmit={handleSubmit} noValidate>
       <h1 className="text-h1 create-card__title">Thẻ mới</h1>
 
-      {vuaLuu ? (
+      {justSaved ? (
         <p className="create-card__status text-small" role="status">
           Đã lưu thẻ. Nhập tiếp thẻ nữa hoặc mở Thư viện thẻ.
         </p>
@@ -78,7 +77,10 @@ export const CreateCardPage = () => {
         </p>
       ) : null}
 
-      <Field label="Mặt hỏi" error={errors.front}>
+      <Field
+        label="Mặt hỏi"
+        error={failedField === 'front' ? (createCard.error as ApiError).message : undefined}
+      >
         {(props) => (
           <textarea
             {...props}
@@ -86,12 +88,15 @@ export const CreateCardPage = () => {
             placeholder="Câu hỏi bạn muốn nhớ được…"
             maxLength={2000}
             value={front}
-            onChange={soanLai(setFront)}
+            onChange={handleChange(setFront)}
           />
         )}
       </Field>
 
-      <Field label="Mặt trả lời" error={errors.back}>
+      <Field
+        label="Mặt trả lời"
+        error={failedField === 'back' ? (createCard.error as ApiError).message : undefined}
+      >
         {(props) => (
           <textarea
             {...props}
@@ -99,17 +104,17 @@ export const CreateCardPage = () => {
             placeholder="Câu trả lời ngắn gọn…"
             maxLength={2000}
             value={back}
-            onChange={soanLai(setBack)}
+            onChange={handleChange(setBack)}
           />
         )}
       </Field>
 
       <div className="create-card__actions">
         <Button onClick={() => navigate(-1)}>Huỷ</Button>
-        <Button type="submit" variant="primary" disabled={!luuDuoc}>
-          {dangLuu ? 'Đang lưu…' : 'Lưu thẻ'}
+        <Button type="submit" variant="primary" disabled={!canSave}>
+          {createCard.isPending ? 'Đang lưu…' : 'Lưu thẻ'}
         </Button>
       </div>
     </form>
   );
-};
+}
