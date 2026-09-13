@@ -1,6 +1,7 @@
 import { Link, NavLink } from 'react-router';
 import type { ReactNode } from 'react';
-import { IconToday, IconLibrary, IconNewCard } from '../Icons/Icons';
+import { Logo } from '@src/shared/Logo/Logo';
+import { IconToday, IconLibrary, IconNewCard } from '@src/shared/Icons/Icons';
 
 import './AppShell.css';
 
@@ -9,7 +10,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div className="shell">
       <nav className="shell__nav" aria-label="Điều hướng chính">
         <Link className="shell__brand" to="/">
-          <span className="shell__mark" aria-hidden="true" />
+          <Logo />
           <span className="text-h2">Retainly</span>
         </Link>
 

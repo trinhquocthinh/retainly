@@ -2,9 +2,9 @@ import { useState, type ChangeEvent, type FormEvent } from 'react';
 import { useNavigate } from 'react-router';
 import { useMutation } from '@tanstack/react-query';
 
-import { Button } from '../../shared/Button/Button';
-import { Field } from '../../shared/Field/Field';
-import { ApiError, NetworkError, api } from '../../shared/api';
+import { Button } from '@src/shared/Button/Button';
+import { Field } from '@src/shared/Field/Field';
+import { ApiError, NetworkError, api } from '@src/shared/api';
 
 import './CreateCardPage.css';
 

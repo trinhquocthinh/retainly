@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { renderWithProviders } from '../../test-utils';
+import { renderWithProviders } from '@src/test-utils';
 
 import { CreateCardPage } from './CreateCardPage';
 

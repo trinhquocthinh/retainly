@@ -22,14 +22,6 @@
   text-decoration: none;
 }
 
-.shell__mark {
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-md);
-  background: var(--color-accent);
-  flex: 0 0 auto;
-}
-
 .shell__links {
   height: 100%;
   display: grid;
