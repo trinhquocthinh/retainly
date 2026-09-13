@@ -1,0 +1,43 @@
+.review-card {
+  width: 100%;
+  min-height: 320px;
+  padding: var(--space-8) var(--space-6);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  & p {
+    margin: 0;
+  }
+
+  &:not(.review-card--flipped) {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+}
+
+.review-card__prompt,
+.review-card__answer {
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.review-card__question,
+.review-card__hint {
+  color: var(--color-text-secondary);
+}
+
+.review-card__divider {
+  margin: 0;
+  border: none;
+  border-top: 1px solid var(--color-border);
+}

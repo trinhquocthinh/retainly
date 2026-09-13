@@ -1,0 +1,23 @@
+.review-skeleton {
+  min-height: 320px;
+  border-radius: var(--radius-xl);
+  background: var(--color-border);
+  opacity: 0.5;
+}
+
+.review-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-16) var(--space-4);
+  text-align: center;
+
+  & p {
+    margin: 0;
+  }
+}
+
+.review-message__note {
+  color: var(--color-text-secondary);
+}

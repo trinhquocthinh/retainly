@@ -1,7 +1,7 @@
 import { Link, NavLink } from 'react-router';
 import type { ReactNode } from 'react';
-import { Logo } from '@src/shared/Logo/Logo';
-import { IconToday, IconLibrary, IconNewCard } from '@src/shared/Icons/Icons';
+import { Logo } from '@src/shared/ui/Logo/Logo';
+import { IconToday, IconLibrary, IconNewCard } from '@src/shared/ui/Icons/Icons';
 
 import './AppShell.css';
 

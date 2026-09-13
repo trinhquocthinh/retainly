@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { ApiError, NetworkError, api, setUnauthorizedHandler } from './api';
+import { ApiError, NetworkError, api, setUnauthorizedHandler } from './client';
 
 function mockFetch(status: number, body: unknown) {
   const fetchMock = vi.fn().mockResolvedValue({

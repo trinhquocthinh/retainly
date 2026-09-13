@@ -1,0 +1,72 @@
+.review {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.review__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.review__counter {
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.review__progress {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--color-border);
+  overflow: hidden;
+
+  & .review__progress-fill {
+    height: 100%;
+    background: var(--color-accent);
+    transition: width 150ms ease-out;
+  }
+}
+
+.review__actions {
+  display: flex;
+  gap: var(--space-3);
+
+  & .btn {
+    flex: 1;
+  }
+}
+
+.review__error {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-danger);
+}
+
+.review__retry {
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.review__hint {
+  margin: 0;
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+/* Không có bàn phím thì không quảng cáo phím tắt */
+@media (max-width: 1023px) {
+  .review__hint {
+    display: none;
+  }
+}
