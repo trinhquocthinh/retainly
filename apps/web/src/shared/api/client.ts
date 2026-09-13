@@ -35,6 +35,28 @@ export function setUnauthorizedHandler(handler: UnauthorizedHandler): void {
   unauthorizedHandler = handler;
 }
 
+/** Máy chủ không trả lời trong hạn. Đáng thử lại, khác hẳn lỗi nghiệp vụ. */
+export class TimeoutError extends Error {
+  constructor() {
+    super('Máy chủ phản hồi quá lâu');
+    this.name = 'TimeoutError';
+  }
+}
+
+const REQUEST_TIMEOUT_MS = 10_000;
+
+/**
+ * Mọi 5xx đều đáng thử lại: 500 là ngoại lệ ngoài dự kiến phía máy chủ (ở quy
+ * mô này thường là database chưa sẵn sàng), 502/503/504 là máy chủ chết hoặc
+ * quá tải sau proxy — proxy vẫn trả về một phản hồi HTTP hợp lệ nên chúng là
+ * ApiError chứ không phải NetworkError (đo được ở E1-S3-T6).
+ * Dưới 500 là lỗi do chính yêu cầu gây ra: gửi lại y hệt thì hỏng y hệt.
+ */
+export function isRetryable(error: unknown): boolean {
+  if (error instanceof NetworkError || error instanceof TimeoutError) return true;
+  return error instanceof ApiError && error.status >= 500;
+}
+
 async function request<T>(method: string, path: string, body?: unknown): Promise<T> {
   let response: Response;
 
@@ -43,8 +65,12 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
       method,
       headers: body === undefined ? undefined : { 'content-type': 'application/json' },
       body: body === undefined ? undefined : JSON.stringify(body),
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });
   } catch (cause) {
+    // Nhận diện theo `name` chứ không theo `instanceof DOMException`: lớp đó
+    // khác nhau giữa trình duyệt, jsdom và Node.
+    if (cause instanceof Error && cause.name === 'TimeoutError') throw new TimeoutError();
     throw new NetworkError(cause);
   }
 

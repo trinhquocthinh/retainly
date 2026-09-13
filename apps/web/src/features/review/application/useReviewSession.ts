@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 
 import { outcomeForKey, type DueCard, type ReviewOutcome } from '../domain/review';
+import { isRetryable } from '@src/shared/api/client';
 
 type ReviewPorts = {
   fetchDueCards: () => Promise<{ dueCards: DueCard[] }>;
@@ -21,6 +22,8 @@ export function useReviewSession({ fetchDueCards, recordOutcome, onFinish }: Rev
 
   const {
     mutate,
+    reset: resetSave,
+    error: saveError,
     isPending: saving,
     isError: saveFailed,
   } = useMutation({
@@ -57,6 +60,16 @@ export function useReviewSession({ fetchDueCards, recordOutcome, onFinish }: Rev
   const onRetry = useCallback(() => {
     if (lastOutcome) onRate(lastOutcome);
   }, [lastOutcome, onRate]);
+
+  /**
+   * Lỗi không đáng thử lại (thẻ đã bị xoá, id không hợp lệ) thì thử lại bao
+   * nhiêu lần cũng hỏng. Không có lối này thì phiên ôn kẹt cứng ở thẻ đó.
+   */
+  const onSkip = useCallback(() => {
+    resetSave();
+    setIndex((value) => value + 1);
+    setFlipped(false);
+  }, [resetSave]);
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -97,5 +110,7 @@ export function useReviewSession({ fetchDueCards, recordOutcome, onFinish }: Rev
     onFlip,
     onRate,
     onRetry,
+    canRetry: isRetryable(saveError),
+    onSkip,
   };
 }

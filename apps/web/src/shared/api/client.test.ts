@@ -1,6 +1,13 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { ApiError, NetworkError, api, setUnauthorizedHandler } from './client';
+import {
+  ApiError,
+  NetworkError,
+  TimeoutError,
+  api,
+  isRetryable,
+  setUnauthorizedHandler,
+} from './client';
 
 function mockFetch(status: number, body: unknown) {
   const fetchMock = vi.fn().mockResolvedValue({
@@ -55,5 +62,44 @@ describe('client gọi API', () => {
 
     await expect(api.get('/cards/due')).rejects.toThrow(ApiError);
     expect(onUnauthorized).toHaveBeenCalledTimes(1);
+  });
+
+  it('502/503/504 đáng thử lại — máy chủ chết sau proxy, không phải lỗi nghiệp vụ', async () => {
+    for (const status of [502, 503, 504]) {
+      mockFetch(status, null);
+      const error = await api.get('/cards/due').catch((cause: unknown) => cause);
+      expect(isRetryable(error)).toBe(true);
+    }
+  });
+
+  it('lỗi nghiệp vụ không đáng thử lại dù cùng là ApiError', async () => {
+    mockFetch(400, { error: { code: 'ERR_EMPTY_BACK', message: 'x' } });
+    const badRequest = await api.post('/cards', {}).catch((cause: unknown) => cause);
+
+    mockFetch(404, { error: { code: 'ERR_CARD_NOT_FOUND', message: 'x' } });
+    const notFound = await api.post('/review-outcomes', {}).catch((cause: unknown) => cause);
+
+    expect(isRetryable(badRequest)).toBe(false);
+    expect(isRetryable(notFound)).toBe(false);
+  });
+
+  it('mất mạng và quá hạn đều đáng thử lại', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('Failed to fetch')));
+    expect(isRetryable(await api.get('/x').catch((cause: unknown) => cause))).toBe(true);
+
+    const timeout = new Error('timed out');
+    timeout.name = 'TimeoutError';
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(timeout));
+
+    const error = await api.get('/x').catch((cause: unknown) => cause);
+    expect(error).toBeInstanceOf(TimeoutError);
+    expect(isRetryable(error)).toBe(true);
+  });
+
+  it('mọi request đều mang signal có hạn', async () => {
+    const fetchMock = mockFetch(200, {});
+    await api.get('/cards/due');
+
+    expect(fetchMock.mock.calls[0][1].signal).toBeInstanceOf(AbortSignal);
   });
 });

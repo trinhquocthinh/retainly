@@ -93,4 +93,38 @@ describe('E1-S3-T7 — màn ôn tập', () => {
     expect(screen.getByText('1 / 2')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Thử lại' })).toBeInTheDocument();
   });
+
+  it('máy chủ chết thì mời thử lại', async () => {
+    mockApi({
+      'GET /api/cards/due': TWO_CARDS,
+      'POST /api/review-outcomes': { status: 502, body: null },
+    });
+    renderWithProviders(<ReviewPage />);
+
+    await userEvent.click(await screen.findByText('Hỏi A'));
+    await userEvent.click(screen.getByRole('button', { name: /Nhớ/ }));
+
+    expect(await screen.findByRole('button', { name: 'Thử lại' })).toBeInTheDocument();
+    expect(screen.getByText('1 / 2')).toBeInTheDocument();
+  });
+
+  it('thẻ không còn tồn tại thì mời bỏ qua, không mời thử lại', async () => {
+    mockApi({
+      'GET /api/cards/due': TWO_CARDS,
+      'POST /api/review-outcomes': {
+        status: 404,
+        body: { error: { code: 'ERR_CARD_NOT_FOUND', message: 'Không tìm thấy thẻ này' } },
+      },
+    });
+    renderWithProviders(<ReviewPage />);
+
+    await userEvent.click(await screen.findByText('Hỏi A'));
+    await userEvent.click(screen.getByRole('button', { name: /Nhớ/ }));
+
+    const skip = await screen.findByRole('button', { name: 'Bỏ qua thẻ này' });
+    expect(screen.queryByRole('button', { name: 'Thử lại' })).not.toBeInTheDocument();
+
+    await userEvent.click(skip);
+    expect(await screen.findByText('Hỏi B')).toBeInTheDocument();
+  });
 });

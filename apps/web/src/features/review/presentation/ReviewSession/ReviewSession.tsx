@@ -13,6 +13,8 @@ type ReviewSessionProps = {
   total: number;
   saving: boolean;
   saveFailed: boolean;
+  canRetry: boolean;
+  onSkip: () => void;
   onFlip: () => void;
   onRate: (outcome: ReviewOutcome) => void;
   onRetry: () => void;
@@ -27,6 +29,8 @@ export function ReviewSession({
   total,
   saving,
   saveFailed,
+  canRetry,
+  onSkip,
   onFlip,
   onRate,
   onRetry,
@@ -64,9 +68,11 @@ export function ReviewSession({
 
       {saveFailed ? (
         <p className="review__error text-small" role="alert">
-          Không lưu được kết quả.{' '}
-          <button type="button" className="review__retry" onClick={onRetry}>
-            Thử lại
+          {canRetry
+            ? 'Không lưu được kết quả, có thể do mạng. '
+            : 'Không lưu được kết quả cho thẻ này. '}
+          <button type="button" className="review__retry" onClick={canRetry ? onRetry : onSkip}>
+            {canRetry ? 'Thử lại' : 'Bỏ qua thẻ này'}
           </button>
         </p>
       ) : null}
