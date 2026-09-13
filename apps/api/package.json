@@ -10,11 +10,14 @@
     "prisma:seed": "prisma db seed",
     "prisma:push": "prisma db push",
     "prisma:studio": "prisma studio",
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test:integration": "vitest run --config vitest.integration.config.mts"
   },
   "devDependencies": {
     "@types/node": "^24",
+    "@types/pg": "^8.23.1",
     "dotenv": "^17.4.2",
+    "pg": "^8.23.0",
     "prisma": "7.10.0",
     "tsx": "4.23.13",
     "typescript": "5.9.3"
