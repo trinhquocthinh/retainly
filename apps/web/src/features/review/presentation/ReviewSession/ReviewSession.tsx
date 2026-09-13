@@ -1,7 +1,7 @@
 import { Button } from '@src/shared/ui/Button/Button';
 
 import { progressPercent, type DueCard, type ReviewOutcome } from '../../domain/review';
-import { ReviewCard } from '../ReviewCard/ReviewCard';
+import { SwipeableCard } from '../SwipeableCard/SwipeableCard';
 
 import './ReviewSession.css';
 
@@ -54,7 +54,13 @@ export function ReviewSession({
         />
       </div>
 
-      <ReviewCard card={card} flipped={flipped} onFlip={onFlip} />
+      <SwipeableCard
+        card={card}
+        flipped={flipped}
+        enabled={flipped && !saving}
+        onFlip={onFlip}
+        onRate={onRate}
+      />
 
       {saveFailed ? (
         <p className="review__error text-small" role="alert">

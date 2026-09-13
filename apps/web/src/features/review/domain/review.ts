@@ -15,3 +15,16 @@ export function outcomeForKey(key: string): ReviewOutcome | undefined {
 export function progressPercent(reviewed: number, total: number): number {
   return total === 0 ? 0 : Math.round((reviewed / total) * 100);
 }
+
+/**
+ * Vuốt vượt quãng đường này (px) thì tính là đã đánh giá; dưới ngưỡng thì thẻ
+ * bật về chỗ cũ. Đặt ở domain để test được mà không phải giả lập cử chỉ, và để
+ * chỉnh ngưỡng không phải mở file component.
+ */
+export const SWIPE_COMMIT_DISTANCE = 110;
+
+export function outcomeForSwipe(deltaX: number): ReviewOutcome | undefined {
+  if (deltaX >= SWIPE_COMMIT_DISTANCE) return 'remembered';
+  if (deltaX <= -SWIPE_COMMIT_DISTANCE) return 'forgotten';
+  return undefined;
+}
