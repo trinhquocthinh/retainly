@@ -1,0 +1,15 @@
+.git
+node_modules
+**/node_modules
+**/dist
+.yarn/cache
+.yarn/install-state.gz
+
+# Bí mật không bao giờ được nướng vào image — biến môi trường do compose cấp
+.env
+**/.env
+**/.env.*
+!**/.env.example
+
+# Sinh lại trong lúc build
+apps/api/src/generated

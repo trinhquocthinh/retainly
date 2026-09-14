@@ -13,7 +13,7 @@ dist/
 # test & tooling output
 /coverage/
 /report/
-apps/api/generated/
+apps/api/src/generated/
 
 # env
 .env

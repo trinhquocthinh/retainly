@@ -1,6 +1,6 @@
 import { PrismaPg } from '@prisma/adapter-pg';
 
-import { PrismaClient } from '../../generated/prisma/client';
+import { PrismaClient } from '../generated/prisma/client';
 
 const connectionString = process.env['DATABASE_URL'];
 if (connectionString === undefined) throw new Error('Thiếu DATABASE_URL');
