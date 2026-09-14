@@ -98,3 +98,79 @@ jobs:
             echo "| migrate | \`${{ steps.migrate.outputs.digest }}\` |"
             echo "| web | \`${{ steps.web.outputs.digest }}\` |"
           } >> "$GITHUB_STEP_SUMMARY"
+  deploy-sit:
+    needs: build-push
+    runs-on: [self-hosted, retainly-deploy]
+    environment: sit
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: read
+    env:
+      STACK: sit
+      DEPLOY_DIR: /home/toni/homelab/project/retainly/retainly-sit
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Đặt compose file và danh sách image vào thư mục triển khai
+        env:
+          API_DIGEST: ${{ needs.build-push.outputs.api }}
+          MIGRATE_DIGEST: ${{ needs.build-push.outputs.migrate }}
+          WEB_DIGEST: ${{ needs.build-push.outputs.web }}
+        run: |
+          for v in "$API_DIGEST" "$MIGRATE_DIGEST" "$WEB_DIGEST"; do
+            case "$v" in
+              sha256:*) ;;
+              *) echo "::error::digest khong hop le: '$v'"; exit 1 ;;
+            esac
+          done
+          mkdir -p "$DEPLOY_DIR"
+          cp docker/docker-compose.yml "$DEPLOY_DIR/docker-compose.yml"
+          cat > "$DEPLOY_DIR/.env.images" <<EOF
+          API_IMAGE=ghcr.io/trinhquocthinh/retainly-api@$API_DIGEST
+          MIGRATE_IMAGE=ghcr.io/trinhquocthinh/retainly-migrate@$MIGRATE_DIGEST
+          WEB_IMAGE=ghcr.io/trinhquocthinh/retainly-web@$WEB_DIGEST
+          EOF
+
+      - name: Đăng nhập registry bằng token của chính lần chạy
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Kéo image và khởi động stack
+        run: |
+          cd "$DEPLOY_DIR"
+          docker compose -p "retainly-$STACK" \
+            --env-file .env --env-file .env.images \
+            -f docker-compose.yml pull
+          docker compose -p "retainly-$STACK" \
+            --env-file .env --env-file .env.images \
+            -f docker-compose.yml up -d --remove-orphans
+
+      - name: Đăng xuất
+        if: always()
+        run: docker logout ghcr.io
+
+      - name: Kiểm tra health
+        run: |
+          for i in $(seq 1 20); do
+            if docker exec "retainly-$STACK-api" node -e "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"; then
+              echo "health OK"; exit 0
+            fi
+            sleep 3
+          done
+          echo "::error::health FAIL"
+          cd "$DEPLOY_DIR" && docker compose -p "retainly-$STACK" \
+            --env-file .env --env-file .env.images \
+            -f docker-compose.yml logs --tail=50
+          exit 1
+
+      - name: Ghi digest đang chạy ra tóm tắt job
+        if: always()
+        run: |
+          {
+            echo "## SIT dang chay"
+            echo
+            for c in api migrate web; do
+              id=$(docker inspect "retainly-$STACK-$c" --format '{{.Image}}' 2>/dev/null) || continue
+              echo "- \`$c\` → \`$(docker inspect "$id" --format '{{index .RepoDigests 0}}')\`"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
