@@ -12,6 +12,10 @@ COPY tsconfig.json ./
 COPY apps/api/ ./apps/api/
 RUN yarn workspace api build
 
+FROM build AS migrate
+LABEL org.opencontainers.image.source=https://github.com/trinhquocthinh/retainly
+CMD ["sh", "-c", "yarn workspace api prisma migrate deploy && yarn workspace api prisma db seed"]
+
 FROM node:24-alpine AS runtime
 WORKDIR /app
 ENV NODE_ENV=production

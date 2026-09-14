@@ -24,9 +24,8 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.api
-      target: build
+      target: migrate
     container_name: retainly-${STACK}-migrate
-    command: sh -c "yarn workspace api prisma migrate deploy && yarn workspace api prisma db seed"
     environment:
       TZ: Asia/Ho_Chi_Minh
       DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@retainly-${STACK}-db:5432/${DB_NAME}?schema=public&options=-c%20timezone%3DUTC
