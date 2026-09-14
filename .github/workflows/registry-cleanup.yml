@@ -7,9 +7,9 @@ on:
 
 env:
   OWNER: trinhquocthinh
-  KEEP: '20'
+  KEEP: '1'
   # Đổi thành 'false' sau khi một lần chạy cho ra danh sách đúng.
-  DRY_RUN: 'true'
+  DRY_RUN: 'false'
 
 jobs:
   digest-dang-chay:
