@@ -3,6 +3,24 @@ services:
     ports:
       - '127.0.0.1:5432:5432'
 
+  migrate:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+      target: migrate
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+      target: runtime
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.web
+      target: runtime
+
 networks:
   internal:
     internal: false

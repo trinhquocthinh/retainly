@@ -21,10 +21,7 @@ services:
       timeout: 5s
       retries: 5
   migrate:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.api
-      target: migrate
+    image: ${MIGRATE_IMAGE:?MIGRATE_IMAGE chua duoc dat}
     container_name: retainly-${STACK}-migrate
     environment:
       TZ: Asia/Ho_Chi_Minh
@@ -37,9 +34,7 @@ services:
     security_opt:
       - no-new-privileges:true
   api:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.api
+    image: ${API_IMAGE:?API_IMAGE chua duoc dat}
     container_name: retainly-${STACK}-api
     restart: unless-stopped
     environment:
@@ -55,9 +50,7 @@ services:
       - no-new-privileges:true
 
   web:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.web
+    image: ${WEB_IMAGE:?WEB_IMAGE chua duoc dat}
     container_name: retainly-${STACK}-web
     restart: unless-stopped
     environment:
