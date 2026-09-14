@@ -22,3 +22,5 @@ jobs:
       - name: Đăng xuất
         if: always()
         run: docker logout ghcr.io
+
+# file tam cho RP-T1, xoa sau khi nghiem thu
