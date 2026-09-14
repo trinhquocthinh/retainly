@@ -1,4 +1,4 @@
-name: Thăng hạng lên production
+name: deploy production
 
 on:
   workflow_dispatch:
