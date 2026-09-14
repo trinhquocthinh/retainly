@@ -33,25 +33,34 @@ jobs:
   don-registry:
     needs: digest-dang-chay
     runs-on: ubuntu-latest
-    permissions:
-      packages: write
+    permissions: {}
     steps:
       - name: Chọn version quá hạn
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GHCR_CLEANUP_TOKEN }}
           INUSE: ${{ needs.digest-dang-chay.outputs.inuse }}
           DRY_RUN: ${{ env.DRY_RUN }}
-          OWNER: ${{ env.OWNER }}
           KEEP: ${{ env.KEEP }}
         run: |
           set -uo pipefail
+          if [ -z "${GH_TOKEN:-}" ]; then
+            echo "::error::thiếu secret GHCR_CLEANUP_TOKEN"
+            exit 1
+          fi
           tong=0
           for pkg in retainly-api retainly-migrate retainly-web; do
             echo "::group::$pkg"
-            rows=$(gh api --paginate "/users/$OWNER/packages/container/$pkg/versions" \
-                     --jq '.[] | [.created_at, .id, .name, (.metadata.container.tags | join(","))] | @tsv' \
-                   | sort -r)
-            if [ -z "$rows" ]; then echo "không đọc được hoặc rỗng"; echo "::endgroup::"; continue; fi
+            if ! rows=$(gh api --paginate "/user/packages/container/$pkg/versions" \
+                          --jq '.[] | [.created_at, .id, .name, (.metadata.container.tags | join(","))] | @tsv'); then
+              echo "::error::không đọc được version của $pkg — kiểm scope của GHCR_CLEANUP_TOKEN"
+              exit 1
+            fi
+            rows=$(printf '%s\n' "$rows" | sort -r)
+            if [ -z "$rows" ]; then
+              echo "package chưa có version nào"
+              echo "::endgroup::"
+              continue
+            fi
             i=0
             while IFS=$'\t' read -r created id name tags; do
               [ -z "${id:-}" ] && continue
@@ -67,7 +76,7 @@ jobs:
               if [ "$DRY_RUN" = 'true' ]; then
                 echo "SẼ XOÁ        $created  $name  [$tags]"
               else
-                gh api -X DELETE "/users/$OWNER/packages/container/$pkg/versions/$id" \
+                gh api -X DELETE "/user/packages/container/$pkg/versions/$id" \
                   && echo "đã xoá       $created  $name  [$tags]"
               fi
             done <<< "$rows"
