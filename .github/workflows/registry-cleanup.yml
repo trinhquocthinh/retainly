@@ -7,7 +7,7 @@ on:
 
 env:
   OWNER: trinhquocthinh
-  KEEP: '1'
+  KEEP: '20'
   # Đổi thành 'false' sau khi một lần chạy cho ra danh sách đúng.
   DRY_RUN: 'false'
 
@@ -75,9 +75,13 @@ jobs:
               tong=$((tong + 1))
               if [ "$DRY_RUN" = 'true' ]; then
                 echo "SẼ XOÁ        $created  $name  [$tags]"
+                tong=$((tong + 1))
+              elif gh api -X DELETE "/user/packages/container/$pkg/versions/$id" >/dev/null; then
+                echo "đã xoá        $created  $name  [$tags]"
+                tong=$((tong + 1))
               else
-                gh api -X DELETE "/user/packages/container/$pkg/versions/$id" \
-                  && echo "đã xoá       $created  $name  [$tags]"
+                echo "::error::xoá thất bại $pkg $name — kiểm scope delete:packages"
+                exit 1
               fi
             done <<< "$rows"
             echo "::endgroup::"
