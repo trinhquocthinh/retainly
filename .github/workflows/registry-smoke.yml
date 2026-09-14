@@ -1,0 +1,24 @@
+name: Registry smoke
+
+on:
+  push:
+    branches: [sit]
+    paths: ['.github/workflows/registry-smoke.yml']
+
+jobs:
+  pull-from-server:
+    runs-on: [self-hosted, retainly-deploy]
+    permissions:
+      packages: read
+    steps:
+      - name: Đăng nhập registry bằng token của chính lần chạy
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Kéo image thử và in digest
+        run: |
+          docker pull ghcr.io/trinhquocthinh/retainly-smoke:t1
+          docker inspect --format '{{index .RepoDigests 0}}' ghcr.io/trinhquocthinh/retainly-smoke:t1
+
+      - name: Đăng xuất
+        if: always()
+        run: docker logout ghcr.io
