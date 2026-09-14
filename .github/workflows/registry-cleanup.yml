@@ -1,4 +1,4 @@
-name: Registry cleanup
+name: Registry Cleanup
 
 on:
   schedule:
