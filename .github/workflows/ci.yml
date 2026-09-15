@@ -59,29 +59,50 @@ jobs:
       - name: Đăng nhập registry bằng token của chính lần chạy
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
+      - name: Bật buildx với driver docker-container
+        run: docker buildx create --name retainly --driver docker-container --use
+
       - name: Build và đẩy api
         id: api
+        env:
+          CACHE: ghcr.io/trinhquocthinh/retainly-buildcache:api
         run: |
           img="ghcr.io/trinhquocthinh/retainly-api:${GITHUB_SHA}"
-          docker build -f docker/Dockerfile.api --target runtime -t "$img" .
-          docker push "$img"
-          echo "digest=$(docker inspect --format '{{index .RepoDigests 0}}' "$img" | cut -d@ -f2)" >> "$GITHUB_OUTPUT"
+          docker buildx build -f docker/Dockerfile.api --target runtime \
+            --provenance=false \
+            --cache-from "type=registry,ref=$CACHE" \
+            --cache-to "type=registry,ref=$CACHE,mode=max" \
+            --metadata-file meta-api.json \
+            -t "$img" --push .
+          echo "digest=$(jq -r '."containerimage.digest"' meta-api.json)" >> "$GITHUB_OUTPUT"
 
       - name: Build và đẩy migrate
         id: migrate
+        env:
+          CACHE: ghcr.io/trinhquocthinh/retainly-buildcache:migrate
         run: |
           img="ghcr.io/trinhquocthinh/retainly-migrate:${GITHUB_SHA}"
-          docker build -f docker/Dockerfile.migrate -t "$img" .
-          docker push "$img"
-          echo "digest=$(docker inspect --format '{{index .RepoDigests 0}}' "$img" | cut -d@ -f2)" >> "$GITHUB_OUTPUT"
+          docker buildx build -f docker/Dockerfile.migrate \
+            --provenance=false \
+            --cache-from "type=registry,ref=$CACHE" \
+            --cache-to "type=registry,ref=$CACHE,mode=max" \
+            --metadata-file meta-migrate.json \
+            -t "$img" --push .
+          echo "digest=$(jq -r '."containerimage.digest"' meta-migrate.json)" >> "$GITHUB_OUTPUT"
 
       - name: Build và đẩy web
         id: web
+        env:
+          CACHE: ghcr.io/trinhquocthinh/retainly-buildcache:web
         run: |
           img="ghcr.io/trinhquocthinh/retainly-web:${GITHUB_SHA}"
-          docker build -f docker/Dockerfile.web --target runtime -t "$img" .
-          docker push "$img"
-          echo "digest=$(docker inspect --format '{{index .RepoDigests 0}}' "$img" | cut -d@ -f2)" >> "$GITHUB_OUTPUT"
+          docker buildx build -f docker/Dockerfile.web --target runtime \
+            --provenance=false \
+            --cache-from "type=registry,ref=$CACHE" \
+            --cache-to "type=registry,ref=$CACHE,mode=max" \
+            --metadata-file meta-web.json \
+            -t "$img" --push .
+          echo "digest=$(jq -r '."containerimage.digest"' meta-web.json)" >> "$GITHUB_OUTPUT"
 
       - name: Đăng xuất
         if: always()
