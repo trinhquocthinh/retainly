@@ -5,8 +5,6 @@ import { AppError, errorCatalog } from './shared/errors';
 export function buildApp(options: { logger?: boolean } = {}): FastifyInstance {
   const app = Fastify({ logger: options.logger ?? false });
 
-  app.get('/api/health', async () => ({ status: 'ok' }));
-
   app.setNotFoundHandler((_request, reply) => {
     const entry = errorCatalog.ERR_NOT_FOUND;
     return reply.status(entry.status).send({

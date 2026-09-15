@@ -4,14 +4,6 @@ import { buildApp } from './app';
 import { AppError } from './shared/errors';
 
 describe('E0-S2-T3 — Fastify skeleton', () => {
-  it('GET /api/health trả 200', async () => {
-    const app = buildApp();
-    const res = await app.inject({ method: 'GET', url: '/api/health' });
-    expect(res.statusCode).toBe(200);
-    expect(res.json()).toEqual({ status: 'ok' });
-    await app.close();
-  });
-
   it('đường dẫn không tồn tại trả 404 đúng khuôn lỗi', async () => {
     const app = buildApp();
     const res = await app.inject({ method: 'GET', url: '/api/khong-ton-tai' });
