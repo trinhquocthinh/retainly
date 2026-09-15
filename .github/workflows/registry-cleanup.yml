@@ -27,7 +27,7 @@ jobs:
             id=$(docker inspect --format '{{.Image}}' "$c" 2>/dev/null) || continue
             d=$(docker inspect --format '{{range .RepoDigests}}{{println .}}{{end}}' "$id" 2>/dev/null || true)
             case "$d" in
-              *@sha256:*) all="$all$d" ;;
+              *@sha256:*) all="$all$d"$'\n' ;;
               *) echo "::warning::$c ton tai nhung khong co digest registry"; thieu=$((thieu+1)) ;;
             esac
           done
