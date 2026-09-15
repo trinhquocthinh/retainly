@@ -3,5 +3,5 @@
   "compilerOptions": {
     "noEmit": true
   },
-  "include": ["src", "prisma7.config.ts", "vitest.config.mts", "prisma/seed.ts"]
+  "include": ["src", "prisma.config.ts", "vitest.config.mts", "prisma/seed.ts"]
 }
