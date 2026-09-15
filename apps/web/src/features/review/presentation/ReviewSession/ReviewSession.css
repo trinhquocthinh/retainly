@@ -4,47 +4,13 @@
   gap: var(--space-4);
 }
 
-.review__bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-4);
-}
-
-.review__counter {
-  color: var(--color-text-secondary);
-  white-space: nowrap;
-}
-
-.review__progress {
-  height: 4px;
-  border-radius: 2px;
-  background: var(--color-border);
-  overflow: hidden;
-
-  & .review__progress-fill {
-    height: 100%;
-    background: var(--color-accent);
-    transition: width 150ms ease-out;
-  }
-}
-
-.review__actions {
-  display: flex;
-  gap: var(--space-3);
-
-  & .btn {
-    flex: 1;
-  }
-}
-
 .review__error {
   margin: 0;
   padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--color-danger);
+  border: 1px solid var(--color-danger-border);
   border-radius: var(--radius-md);
-  background: var(--color-surface);
-  color: var(--color-danger);
+  background: var(--color-danger-surface);
+  color: var(--color-danger-active);
 }
 
 .review__retry {
@@ -58,15 +24,67 @@
   cursor: pointer;
 }
 
-.review__hint {
-  margin: 0;
-  color: var(--color-text-secondary);
-  text-align: center;
+/* Nút lật — lối đi bằng bàn phím/chuột song song với chạm vào thẻ và vuốt */
+.review__flip {
+  align-self: center;
+  width: 100%;
+  max-width: 280px;
+  height: var(--control-height);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  font: inherit;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--color-text);
+  cursor: pointer;
+  transition:
+    background var(--duration-fast),
+    border-color var(--duration-fast);
 }
 
-/* Không có bàn phím thì không quảng cáo phím tắt */
+.review__flip:hover {
+  background: var(--color-secondary-hover-bg);
+  border-color: var(--color-secondary-hover-border);
+}
+
+.review__flip:active {
+  background: var(--color-secondary-active-bg);
+}
+
+.review__flip svg {
+  color: var(--color-accent);
+}
+
+.review__flip kbd {
+  padding: 2px var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-secondary-active-bg);
+  color: var(--color-text-secondary);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.review__actions {
+  display: flex;
+  gap: var(--space-3);
+
+  & .btn {
+    flex: 1;
+  }
+}
+
 @media (max-width: 1023px) {
-  .review__hint {
+  .review__flip kbd {
     display: none;
   }
 }

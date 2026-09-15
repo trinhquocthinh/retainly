@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Retainly - Phiên ôn tập Flashcard</title>
+<!-- Tailwind CSS CDN with forms & container-queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              amber: '#F59E0B',
+              'amber-hover': '#D97706',
+              bg: '#FAFAF8',
+              text: '#1A1D23',
+              muted: '#6B7280',
+              border: '#E5E7EB',
+              danger: '#DC2626',
+              success: '#16A34A',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+          },
+          boxShadow: {
+            'flat-card': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.03)',
+            'flat-card-hover': '0 12px 24px -4px rgba(0, 0, 0, 0.08), 0 4px 8px -2px rgba(0, 0, 0, 0.03)',
+            'btn-lift': '0 4px 12px rgba(0, 0, 0, 0.08)',
+          },
+          borderRadius: {
+            'xl': '16px',
+          }
+        }
+      }
+    }
+  </script>
+<!-- BEGIN: Custom Animation & 3D Flip Styles -->
+<style data-purpose="motion-and-flip-styles">
+    .perspective-1000 {
+      perspective: 1000px;
+    }
+    .transform-style-3d {
+      transform-style: preserve-3d;
+    }
+    .backface-hidden {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .rotate-y-180 {
+      transform: rotateY(180deg);
+    }
+    .card-transition {
+      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* Staggered entrance animation keyframes */
+    @keyframes slideDownHeader {
+      from { transform: translateY(-100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes fadeInUpCard {
+      from { transform: translateY(32px) scale(0.97); opacity: 0; }
+      to { transform: translateY(0) scale(1); opacity: 1; }
+    }
+    @keyframes fadeInUpElement {
+      from { transform: translateY(18px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes badgePop {
+      0% { transform: scale(0.6) translateY(10px); opacity: 0; }
+      60% { transform: scale(1.08) translateY(-2px); opacity: 1; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    /* Entrance classes */
+    .animate-enter-header {
+      animation: slideDownHeader 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .animate-enter-card {
+      animation: fadeInUpCard 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.15s backwards;
+    }
+    .animate-enter-controls {
+      animation: fadeInUpElement 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.3s backwards;
+    }
+    .animate-enter-footer {
+      animation: fadeInUpElement 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.4s backwards;
+    }
+    .animate-badge-pop {
+      animation: badgePop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    /* Interactive Action States */
+    .swipe-right-out {
+      transform: translateX(100px) rotate(6deg) !important;
+      opacity: 0 !important;
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease !important;
+    }
+    .swipe-left-out {
+      transform: translateX(-100px) rotate(-6deg) !important;
+      opacity: 0 !important;
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease !important;
+    }
+    .swipe-reset-in {
+      transform: translateY(16px) scale(0.96) !important;
+      opacity: 0 !important;
+      transition: none !important;
+    }
+
+    /* Accessibility: Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .card-transition,
+      .animate-enter-header,
+      .animate-enter-card,
+      .animate-enter-controls,
+      .animate-enter-footer,
+      .animate-badge-pop,
+      .swipe-right-out,
+      .swipe-left-out {
+        animation: none !important;
+        transition: opacity 0.15s ease !important;
+        transform: none !important;
+      }
+    }
+  </style>
+<!-- END: Custom Animation & 3D Flip Styles -->
+</head>
+<body class="h-full bg-[#FAFAF8] text-[#1A1D23] font-sans antialiased flex flex-col justify-between select-none overflow-x-hidden">
+<!-- BEGIN: TopHeader -->
+<header class="h-16 w-full bg-white border-b border-[#E5E7EB] px-6 flex items-center justify-between z-20 shrink-0 shadow-sm transition-all duration-300 animate-enter-header" data-purpose="review-top-bar">
+<!-- Left: Exit Button & Brand Logo -->
+<div class="flex items-center space-x-3">
+<!-- Retainly Brand Logo https://lh3.googleusercontent.com/aida/AEtjO1XZ5YPvoVrMV2XrgJwQCiseJdQdn8Ip-oXXKJQvn2983wxdibLvRuPzTik2ebJweHxImavPnwwffNXMGzA2wt2VOGhLCLZicBwy9em_pJWemT-22yCS0UUZOGEfCJze6WAA1_SrVjKf9mo73xSuUl8HOOo3vjCT2_EoNfJXPHgjBZX40cgY3X0a-O0sbk7dZvtgsrJs6iYWkYD9scGwWc2muAoDNI561ZcldFVtT2aTrCRssts0IACpD--z -->
+<a class="inline-flex items-center transition-transform hover:scale-105 active:scale-95 duration-200" data-purpose="brand-logo" href="#" title="Retainly">
+<svg fill="none" height="32" viewbox="0 0 32 32" width="32" xmlns="http://www.w3.org/2000/svg">
+<rect fill="#F59E0B" height="32" rx="8" width="32"></rect>
+<path d="M11 23V9.5H17A3.75 3.75 0 0 1 17 17H11M14.75 17L20.75 23" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.2"></path>
+</svg>
+</a>
+<!-- Divider -->
+<span class="h-4 w-px bg-[#E5E7EB]"></span>
+<!-- Exit Button -->
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#6B7280] hover:text-[#1A1D23] hover:bg-gray-100 rounded-lg transition-all border border-transparent hover:border-[#E5E7EB] active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#F59E0B]" data-purpose="exit-session" id="btn-exit" title="Nhấn Esc để thoát phiên" type="button">
+<svg class="w-4 h-4 transition-transform group-hover:-translate-x-0.5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span>Kết thúc phiên</span>
+<span class="ml-1 text-[10px] bg-gray-100 text-[#6B7280] px-1.5 py-0.5 rounded border border-[#E5E7EB] font-mono">Esc</span>
+</button>
+</div>
+<!-- Center: Session Progress Bar -->
+<div class="flex flex-col items-center w-full max-w-xs px-4" data-purpose="progress-container">
+<div class="flex items-center justify-between w-full mb-1.5 text-xs">
+<span class="font-medium text-[#6B7280]">Tiến độ ôn tập</span>
+<span class="font-semibold text-[#1A1D23] tracking-tight font-mono transition-all duration-300" id="progress-counter">3 / 12</span>
+</div>
+<!-- Progress Bar Track -->
+<div class="w-full bg-[#E5E7EB] h-1.5 rounded-full overflow-hidden p-[0.5px]">
+<div class="bg-[#F59E0B] h-full rounded-full transition-all duration-700 ease-out" id="progress-bar-fill" style="width: 0%;"></div>
+</div>
+</div>
+<!-- Right: Context Info & Help -->
+<div class="flex items-center space-x-3">
+<div class="hidden sm:flex items-center space-x-2 text-xs text-[#6B7280] bg-gray-50 border border-[#E5E7EB] px-2.5 py-1 rounded-md shadow-2xs">
+<span class="inline-block w-2 h-2 rounded-full bg-[#F59E0B] animate-pulse"></span>
+<span>Thẻ đến hạn hôm nay</span>
+</div>
+<!-- Quick Tips / Shortcuts Modal Trigger -->
+<button aria-label="Trợ giúp phím tắt" class="text-[#6B7280] hover:text-[#1A1D23] p-1.5 rounded-md hover:bg-gray-100 transition-colors active:scale-95" data-purpose="help-shortcut-btn" id="btn-help" title="Trợ giúp phím tắt" type="button">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</div>
+</header>
+<!-- END: TopHeader -->
+<!-- BEGIN: MainInteractiveContent -->
+<main class="flex-1 flex flex-col items-center justify-center px-4 py-8 relative" data-purpose="flashcard-workspace">
+<div class="w-full max-w-[560px] flex flex-col items-center relative">
+<!-- Floating Feedback Badges (Appears on Remember/Forgot) -->
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 z-30 pointer-events-none hidden" id="feedback-badge-remember">
+<div class="flex items-center gap-1.5 px-3 py-1 bg-emerald-600 text-white text-xs font-semibold rounded-full shadow-lg border border-emerald-400 animate-badge-pop">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path></svg>
+<span>Nhớ · +6 ngày</span>
+</div>
+</div>
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 z-30 pointer-events-none hidden" id="feedback-badge-forgot">
+<div class="flex items-center gap-1.5 px-3 py-1 bg-red-600 text-white text-xs font-semibold rounded-full shadow-lg border border-red-400 animate-badge-pop">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path></svg>
+<span>Quên · Ôn lại sớm</span>
+</div>
+</div>
+<!-- 3D Flashcard Container (Width 560px, Min-Height 340px) -->
+<div aria-label="Thẻ ghi nhớ FSRS. Nhấn phím cách hoặc click để lật mặt." class="w-full h-[360px] perspective-1000 cursor-pointer group animate-enter-card transition-all duration-300" data-purpose="flashcard-viewport" id="card-container" tabindex="0">
+<!-- Flipping Card Inner Wrapper -->
+<div class="relative w-full h-full transform-style-3d card-transition" data-purpose="card-flipper" id="card-inner">
+<!-- FRONT FACE (Mặt câu hỏi) -->
+<article class="absolute inset-0 w-full h-full bg-white border border-[#E5E7EB] rounded-xl shadow-flat-card group-hover:shadow-flat-card-hover backface-hidden p-8 flex flex-col justify-between transition-all duration-300" data-purpose="card-question-face" id="card-front">
+<!-- Top Tag and Status -->
+<div class="flex items-center justify-between">
+<span class="text-xs font-semibold text-[#6B7280] tracking-wider uppercase">TRÍ NHỚ &amp; HỌC TẬP</span>
+<span class="text-[11px] font-medium text-[#F59E0B] bg-amber-50 border border-amber-200/80 px-2 py-0.5 rounded shadow-2xs">Mặt hỏi</span>
+</div>
+<!-- Question Body -->
+<div class="my-auto py-4">
+<h2 class="text-xl font-semibold text-[#1A1D23] leading-relaxed text-center" id="card-question-text">
+                FSRS tính lại khoảng cách ôn tập dựa trên ba đại lượng nào?
+              </h2>
+</div>
+<!-- Card Bottom Hint / Meta -->
+<div class="pt-4 border-t border-[#E5E7EB] flex items-center justify-between text-xs text-[#6B7280]">
+<span class="flex items-center gap-1.5">
+<svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+                Ôn lần cuối 3 ngày trước
+              </span>
+<span class="inline-flex items-center gap-1 text-[#F59E0B] font-medium group-hover:translate-x-0.5 transition-transform duration-200">
+<span>Nhấn để xem đáp án</span>
+<svg class="w-3 h-3" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</span>
+</div>
+</article>
+<!-- BACK FACE (Mặt đáp án) -->
+<article class="absolute inset-0 w-full h-full bg-white border border-[#E5E7EB] rounded-xl shadow-flat-card group-hover:shadow-flat-card-hover backface-hidden rotate-y-180 p-8 flex flex-col justify-between transition-all duration-300" data-purpose="card-answer-face" id="card-back">
+<!-- Top Tag and Answer Status -->
+<div class="flex items-center justify-between">
+<span class="text-xs font-semibold text-[#6B7280] tracking-wider uppercase">TRÍ NHỚ &amp; HỌC TẬP</span>
+<span class="text-[11px] font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded shadow-2xs">Mặt đáp án</span>
+</div>
+<!-- Answer Body -->
+<div class="my-auto py-2">
+<p class="text-xs text-[#6B7280] mb-2 font-medium">Câu trả lời chính xác:</p>
+<p class="text-lg font-medium text-[#1A1D23] leading-relaxed" id="card-answer-text">
+<strong class="font-semibold text-emerald-700">Độ khó</strong> (difficulty), <strong class="font-semibold text-emerald-700">độ bền trí nhớ</strong> (stability) và <strong class="font-semibold text-emerald-700">khả năng nhớ lại</strong> tại thời điểm ôn (retrievability).
+              </p>
+</div>
+<!-- Metadata footer -->
+<div class="pt-4 border-t border-[#E5E7EB] flex items-center justify-between text-xs text-[#6B7280]">
+<span class="flex items-center gap-1">
+<span>Ôn lần cuối 3 ngày trước ·</span>
+<span class="font-medium text-emerald-700">lần tới +6 ngày nếu Nhớ</span>
+</span>
+<span class="text-xs text-gray-400">Thuật toán FSRS v4.5</span>
+</div>
+</article>
+</div>
+</div>
+<!-- Action Panel & Control Buttons -->
+<div class="w-full mt-6 flex flex-col items-center gap-3 animate-enter-controls" data-purpose="review-actions-panel">
+<!-- FLIP ACTION STATE: Button shown prior to reveal or always available -->
+<div class="w-full flex justify-center" id="action-reveal">
+<button class="w-full max-w-[280px] h-12 inline-flex items-center justify-center px-4 rounded-lg bg-white border border-[#E5E7EB] hover:border-gray-400 text-sm font-semibold text-[#1A1D23] shadow-sm hover:shadow-btn-lift hover:bg-gray-50 active:scale-[0.98] transition-all duration-150 gap-2 focus:outline-none focus:ring-2 focus:ring-[#F59E0B]" data-purpose="btn-reveal-answer" id="btn-flip" type="button">
+<svg class="w-4 h-4 text-[#F59E0B] transition-transform duration-300 group-hover:rotate-180" fill="none" id="flip-icon" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span id="flip-button-text">Lật thẻ / Xem đáp án</span>
+<span class="text-[11px] font-normal text-[#6B7280] bg-gray-100 px-1.5 py-0.5 rounded border border-[#E5E7EB] font-mono">Space</span>
+</button>
+</div>
+<!-- RATING BUTTONS: Shown after reveal (also visible for quick evaluation) -->
+<div class="w-full grid grid-cols-2 gap-4" id="action-ratings">
+<!-- Button Quên (Forgot) -->
+<button class="group h-12 w-full inline-flex items-center justify-center px-4 rounded-lg border-2 border-[#DC2626] bg-white text-[#DC2626] hover:bg-red-50 hover:shadow-btn-lift active:scale-[0.97] font-semibold text-sm transition-all duration-150 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-400 gap-2" data-purpose="btn-forgot" id="btn-forgot" title="Nhấn phím [←] hoặc số [1]" type="button">
+<svg class="w-4 h-4 shrink-0 transition-transform duration-200 group-hover:-translate-x-1" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M10 19l-7-7m0 0l7-7m-7 7h18" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+</svg>
+<span>Quên</span>
+<span class="text-xs font-normal opacity-85 ml-1 hidden sm:inline">(Phím [←] hoặc [1])</span>
+</button>
+<!-- Button Nhớ (Remembered) -->
+<button class="group h-12 w-full inline-flex items-center justify-center px-4 rounded-lg bg-[#16A34A] border-2 border-[#16A34A] text-white hover:bg-emerald-700 hover:shadow-btn-lift active:scale-[0.97] font-semibold text-sm transition-all duration-150 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 gap-2" data-purpose="btn-remember" id="btn-remember" title="Nhấn phím [→] hoặc số [2]" type="button">
+<span>Nhớ</span>
+<span class="text-xs font-normal opacity-90 mr-1 hidden sm:inline">(Phím [→] hoặc [2])</span>
+<svg class="w-4 h-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+</svg>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- END: MainInteractiveContent -->
+<!-- BEGIN: BottomShortcutBar -->
+<footer class="w-full py-4 border-t border-[#E5E7EB] bg-white shrink-0 animate-enter-footer" data-purpose="shortcuts-legend-bar">
+<p class="text-center text-xs text-[#6B7280] tracking-wide">
+      Phím tắt: 
+      <span class="font-medium text-[#1A1D23] mx-1 bg-gray-50 px-1.5 py-0.5 rounded border border-gray-200">[Space] Lật thẻ</span> · 
+      <span class="font-medium text-[#1A1D23] mx-1 bg-gray-50 px-1.5 py-0.5 rounded border border-gray-200">[←] Quên</span> · 
+      <span class="font-medium text-[#1A1D23] mx-1 bg-gray-50 px-1.5 py-0.5 rounded border border-gray-200">[→] Nhớ</span> · 
+      <span class="font-medium text-[#1A1D23] mx-1 bg-gray-50 px-1.5 py-0.5 rounded border border-gray-200">[Esc] Kết thúc phiên</span>
+</p>
+</footer>
+<!-- END: BottomShortcutBar -->
+<!-- BEGIN: InteractionHandlers -->
+<script data-purpose="card-flip-and-shortcuts">
+    document.addEventListener('DOMContentLoaded', () => {
+      const cardContainer = document.getElementById('card-container');
+      const cardInner = document.getElementById('card-inner');
+      const btnFlip = document.getElementById('btn-flip');
+      const flipButtonText = document.getElementById('flip-button-text');
+      const btnForgot = document.getElementById('btn-forgot');
+      const btnRemember = document.getElementById('btn-remember');
+      const btnExit = document.getElementById('btn-exit');
+      const btnHelp = document.getElementById('btn-help');
+      const progressBar = document.getElementById('progress-bar-fill');
+      const progressCounter = document.getElementById('progress-counter');
+      const badgeRemember = document.getElementById('feedback-badge-remember');
+      const badgeForgot = document.getElementById('feedback-badge-forgot');
+
+      let isFlipped = false;
+      let isAnimating = false;
+      let currentCardIndex = 3;
+      const totalCards = 12;
+
+      // Sample flashcard deck data for live next card transition
+      const flashcards = [
+        {
+          q: "FSRS tính lại khoảng cách ôn tập dựa trên ba đại lượng nào?",
+          a: "<strong class=\"font-semibold text-emerald-700\">Độ khó</strong> (difficulty), <strong class=\"font-semibold text-emerald-700\">độ bền trí nhớ</strong> (stability) và <strong class=\"font-semibold text-emerald-700\">khả năng nhớ lại</strong> tại thời điểm ôn (retrievability)."
+        },
+        {
+          q: "Nguyên lý Active Recall (chủ động gợi nhớ) khác passive review thế nào?",
+          a: "<strong class=\"font-semibold text-emerald-700\">Active Recall</strong> buộc não bộ kích hoạt liên kết synapse để truy xuất dữ liệu thay vì chỉ nhận diện thụ động qua đọc lại."
+        },
+        {
+          q: "Đường cong quên lãng Ebbinghaus chỉ ra điều gì về sự suy giảm trí nhớ?",
+          a: "Não bộ quên đi <strong class=\"font-semibold text-emerald-700\">khoảng 50-70%</strong> lượng thông tin mới nạp chỉ trong vòng 24 giờ đầu nếu không được củng cố cách quãng."
+        }
+      ];
+
+      // Initial progress bar entrance animation
+      setTimeout(() => {
+        updateProgress(currentCardIndex);
+      }, 250);
+
+      function updateProgress(index) {
+        const percent = Math.min(100, Math.round((index / totalCards) * 100));
+        progressBar.style.width = `${percent}%`;
+        progressCounter.textContent = `${index} / ${totalCards}`;
+      }
+
+      // 3D Card Flip Handler
+      function toggleCard() {
+        if (isAnimating) return;
+        isFlipped = !isFlipped;
+        if (isFlipped) {
+          cardInner.classList.add('rotate-y-180');
+          if (flipButtonText) flipButtonText.textContent = "Lật về câu hỏi";
+        } else {
+          cardInner.classList.remove('rotate-y-180');
+          if (flipButtonText) flipButtonText.textContent = "Lật thẻ / Xem đáp án";
+        }
+      }
+
+      // Handle Review Rating (Remember or Forgot) with swipe animation & badge
+      function handleAnswer(type) {
+        if (isAnimating) return;
+        isAnimating = true;
+
+        // Visual badge pop
+        if (type === 'remember') {
+          badgeRemember.classList.remove('hidden');
+          cardContainer.classList.add('swipe-right-out');
+        } else {
+          badgeForgot.classList.remove('hidden');
+          cardContainer.classList.add('swipe-left-out');
+        }
+
+        // Increment progress
+        if (currentCardIndex < totalCards) {
+          currentCardIndex++;
+          updateProgress(currentCardIndex);
+        }
+
+        // Animate out, swap card data, animate back in
+        setTimeout(() => {
+          // Hide feedback badges
+          badgeRemember.classList.add('hidden');
+          badgeForgot.classList.add('hidden');
+
+          // Reset flip to front side instantly while hidden
+          if (isFlipped) {
+            isFlipped = false;
+            cardInner.classList.remove('rotate-y-180');
+            if (flipButtonText) flipButtonText.textContent = "Lật thẻ / Xem đáp án";
+          }
+
+          // Cycle question/answer for dynamic demonstration
+          const nextCard = flashcards[currentCardIndex % flashcards.length];
+          const qText = document.getElementById('card-question-text');
+          const aText = document.getElementById('card-answer-text');
+          if (qText && nextCard) qText.textContent = nextCard.q;
+          if (aText && nextCard) aText.innerHTML = nextCard.a;
+
+          // Prepare card reset position
+          cardContainer.classList.remove('swipe-right-out', 'swipe-left-out');
+          cardContainer.classList.add('swipe-reset-in');
+
+          // Smooth slide-in entrance of the new card
+          requestAnimationFrame(() => {
+            setTimeout(() => {
+              cardContainer.style.transition = 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease';
+              cardContainer.classList.remove('swipe-reset-in');
+              cardContainer.style.transform = 'none';
+              cardContainer.style.opacity = '1';
+
+              setTimeout(() => {
+                cardContainer.style.transition = '';
+                isAnimating = false;
+              }, 400);
+            }, 30);
+          });
+        }, 340);
+      }
+
+      // Click Events
+      cardContainer.addEventListener('click', toggleCard);
+      btnFlip.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleCard();
+      });
+
+      btnForgot.addEventListener('click', (e) => {
+        e.stopPropagation();
+        handleAnswer('forgot');
+      });
+
+      btnRemember.addEventListener('click', (e) => {
+        e.stopPropagation();
+        handleAnswer('remember');
+      });
+
+      btnExit.addEventListener('click', () => {
+        if (confirm('Bạn có chắc chắn muốn tạm dừng phiên ôn tập? Tiến độ ôn 3/12 thẻ sẽ được tự động lưu lại.')) {
+          window.history.back();
+        }
+      });
+
+      btnHelp.addEventListener('click', () => {
+        alert("Retainly Flashcard Shortcuts:\n• [Phím Space]: Lật mặt trước/sau\n• [Mũi tên trái ←] hoặc [Phím 1]: Đánh giá 'Quên'\n• [Mũi tên phải →] hoặc [Phím 2]: Đánh giá 'Nhớ'\n• [Phím Esc]: Kết thúc & Lưu phiên ôn tập");
+      });
+
+      // Keyboard shortcuts listeners
+      window.addEventListener('keydown', (e) => {
+        if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+
+        switch (e.code) {
+          case 'Space':
+            e.preventDefault();
+            btnFlip.classList.add('scale-95');
+            setTimeout(() => btnFlip.classList.remove('scale-95'), 120);
+            toggleCard();
+            break;
+
+          case 'ArrowLeft':
+          case 'Digit1':
+          case 'Numpad1':
+            e.preventDefault();
+            btnForgot.classList.add('scale-95', 'bg-red-50');
+            setTimeout(() => btnForgot.classList.remove('scale-95', 'bg-red-50'), 150);
+            handleAnswer('forgot');
+            break;
+
+          case 'ArrowRight':
+          case 'Digit2':
+          case 'Numpad2':
+            e.preventDefault();
+            btnRemember.classList.add('scale-95');
+            setTimeout(() => btnRemember.classList.remove('scale-95'), 150);
+            handleAnswer('remember');
+            break;
+
+          case 'Escape':
+            e.preventDefault();
+            btnExit.click();
+            break;
+        }
+      });
+    });
+  </script>
+<!-- END: InteractionHandlers -->
+</body></html>

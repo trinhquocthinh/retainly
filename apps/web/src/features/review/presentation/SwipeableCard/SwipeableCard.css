@@ -3,13 +3,12 @@
   border-radius: var(--radius-xl);
   transition: background-color 120ms ease-out;
 
-  /* Nền loang màu sau thẻ khi vuốt qua ngưỡng — mockup trạng thái "đang vuốt" */
   &.swipeable--remembered {
-    background: #f0fdf4;
+    background: var(--color-success-surface);
   }
 
   &.swipeable--forgotten {
-    background: #fef2f2;
+    background: var(--color-danger-surface);
   }
 }
 

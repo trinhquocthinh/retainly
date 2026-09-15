@@ -54,3 +54,13 @@
 .field--error textarea {
   border-color: var(--color-danger);
 }
+
+.field__description {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.field input,
+.field textarea {
+  transition: border-color var(--duration-fast);
+}

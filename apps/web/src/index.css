@@ -17,6 +17,15 @@
 
   --color-danger: #dc2626;
   --color-success: #16a34a;
+  --color-success-surface: #f0fdf4;
+  --color-success-strong: #15803d;
+  --color-accent-highlight: #fde68a;
+
+  --color-danger-surface: #fef2f2;
+  --color-danger-border: #fca5a5;
+  --color-danger-active: #991b1b;
+
+  --color-scrim: rgb(26 29 35 / 40%);
 
   --color-secondary-hover-bg: #f9fafb;
   --color-secondary-hover-border: #d1d5db;
@@ -46,6 +55,11 @@
   --sidebar-width: 240px;
   --content-max: 720px;
   --control-height: 44px;
+  --header-height: 64px;
+
+  /* Chuyển động — design-criteria §2: 150–250ms, không hơn */
+  --duration-fast: 150ms;
+  --duration-base: 200ms;
 
   font-family:
     Inter,
@@ -106,4 +120,22 @@ body {
 .text-caption {
   font-size: 12px;
   line-height: 16px;
+}
+
+.text-caption-caps {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Tôn trọng thiết lập giảm chuyển động của hệ điều hành */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

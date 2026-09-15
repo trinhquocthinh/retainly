@@ -39,3 +39,61 @@ export function IconNewCard({ size = 18 }: IconProps) {
     </svg>
   );
 }
+
+export function IconMenu({ size = 22 }: IconProps) {
+  return (
+    <svg {...base(size)}>
+      <path d="M4 7h16M4 12h16M4 17h16" />
+    </svg>
+  );
+}
+
+export function IconClose({ size = 20 }: IconProps) {
+  return (
+    <svg {...base(size)}>
+      <path d="M6 6l12 12M18 6L6 18" />
+    </svg>
+  );
+}
+
+export function IconUser({ size = 20 }: IconProps) {
+  return (
+    <svg {...base(size)}>
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4.5 20a7.5 7.5 0 0 1 15 0" />
+    </svg>
+  );
+}
+
+export function IconCheck({ size = 16 }: IconProps) {
+  return (
+    <svg {...base(size)}>
+      <path d="M5 13l4 4L19 7" />
+    </svg>
+  );
+}
+
+export function IconFlip({ size = 16 }: IconProps) {
+  return (
+    <svg {...base(size)}>
+      <path d="M4 4v5h5M20 20v-5h-5" />
+      <path d="M19.4 9A8 8 0 0 0 5.6 6.6L4 9m0 6 1.6 2.4A8 8 0 0 0 19.4 15" />
+    </svg>
+  );
+}
+
+export function IconArrowLeft({ size = 16 }: IconProps) {
+  return (
+    <svg {...base(size)}>
+      <path d="M10 19l-7-7 7-7M3 12h18" />
+    </svg>
+  );
+}
+
+export function IconArrowRight({ size = 16 }: IconProps) {
+  return (
+    <svg {...base(size)}>
+      <path d="M14 5l7 7-7 7M21 12H3" />
+    </svg>
+  );
+}

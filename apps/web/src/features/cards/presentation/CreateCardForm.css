@@ -1,44 +1,150 @@
 .create-card {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: var(--space-4);
+}
+
+.create-card__breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-text-secondary);
+}
+
+.create-card__breadcrumb a {
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--duration-fast);
+}
+
+.create-card__breadcrumb a:hover {
+  color: var(--color-text);
+}
+
+.create-card__breadcrumb-current {
+  color: var(--color-text);
+  font-weight: 500;
 }
 
 .create-card__title {
-  margin: 0;
+  margin: 0 0 var(--space-2);
+}
+
+/* Panel — Flat 2.0 level 1: viền 1px, bóng sm, bo 12px */
+.create-card__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
 }
 
 .create-card__banner {
   margin: 0;
   padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--color-danger);
+  border: 1px solid var(--color-danger-border);
   border-radius: var(--radius-md);
-  background: var(--color-surface);
-  color: var(--color-danger);
+  background: var(--color-danger-surface);
+  color: var(--color-danger-active);
 }
 
 .create-card__actions {
   display: flex;
-  gap: var(--space-3);
-  padding-top: var(--space-2);
+  flex-direction: column;
+  gap: var(--space-4);
+  padding-top: var(--space-6);
   border-top: 1px solid var(--color-border);
 }
 
-.create-card__actions .btn--primary {
+.create-card__shortcut {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-placeholder);
+  order: 2;
+}
+
+.create-card__shortcut kbd {
+  padding: 2px var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-secondary-active-bg);
+  color: var(--color-text-secondary);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+}
+
+.create-card__buttons {
+  display: flex;
+  gap: var(--space-3);
+  order: 1;
+}
+
+.create-card__buttons .btn--primary {
   flex: 1;
 }
 
-.create-card__status {
+.create-card__rules {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: var(--color-secondary-hover-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.create-card__rules-title {
   margin: 0;
-  padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--color-accent);
-  border-radius: var(--radius-md);
-  background: var(--color-accent-soft);
-  color: var(--color-accent-strong);
+  font-weight: 600;
+}
+
+.create-card__rules-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.create-card__rule {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  color: var(--color-text-secondary);
+}
+
+.create-card__rule svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+  color: var(--color-accent);
 }
 
 @media (min-width: 1024px) {
-  .create-card__actions .btn--primary {
+  .create-card__panel {
+    padding: var(--space-6);
+  }
+
+  .create-card__actions {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .create-card__shortcut {
+    order: 1;
+  }
+
+  .create-card__buttons {
+    order: 2;
+  }
+
+  .create-card__buttons .btn--primary {
     flex: 0 0 auto;
     min-width: 160px;
   }
