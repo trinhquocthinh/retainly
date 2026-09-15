@@ -71,7 +71,7 @@ jobs:
         id: migrate
         run: |
           img="ghcr.io/trinhquocthinh/retainly-migrate:${GITHUB_SHA}"
-          docker build -f docker/Dockerfile.api --target migrate -t "$img" .
+          docker build -f docker/Dockerfile.migrate -t "$img" .
           docker push "$img"
           echo "digest=$(docker inspect --format '{{index .RepoDigests 0}}' "$img" | cut -d@ -f2)" >> "$GITHUB_OUTPUT"
 

@@ -1,0 +1,23 @@
+# syntax=docker/dockerfile:1
+
+# Bay dong dau PHAI giong het Dockerfile.api stage builder
+# de layer cache dung chung, yarn workspaces focus chi chay 1 lan cho ca 2 image
+FROM node:24-alpine
+
+WORKDIR /app
+
+RUN corepack enable && apk add --no-cache openssl
+
+COPY .yarnrc.yml yarn.lock package.json ./
+COPY apps/api/package.json ./apps/api/
+COPY apps/web/package.json ./apps/web/
+
+RUN yarn workspaces focus api && yarn cache clean
+
+# Chi can schema + migrations, khong can src hay dist
+COPY apps/api/prisma ./apps/api/prisma
+COPY apps/api/prisma.config.ts ./apps/api/
+
+LABEL org.opencontainers.image.source=https://github.com/trinhquocthinh/retainly
+
+CMD ["yarn", "workspace", "api", "prisma", "migrate", "deploy"]

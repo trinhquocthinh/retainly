@@ -1,31 +1,50 @@
 # syntax=docker/dockerfile:1
-FROM node:24-alpine AS deps
+
+# ---------------------------------------------------
+# Stage 1: Biên dịch TypeScript
+# ---------------------------------------------------
+FROM node:24-alpine AS builder
+
 WORKDIR /app
-RUN corepack enable
+
+RUN corepack enable && apk add --no-cache openssl
+
 COPY .yarnrc.yml yarn.lock package.json ./
 COPY apps/api/package.json ./apps/api/
 COPY apps/web/package.json ./apps/web/
-RUN yarn workspaces focus api
 
-FROM deps AS build
+RUN yarn workspaces focus api && yarn cache clean
+
 COPY tsconfig.json ./
 COPY apps/api/ ./apps/api/
+
+# build = prisma generate && tsc -p tsconfig.build.json
+# generator xuat ra ../src/generated/prisma, rootDir=src nen dist/ da chua client
 RUN yarn workspace api build
 
-FROM build AS migrate
-LABEL org.opencontainers.image.source=https://github.com/trinhquocthinh/retainly
-CMD ["sh", "-c", "yarn workspace api prisma migrate deploy && yarn workspace api prisma db seed"]
-
+# ---------------------------------------------------
+# Stage 2: Runtime production
+# ---------------------------------------------------
 FROM node:24-alpine AS runtime
+LABEL org.opencontainers.image.source=https://github.com/trinhquocthinh/retainly
+
 WORKDIR /app
 ENV NODE_ENV=production
+
 RUN corepack enable \
     && addgroup -g 10001 -S retainly \
     && adduser -u 10001 -S retainly -G retainly
+
 COPY .yarnrc.yml yarn.lock package.json ./
 COPY apps/api/package.json ./apps/api/
 COPY apps/web/package.json ./apps/web/
+
 RUN yarn workspaces focus api --production && yarn cache clean
-COPY --from=build /app/apps/api/dist ./apps/api/dist
+
+COPY --from=builder /app/apps/api/dist ./apps/api/dist
+
 USER retainly
+
+EXPOSE 3000
+
 CMD ["node", "apps/api/dist/server.js"]

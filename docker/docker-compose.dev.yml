@@ -6,8 +6,7 @@ services:
   migrate:
     build:
       context: .
-      dockerfile: docker/Dockerfile.api
-      target: migrate
+      dockerfile: docker/Dockerfile.migrate
 
   api:
     build:
