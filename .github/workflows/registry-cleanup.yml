@@ -21,11 +21,20 @@ jobs:
         id: doc
         run: |
           all=''
+          thieu=0
           for c in retainly-sit-api retainly-sit-web retainly-sit-migrate \
                    retainly-prod-api retainly-prod-web retainly-prod-migrate; do
-            d=$(docker inspect --format '{{range .RepoDigests}}{{println .}}{{end}}' "$c" 2>/dev/null || true)
-            all="$all$d"
+            id=$(docker inspect --format '{{.Image}}' "$c" 2>/dev/null) || continue
+            d=$(docker inspect --format '{{range .RepoDigests}}{{println .}}{{end}}' "$id" 2>/dev/null || true)
+            case "$d" in
+              *@sha256:*) all="$all$d" ;;
+              *) echo "::warning::$c ton tai nhung khong co digest registry"; thieu=$((thieu+1)) ;;
+            esac
           done
+          if [ -n "$all" ] && [ "$thieu" -gt 0 ]; then
+            echo "::error::co container chay bang image khong tu registry — dung don de tranh xoa nham"
+            exit 1
+          fi
           list=$(printf '%s\n' "$all" | sed -n 's/.*@\(sha256:[0-9a-f]\{64\}\)$/\1/p' | sort -u | paste -sd, -)
           echo "inuse=$list" >> "$GITHUB_OUTPUT"
           echo "Đang chạy trên máy này: ${list:-<chưa có container nào chạy bằng image từ registry>}"
