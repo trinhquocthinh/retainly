@@ -10,6 +10,7 @@ import { prismaSourceRepository } from './features/sources/infrastructure/prisma
 import { registerSourcesRoutes } from './features/sources/presentation/sources-routes';
 import { registerHealthRoutes } from './shared/health-routes';
 import { prismaHealthProbe } from './shared/prisma-health-probe';
+import { prismaCardListQuery } from './features/cards/infrastructure/prisma-card-list-query';
 
 const port = Number(process.env['PORT'] ?? 3000);
 const host = process.env['HOST'] ?? '0.0.0.0';
@@ -19,6 +20,7 @@ const app = buildApp({ logger: true });
 registerHealthRoutes(app, { probe: prismaHealthProbe });
 registerCardsRoutes(app, {
   cards: prismaCardRepository,
+  cardList: prismaCardListQuery,
   sources: prismaSourceOwnership,
   now: () => new Date(),
 });

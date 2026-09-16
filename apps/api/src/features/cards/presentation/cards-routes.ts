@@ -2,13 +2,66 @@ import type { FastifyInstance } from 'fastify';
 
 import { createCard, type CardRepository, type SourceOwnership } from '../application/create-card';
 import { DEFAULT_USER_ID } from '../../../shared/default-user';
+import { listCards, type CardListQuery } from '../application/list-cards';
 
 type Body = { sourceId?: string; front: string; back: string };
 
-export function registerCardsRoutes(
-  app: FastifyInstance,
-  deps: { cards: CardRepository; sources: SourceOwnership; now: () => Date },
-): void {
+type Query = {
+  page?: number;
+  pageSize?: number;
+  sourceId?: string;
+};
+
+type CardsRouteDeps = {
+  cards: CardRepository;
+  cardList: CardListQuery;
+  sources: SourceOwnership;
+  now: () => Date;
+};
+
+export function registerCardsRoutes(app: FastifyInstance, deps: CardsRouteDeps): void {
+  app.get<{ Querystring: Query }>(
+    '/api/cards',
+    {
+      schema: {
+        querystring: {
+          type: 'object',
+          additionalProperties: false,
+          properties: {
+            page: {
+              type: 'integer',
+              minimum: 1,
+              default: 1,
+            },
+            pageSize: {
+              type: 'integer',
+              minimum: 1,
+              maximum: 100,
+              default: 20,
+            },
+            sourceId: {
+              type: 'string',
+              format: 'uuid',
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const result = await listCards(
+        { cards: deps.cardList },
+        {
+          userId: DEFAULT_USER_ID,
+          page: request.query.page ?? 1,
+          pageSize: request.query.pageSize ?? 20,
+          sourceId: request.query.sourceId,
+        },
+      );
+
+      return reply.status(200).send(result);
+    },
+  );
+
   app.post<{ Body: Body }>(
     '/api/cards',
     {

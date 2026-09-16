@@ -3,6 +3,8 @@ import { describe, it, expect } from 'vitest';
 import { buildApp } from '../../../app';
 import { registerCardsRoutes } from './cards-routes';
 import type { CardRepository, SourceOwnership } from '../application/create-card';
+import type { CardListQuery, CardListQueryInput } from '../application/list-cards';
+import { DEFAULT_USER_ID } from '../../../shared/default-user';
 
 const NOW = new Date('2026-06-15T09:00:00Z');
 const SOURCE = '00000000-0000-0000-0000-0000000000b1';
@@ -13,9 +15,29 @@ const fakeCards: CardRepository = {
   },
 };
 
+const listInputs: CardListQueryInput[] = [];
+
+const fakeCardList: CardListQuery = {
+  async list(input) {
+    listInputs.push(input);
+    return {
+      items: [],
+      totalItems: 21,
+    };
+  },
+};
+
 function appWithCards(sources: SourceOwnership = { belongsToUser: async () => true }) {
+  listInputs.length = 0;
+
   const app = buildApp();
-  registerCardsRoutes(app, { cards: fakeCards, sources, now: () => NOW });
+  registerCardsRoutes(app, {
+    cards: fakeCards,
+    cardList: fakeCardList,
+    sources,
+    now: () => NOW,
+  });
+
   return app;
 }
 
@@ -97,6 +119,78 @@ describe('E2-S1-T4 — POST /api/cards kèm sourceId', () => {
 
     expect(res.statusCode).toBe(400);
     expect(res.json().error.code).toBe('ERR_BAD_REQUEST');
+    await app.close();
+  });
+});
+
+describe('E3-S1-T1 — GET /api/cards', () => {
+  it('dùng mặc định page=1 và pageSize=20', async () => {
+    const app = appWithCards();
+
+    const res = await app.inject({
+      method: 'GET',
+      url: '/api/cards',
+    });
+
+    expect(res.statusCode).toBe(200);
+    expect(listInputs).toEqual([
+      {
+        userId: DEFAULT_USER_ID,
+        page: 1,
+        pageSize: 20,
+        sourceId: undefined,
+      },
+    ]);
+    expect(res.json().pagination).toEqual({
+      page: 1,
+      pageSize: 20,
+      totalItems: 21,
+      totalPages: 2,
+    });
+
+    await app.close();
+  });
+
+  it('truyền page, pageSize và sourceId hợp lệ', async () => {
+    const app = appWithCards();
+
+    const res = await app.inject({
+      method: 'GET',
+      url: `/api/cards?page=2&pageSize=10&sourceId=${SOURCE}`,
+    });
+
+    expect(res.statusCode).toBe(200);
+    expect(listInputs).toEqual([
+      {
+        userId: DEFAULT_USER_ID,
+        page: 2,
+        pageSize: 10,
+        sourceId: SOURCE,
+      },
+    ]);
+
+    await app.close();
+  });
+
+  it.each([
+    '?page=0',
+    '?page=1.5',
+    '?pageSize=0',
+    '?pageSize=101',
+    '?pageSize=abc',
+    '?sourceId=khong-phai-uuid',
+  ])('query không hợp lệ %s trả ERR_BAD_REQUEST', async (query) => {
+    const app = appWithCards();
+
+    const res = await app.inject({
+      method: 'GET',
+      url: `/api/cards${query}`,
+    });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.json().error.code).toBe('ERR_BAD_REQUEST');
+    expect(listInputs).toHaveLength(0);
+
     await app.close();
   });
 });

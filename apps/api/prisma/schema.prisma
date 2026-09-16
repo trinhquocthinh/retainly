@@ -46,6 +46,8 @@ model Card {
 
   @@index([userId])
   @@index([sourceId])
+  @@index([userId, createdAt, id], map: "cards_user_id_created_at_id_idx")
+  @@index([userId, sourceId, createdAt, id], map: "cards_user_id_source_id_created_at_id_idx")
   @@map("cards")
 }
 
