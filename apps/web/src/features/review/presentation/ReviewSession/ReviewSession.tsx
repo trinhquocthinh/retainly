@@ -40,7 +40,7 @@ export function ReviewSession({
       />
 
       {saveFailed ? (
-        <p className="review__error text-small" role="alert">
+        <p className="review__error feedback-danger text-small" role="alert">
           {canRetry
             ? 'Không lưu được kết quả, có thể do mạng. '
             : 'Không lưu được kết quả cho thẻ này. '}
@@ -53,7 +53,7 @@ export function ReviewSession({
       <button type="button" className="review__flip" onClick={onFlip}>
         <IconFlip />
         <span>{flipped ? 'Lật về mặt hỏi' : 'Lật thẻ / Xem đáp án'}</span>
-        <kbd>Space</kbd>
+        <kbd className="compact-chip key-hint">Space</kbd>
       </button>
 
       <div className="review__actions">

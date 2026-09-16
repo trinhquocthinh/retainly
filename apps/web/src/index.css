@@ -130,6 +130,60 @@ body {
   text-transform: uppercase;
 }
 
+/* Primitive bề mặt Flat 2.0 level 1 — dùng cho panel nội dung độc lập. */
+.surface-panel {
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Phản hồi lỗi cấp khối, có thể chứa cả text lẫn nút thử lại. */
+.feedback-danger {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-danger-border);
+  border-radius: var(--radius-md);
+  background: var(--color-danger-surface);
+  color: var(--color-danger-active);
+}
+
+/* Chip nhỏ dùng cho phím tắt và nhãn trạng thái gọn. */
+.compact-chip {
+  padding: 2px var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-secondary-active-bg);
+  color: var(--color-text-secondary);
+}
+
+.compact-chip--subtle {
+  background: var(--color-secondary-hover-bg);
+}
+
+.key-hint {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+}
+
+/* Đĩa icon 32px; màu nền và màu icon do component sở hữu. */
+.icon-disc {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+}
+
+@media (min-width: 1024px) {
+  .surface-panel {
+    padding: var(--space-6);
+  }
+}
+
 /* Tôn trọng thiết lập giảm chuyển động của hệ điều hành */
 @media (prefers-reduced-motion: reduce) {
   *,

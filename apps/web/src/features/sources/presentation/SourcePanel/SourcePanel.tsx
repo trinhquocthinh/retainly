@@ -17,7 +17,7 @@ type SourcePanelProps = {
 export function SourcePanel({ source, loading, contentRef }: SourcePanelProps) {
   if (loading) {
     return (
-      <section className="source-panel" aria-busy="true">
+      <section className="source-panel surface-panel" aria-busy="true">
         <p className="source-panel__label text-caption">Đang tải nội dung…</p>
         <div className="source-panel__skeleton">
           {SKELETON_WIDTHS.map((width) => (
@@ -31,7 +31,7 @@ export function SourcePanel({ source, loading, contentRef }: SourcePanelProps) {
   if (!source) return null;
 
   return (
-    <section className="source-panel" aria-label="Nguồn đã bóc tách">
+    <section className="source-panel surface-panel" aria-label="Nguồn đã bóc tách">
       <p className="source-panel__label text-caption">Nguồn đã bóc tách</p>
       <h2 className="source-panel__title text-h2">{source.title}</h2>
 

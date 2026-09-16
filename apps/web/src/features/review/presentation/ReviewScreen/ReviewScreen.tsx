@@ -54,14 +54,18 @@ export function ReviewScreen({ onExit, progress, children }: ReviewScreenProps) 
           </div>
         ) : null}
 
-        <p className="review-screen__due text-caption">Thẻ đến hạn hôm nay</p>
+        <p className="review-screen__due compact-chip compact-chip--subtle text-caption">
+          Thẻ đến hạn hôm nay
+        </p>
       </header>
 
       <main className="review-screen__stage">{children}</main>
 
       <footer className="review-screen__legend text-caption">
-        Phím tắt: <kbd>Space</kbd> Lật thẻ · <kbd>←</kbd> Quên · <kbd>→</kbd> Nhớ · <kbd>Esc</kbd>{' '}
-        Kết thúc
+        Phím tắt: <kbd className="compact-chip compact-chip--subtle key-hint">Space</kbd> Lật thẻ ·{' '}
+        <kbd className="compact-chip compact-chip--subtle key-hint">←</kbd> Quên ·{' '}
+        <kbd className="compact-chip compact-chip--subtle key-hint">→</kbd> Nhớ ·{' '}
+        <kbd className="compact-chip compact-chip--subtle key-hint">Esc</kbd> Kết thúc
       </footer>
     </div>
   );

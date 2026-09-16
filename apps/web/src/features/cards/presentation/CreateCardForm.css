@@ -42,20 +42,6 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
-  padding: var(--space-4);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
-}
-
-.create-card__banner {
-  margin: 0;
-  padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--color-danger-border);
-  border-radius: var(--radius-md);
-  background: var(--color-danger-surface);
-  color: var(--color-danger-active);
 }
 
 .create-card__actions {
@@ -73,16 +59,6 @@
   gap: var(--space-1);
   color: var(--color-placeholder);
   order: 2;
-}
-
-.create-card__shortcut kbd {
-  padding: 2px var(--space-2);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  background: var(--color-secondary-active-bg);
-  color: var(--color-text-secondary);
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 11px;
 }
 
 .create-card__buttons {
@@ -133,10 +109,6 @@
 }
 
 @media (min-width: 1024px) {
-  .create-card__panel {
-    padding: var(--space-6);
-  }
-
   /* D3 — nguồn bên trái, form 400px bên phải. */
   .create-card__workspace--split {
     display: grid;

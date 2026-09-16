@@ -4,15 +4,6 @@
   gap: var(--space-4);
 }
 
-.review__error {
-  margin: 0;
-  padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--color-danger-border);
-  border-radius: var(--radius-md);
-  background: var(--color-danger-surface);
-  color: var(--color-danger-active);
-}
-
 .review__retry {
   padding: 0;
   border: none;
@@ -64,13 +55,6 @@
 }
 
 .review__flip kbd {
-  padding: 2px var(--space-2);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  background: var(--color-secondary-active-bg);
-  color: var(--color-text-secondary);
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 11px;
   font-weight: 400;
 }
 

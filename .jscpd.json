@@ -2,5 +2,12 @@
   "threshold": 3,
   "minTokens": 50,
   "absolute": true,
-  "ignore": ["**/node_modules/**", "**/dist/**", "**/*.json", "**/*.test.ts", "**/generated/**"]
+  "ignore": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/*.json",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/generated/**"
+  ]
 }

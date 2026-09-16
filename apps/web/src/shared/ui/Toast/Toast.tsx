@@ -30,7 +30,7 @@ export function Toast({ open, children }: ToastProps) {
 
   return (
     <div className="toast" role="status">
-      <span className="toast__icon">
+      <span className="toast__icon icon-disc">
         <IconCheck />
       </span>
       <span className="toast__body text-small">{children}</span>

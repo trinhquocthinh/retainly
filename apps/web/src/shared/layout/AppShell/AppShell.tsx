@@ -109,7 +109,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
         {/* Alpha chạy một người dùng mặc định; danh tính thật gắn vào ở Epic 4 (SSO). */}
         <div className="shell__user">
-          <span className="shell__user-avatar">
+          <span className="shell__user-avatar icon-disc">
             <IconUser />
           </span>
           <span className="shell__user-name text-small">Người dùng mặc định</span>

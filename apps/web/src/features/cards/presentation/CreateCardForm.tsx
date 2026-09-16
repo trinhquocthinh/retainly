@@ -40,9 +40,14 @@ export function CreateCardForm({
   }
 
   return (
-    <form className="create-card__panel" onSubmit={onSubmit} onKeyDown={onKeyDown} noValidate>
+    <form
+      className="create-card__panel surface-panel"
+      onSubmit={onSubmit}
+      onKeyDown={onKeyDown}
+      noValidate
+    >
       {banner ? (
-        <p className="create-card__banner text-small" role="alert">
+        <p className="create-card__banner feedback-danger text-small" role="alert">
           {banner}
         </p>
       ) : null}
@@ -83,7 +88,8 @@ export function CreateCardForm({
 
       <div className="create-card__actions">
         <p className="create-card__shortcut text-caption">
-          <kbd>Ctrl</kbd> + <kbd>Enter</kbd> để lưu nhanh
+          <kbd className="compact-chip key-hint">Ctrl</kbd> +{' '}
+          <kbd className="compact-chip key-hint">Enter</kbd> để lưu nhanh
         </p>
         <div className="create-card__buttons">
           <Button onClick={onCancel}>Huỷ</Button>
