@@ -1,10 +1,25 @@
 import type { FastifyInstance } from 'fastify';
 
 import { createCard, type CardRepository, type SourceOwnership } from '../application/create-card';
-import { DEFAULT_USER_ID } from '../../../shared/default-user';
 import { listCards, type CardListQuery } from '../application/list-cards';
+import { deleteCard, type CardDeleteRepository } from '../application/delete-card';
+import { updateCard, type CardUpdateRepository } from '../application/update-card';
+import { DEFAULT_USER_ID } from '../../../shared/default-user';
 
-type Body = { sourceId?: string; front: string; back: string };
+type CreateBody = {
+  sourceId?: string;
+  front: string;
+  back: string;
+};
+
+type UpdateBody = {
+  front?: string;
+  back?: string;
+};
+
+type CardParams = {
+  id: string;
+};
 
 type Query = {
   page?: number;
@@ -13,7 +28,7 @@ type Query = {
 };
 
 type CardsRouteDeps = {
-  cards: CardRepository;
+  cards: CardRepository & CardUpdateRepository & CardDeleteRepository;
   cardList: CardListQuery;
   sources: SourceOwnership;
   now: () => Date;
@@ -62,7 +77,7 @@ export function registerCardsRoutes(app: FastifyInstance, deps: CardsRouteDeps):
     },
   );
 
-  app.post<{ Body: Body }>(
+  app.post<{ Body: CreateBody }>(
     '/api/cards',
     {
       schema: {
@@ -82,6 +97,83 @@ export function registerCardsRoutes(app: FastifyInstance, deps: CardsRouteDeps):
     async (request, reply) => {
       const card = await createCard(deps, { userId: DEFAULT_USER_ID, ...request.body });
       return reply.status(201).send(card);
+    },
+  );
+
+  app.patch<{ Params: CardParams; Body: UpdateBody }>(
+    '/api/cards/:id',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          required: ['id'],
+          additionalProperties: false,
+          properties: {
+            id: {
+              type: 'string',
+              format: 'uuid',
+            },
+          },
+        },
+        body: {
+          type: 'object',
+          minProperties: 1,
+          additionalProperties: false,
+          properties: {
+            front: {
+              type: 'string',
+              maxLength: 2000,
+            },
+            back: {
+              type: 'string',
+              maxLength: 2000,
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const card = await updateCard(
+        { cards: deps.cards },
+        {
+          userId: DEFAULT_USER_ID,
+          cardId: request.params.id,
+          front: request.body.front,
+          back: request.body.back,
+        },
+      );
+
+      return reply.status(200).send(card);
+    },
+  );
+
+  app.delete<{ Params: CardParams }>(
+    '/api/cards/:id',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          required: ['id'],
+          additionalProperties: false,
+          properties: {
+            id: {
+              type: 'string',
+              format: 'uuid',
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const result = await deleteCard(
+        { cards: deps.cards },
+        {
+          userId: DEFAULT_USER_ID,
+          cardId: request.params.id,
+        },
+      );
+
+      return reply.status(200).send(result);
     },
   );
 }
