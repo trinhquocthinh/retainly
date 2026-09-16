@@ -273,4 +273,10 @@
   .shell__scrim {
     display: none;
   }
+
+  /* Cột 720px là mặc định cho mọi màn. Màn tạo thẻ khi đang mở nguồn cần hai
+     cột nên tự xin nới ra, thay vì phải luồn prop qua AppShell. */
+  .shell__content:has(.create-card--wide) {
+    max-width: 1120px;
+  }
 }

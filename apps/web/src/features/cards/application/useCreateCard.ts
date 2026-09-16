@@ -11,7 +11,7 @@ import {
 } from '../domain/cardDraft';
 
 /** Cổng lưu thẻ. Hiện thực thật do page container tiêm vào. */
-type CreateCardPort = (draft: CardDraft) => Promise<unknown>;
+type CreateCardPort = (card: CardDraft & { sourceId?: string }) => Promise<unknown>;
 
 const EMPTY_DRAFT: CardDraft = { front: '', back: '' };
 
@@ -23,12 +23,14 @@ function bannerFor(error: unknown): string | null {
   return error instanceof Error ? error.message : 'Không lưu được thẻ, thử lại sau';
 }
 
-export function useCreateCard(deps: { createCard: CreateCardPort }) {
+export function useCreateCard(deps: { createCard: CreateCardPort; sourceId?: string }) {
   const [draft, setDraft] = useState<CardDraft>(EMPTY_DRAFT);
   const [justSaved, setJustSaved] = useState(false);
 
   const mutation = useMutation({
     mutationFn: deps.createCard,
+    // Chỉ xoá hai mặt thẻ. Nguồn do page giữ nên vẫn còn đó: một bài viết đọc
+    // một lần, rút được nhiều thẻ mà không phải nạp lại.
     onSuccess: () => {
       setDraft(EMPTY_DRAFT);
       setJustSaved(true);
@@ -37,6 +39,11 @@ export function useCreateCard(deps: { createCard: CreateCardPort }) {
 
   const failedField =
     mutation.error instanceof ApiError ? fieldForErrorCode(mutation.error.code) : undefined;
+
+  function setField(field: CardField, value: string) {
+    setDraft((current) => ({ ...current, [field]: value }));
+    setJustSaved(false);
+  }
 
   return {
     draft,
@@ -47,18 +54,16 @@ export function useCreateCard(deps: { createCard: CreateCardPort }) {
 
     errorOf: (field: CardField) =>
       failedField === field ? (mutation.error as ApiError).message : undefined,
-
-    onChange: (field: CardField) => (event: ChangeEvent<HTMLTextAreaElement>) => {
-      setDraft((current) => ({ ...current, [field]: event.target.value }));
-      setJustSaved(false);
-    },
+    setField,
+    onChange: (field: CardField) => (event: ChangeEvent<HTMLTextAreaElement>) =>
+      setField(field, event.target.value),
 
     onSubmit: (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       if (!isDraftComplete(draft) || mutation.isPending) return;
 
       setJustSaved(false);
-      mutation.mutate(draft);
+      mutation.mutate(deps.sourceId ? { ...draft, sourceId: deps.sourceId } : draft);
     },
   };
 }

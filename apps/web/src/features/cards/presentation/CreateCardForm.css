@@ -30,6 +30,13 @@
   margin: 0 0 var(--space-2);
 }
 
+.create-card__workspace {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-height: 0;
+}
+
 /* Panel — Flat 2.0 level 1: viền 1px, bóng sm, bo 12px */
 .create-card__panel {
   display: flex;
@@ -128,6 +135,24 @@
 @media (min-width: 1024px) {
   .create-card__panel {
     padding: var(--space-6);
+  }
+
+  /* D3 — nguồn bên trái, form 400px bên phải. */
+  .create-card__workspace--split {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: var(--space-8);
+    align-items: start;
+  }
+
+  /* Cột 400px không đủ cho một hàng ngang: nhắc phím tụt xuống dưới hai nút. */
+  .create-card__workspace--split .create-card__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .create-card__workspace--split .create-card__shortcut {
+    order: 2;
   }
 
   .create-card__actions {
