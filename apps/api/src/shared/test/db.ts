@@ -16,7 +16,7 @@ const OTHER_USER_ID = '00000000-0000-0000-0000-0000000000aa';
  */
 export async function resetDatabase(): Promise<void> {
   await testPrisma.$executeRawUnsafe(
-    'truncate table users, cards, review_schedules, review_outcomes cascade',
+    'truncate table users, sources, cards, review_schedules, review_outcomes cascade',
   );
 
   await testPrisma.user.createMany({

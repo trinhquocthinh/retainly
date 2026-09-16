@@ -6,6 +6,7 @@ export const prismaCardRepository: CardRepository = {
     const row = await prisma.card.create({
       data: {
         userId: card.userId,
+        sourceId: card.sourceId,
         front: card.front,
         back: card.back,
         schedule: {

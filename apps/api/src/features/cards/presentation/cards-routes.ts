@@ -1,13 +1,13 @@
 import type { FastifyInstance } from 'fastify';
 
-import { createCard, type CardRepository } from '../application/create-card';
+import { createCard, type CardRepository, type SourceOwnership } from '../application/create-card';
 import { DEFAULT_USER_ID } from '../../../shared/default-user';
 
-type Body = { front: string; back: string };
+type Body = { sourceId?: string; front: string; back: string };
 
 export function registerCardsRoutes(
   app: FastifyInstance,
-  deps: { cards: CardRepository; now: () => Date },
+  deps: { cards: CardRepository; sources: SourceOwnership; now: () => Date },
 ): void {
   app.post<{ Body: Body }>(
     '/api/cards',
@@ -17,6 +17,9 @@ export function registerCardsRoutes(
           type: 'object',
           required: ['front', 'back'],
           properties: {
+            // format uuid chặn ngay ở tầng schema: cột source_id là UUID, chuỗi
+            // sai dạng mà xuống tới Postgres sẽ thành lỗi 500 thay vì 400.
+            sourceId: { type: 'string', format: 'uuid' },
             front: { type: 'string', maxLength: 2000 },
             back: { type: 'string', maxLength: 2000 },
           },

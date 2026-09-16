@@ -6,6 +6,7 @@ export const errorCatalog = {
   ERR_EMPTY_FRONT: { status: 400, message: 'Mặt hỏi của thẻ không được để trống' },
   ERR_EMPTY_BACK: { status: 400, message: 'Mặt trả lời của thẻ không được để trống' },
   ERR_TOPIC_NOT_FOUND: { status: 404, message: 'Không tìm thấy nhánh kiến thức này' },
+  ERR_SOURCE_NOT_FOUND: { status: 404, message: 'Không tìm thấy nguồn bài viết này' },
   ERR_CARD_NOT_FOUND: { status: 404, message: 'Không tìm thấy thẻ này' },
   ERR_UNAUTHORIZED: { status: 401, message: 'Vui lòng đăng nhập lại' },
   ERR_INVALID_OUTCOME: { status: 400, message: 'Kết quả ôn tập không hợp lệ' },

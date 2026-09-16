@@ -23,9 +23,13 @@
     "typescript": "5.9.3"
   },
   "dependencies": {
+    "@extractus/article-extractor": "^9.0.1",
     "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "7.10.0",
     "fastify": "5.12.3",
-    "ts-fsrs": "^5.4.2"
+    "ipaddr.js": "^2.5.0",
+    "node-html-markdown": "^2.0.0",
+    "ts-fsrs": "^5.4.2",
+    "undici": "^8.10.2"
   }
 }
