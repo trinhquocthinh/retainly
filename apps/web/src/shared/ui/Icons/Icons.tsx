@@ -97,3 +97,20 @@ export function IconArrowRight({ size = 16 }: IconProps) {
     </svg>
   );
 }
+
+export function IconEdit({ size = 18 }: IconProps) {
+  return (
+    <svg {...base(size)}>
+      <path d="M12 20h9" />
+      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z" />
+    </svg>
+  );
+}
+
+export function IconDelete({ size = 18 }: IconProps) {
+  return (
+    <svg {...base(size)}>
+      <path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5" />
+    </svg>
+  );
+}
