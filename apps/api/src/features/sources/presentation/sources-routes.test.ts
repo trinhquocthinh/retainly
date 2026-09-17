@@ -5,6 +5,7 @@ import { AppError } from '../../../shared/errors';
 import type { SourceRepository } from '../application/create-source';
 import type { ArticleExtractor } from '../application/extract-article';
 import { registerSourcesRoutes } from './sources-routes';
+import { signInAs } from '../../../shared/test/sign-in-as';
 
 const NOW = new Date('2026-06-15T09:00:00Z');
 
@@ -20,6 +21,7 @@ const fakeSources: SourceRepository = {
 function appWith(extractor: ArticleExtractor) {
   saveCount = 0;
   const app = buildApp();
+  signInAs(app);
   registerSourcesRoutes(app, { extractor, sources: fakeSources });
   return app;
 }

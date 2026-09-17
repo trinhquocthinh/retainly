@@ -29,8 +29,22 @@ model User {
 
   cards   Card[]
   sources Source[]
+  sessions Session[]
 
   @@map("users")
+}
+
+/// Cookie giữ token gốc, bảng chỉ giữ sha256 của nó.
+model Session {
+  tokenHash String   @id @map("token_hash")
+  userId    String   @map("user_id") @db.Uuid
+  expiresAt DateTime @map("expires_at") @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
 }
 
 model Card {

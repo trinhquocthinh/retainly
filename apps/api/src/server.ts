@@ -11,11 +11,28 @@ import { registerSourcesRoutes } from './features/sources/presentation/sources-r
 import { registerHealthRoutes } from './shared/health-routes';
 import { prismaHealthProbe } from './shared/prisma-health-probe';
 import { prismaCardListQuery } from './features/cards/infrastructure/prisma-card-list-query';
+import { readAuthConfig } from './features/auth/infrastructure/auth-config';
+import { createOpenIdSsoClient } from './features/auth/infrastructure/openid-sso-client';
+import {
+  prismaSessionRepository,
+  prismaSsoUserRepository,
+} from './features/auth/infrastructure/prisma-auth-repositories';
+import { registerAuthRoutes } from './features/auth/presentation/auth-routes';
 
 const port = Number(process.env['PORT'] ?? 3000);
 const host = process.env['HOST'] ?? '0.0.0.0';
 
+const auth = readAuthConfig(process.env);
 const app = buildApp({ logger: true });
+
+registerAuthRoutes(app, {
+  sso: createOpenIdSsoClient(auth.oidc),
+  users: prismaSsoUserRepository,
+  sessions: prismaSessionRepository,
+  now: () => new Date(),
+  appOrigin: auth.appOrigin,
+  cookieSecret: auth.cookieSecret,
+});
 
 registerHealthRoutes(app, { probe: prismaHealthProbe });
 registerCardsRoutes(app, {

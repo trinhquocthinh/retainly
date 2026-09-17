@@ -4,6 +4,7 @@ import { buildApp } from '../../../app';
 import { registerReviewRoutes } from './review-routes';
 import type { DueCard, DueCardQuery } from '../application/list-due-cards';
 import type { ReviewRepository } from '../application/record-outcome';
+import { signInAs } from '../../../shared/test/sign-in-as';
 
 const NOW = new Date('2026-09-12T13:49:00Z');
 
@@ -26,6 +27,8 @@ function appWith(rows: DueCard[]) {
   };
 
   const app = buildApp();
+  signInAs(app);
+
   registerReviewRoutes(app, { schedules, reviews, now: () => NOW });
   return app;
 }

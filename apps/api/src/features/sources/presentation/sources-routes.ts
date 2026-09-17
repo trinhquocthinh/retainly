@@ -2,7 +2,7 @@ import type { FastifyInstance } from 'fastify';
 
 import { createSource, type SourceRepository } from '../application/create-source';
 import type { ArticleExtractor } from '../application/extract-article';
-import { DEFAULT_USER_ID } from '../../../shared/default-user';
+import { requireAuth } from '../../../shared/request-auth';
 
 type Body = { url: string };
 
@@ -23,7 +23,7 @@ export function registerSourcesRoutes(
     },
     async (request, reply) => {
       const source = await createSource(deps, {
-        userId: DEFAULT_USER_ID,
+        userId: requireAuth(request).userId,
         url: request.body.url,
       });
 

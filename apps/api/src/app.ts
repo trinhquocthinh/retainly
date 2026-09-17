@@ -2,8 +2,13 @@ import Fastify, { type FastifyInstance } from 'fastify';
 
 import { AppError, errorCatalog } from './shared/errors';
 
+import './shared/request-auth';
+
 export function buildApp(options: { logger?: boolean } = {}): FastifyInstance {
   const app = Fastify({ logger: options.logger ?? false });
+
+  // Mặc định chưa đăng nhập. Hook của auth-routes gắn phiên thật nếu có cookie.
+  app.decorateRequest('auth', null);
 
   app.setNotFoundHandler((_request, reply) => {
     const entry = errorCatalog.ERR_NOT_FOUND;

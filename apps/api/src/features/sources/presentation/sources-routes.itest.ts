@@ -1,32 +1,23 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { buildApp } from '../../../app';
-import { DEFAULT_USER_EXTERNAL_AUTH_ID, DEFAULT_USER_ID } from '../../../shared/default-user';
 import { AppError } from '../../../shared/errors';
-import { resetDatabase, testPrisma } from '../../../shared/test/db';
 import { createArticleExtractor } from '../infrastructure/article-extractor';
 import { prismaSourceRepository } from '../infrastructure/prisma-source-repository';
 import type { SafeFetcher } from '../infrastructure/safe-fetch';
+import { resetDatabase, TEST_USER_ID, testPrisma } from '../../../shared/test/db';
+import { signInAs } from '../../../shared/test/sign-in-as';
 import { registerSourcesRoutes } from './sources-routes';
 
 const VALID_URL = 'https://example.com/spaced-repetition';
 
 beforeEach(async () => {
   await resetDatabase();
-
-  // Route hiện lấy DEFAULT_USER_ID thay vì TEST_USER_ID. Phải seed đúng user
-  // này trước khi repository thật tạo Source, nếu không PostgreSQL chặn FK.
-  await testPrisma.user.create({
-    data: {
-      id: DEFAULT_USER_ID,
-      externalAuthId: DEFAULT_USER_EXTERNAL_AUTH_ID,
-      displayName: 'Chủ dự án test',
-    },
-  });
 });
 
 function appWith(fetcher: SafeFetcher) {
   const app = buildApp();
+  signInAs(app, TEST_USER_ID);
 
   registerSourcesRoutes(app, {
     extractor: createArticleExtractor({ fetcher }),
@@ -85,7 +76,7 @@ describe('E2-S2-T6 — POST /api/sources xuyên suốt', () => {
     });
 
     expect(row.cleanText).toBe(response.json().cleanText);
-    expect(row.userId).toBe(DEFAULT_USER_ID);
+    expect(row.userId).toBe(TEST_USER_ID);
     expect(fetcher).toHaveBeenCalledOnce();
 
     await app.close();

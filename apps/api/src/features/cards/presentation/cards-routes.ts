@@ -4,7 +4,7 @@ import { createCard, type CardRepository, type SourceOwnership } from '../applic
 import { listCards, type CardListQuery } from '../application/list-cards';
 import { deleteCard, type CardDeleteRepository } from '../application/delete-card';
 import { updateCard, type CardUpdateRepository } from '../application/update-card';
-import { DEFAULT_USER_ID } from '../../../shared/default-user';
+import { requireAuth } from '../../../shared/request-auth';
 
 type CreateBody = {
   sourceId?: string;
@@ -66,7 +66,7 @@ export function registerCardsRoutes(app: FastifyInstance, deps: CardsRouteDeps):
       const result = await listCards(
         { cards: deps.cardList },
         {
-          userId: DEFAULT_USER_ID,
+          userId: requireAuth(request).userId,
           page: request.query.page ?? 1,
           pageSize: request.query.pageSize ?? 20,
           sourceId: request.query.sourceId,
@@ -95,7 +95,7 @@ export function registerCardsRoutes(app: FastifyInstance, deps: CardsRouteDeps):
       },
     },
     async (request, reply) => {
-      const card = await createCard(deps, { userId: DEFAULT_USER_ID, ...request.body });
+      const card = await createCard(deps, { userId: requireAuth(request).userId, ...request.body });
       return reply.status(201).send(card);
     },
   );
@@ -136,7 +136,7 @@ export function registerCardsRoutes(app: FastifyInstance, deps: CardsRouteDeps):
       const card = await updateCard(
         { cards: deps.cards },
         {
-          userId: DEFAULT_USER_ID,
+          userId: requireAuth(request).userId,
           cardId: request.params.id,
           front: request.body.front,
           back: request.body.back,
@@ -168,7 +168,7 @@ export function registerCardsRoutes(app: FastifyInstance, deps: CardsRouteDeps):
       const result = await deleteCard(
         { cards: deps.cards },
         {
-          userId: DEFAULT_USER_ID,
+          userId: requireAuth(request).userId,
           cardId: request.params.id,
         },
       );

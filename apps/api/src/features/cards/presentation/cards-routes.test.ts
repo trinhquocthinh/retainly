@@ -6,7 +6,7 @@ import type { CardRepository, SourceOwnership } from '../application/create-card
 import type { CardListQuery, CardListQueryInput } from '../application/list-cards';
 import type { CardDeleteRepository } from '../application/delete-card';
 import type { CardUpdateRepository } from '../application/update-card';
-import { DEFAULT_USER_ID } from '../../../shared/default-user';
+import { SIGNED_IN_USER_ID, signInAs } from '../../../shared/test/sign-in-as';
 
 const NOW = new Date('2026-06-15T09:00:00Z');
 const SOURCE = '00000000-0000-0000-0000-0000000000b1';
@@ -60,6 +60,8 @@ function appWithCards(sources: SourceOwnership = { belongsToUser: async () => tr
   deleteInputs.length = 0;
 
   const app = buildApp();
+  signInAs(app);
+
   registerCardsRoutes(app, {
     cards: fakeCards,
     cardList: fakeCardList,
@@ -82,7 +84,7 @@ describe('E3-S1-T1 — GET /api/cards', () => {
     expect(res.statusCode).toBe(200);
     expect(listInputs).toEqual([
       {
-        userId: DEFAULT_USER_ID,
+        userId: SIGNED_IN_USER_ID,
         page: 1,
         pageSize: 20,
         sourceId: undefined,
@@ -109,7 +111,7 @@ describe('E3-S1-T1 — GET /api/cards', () => {
     expect(res.statusCode).toBe(200);
     expect(listInputs).toEqual([
       {
-        userId: DEFAULT_USER_ID,
+        userId: SIGNED_IN_USER_ID,
         page: 2,
         pageSize: 10,
         sourceId: SOURCE,
@@ -265,7 +267,7 @@ describe('E3-S1-T2 — PATCH /api/cards/:id', () => {
     });
     expect(updateInputs).toEqual([
       {
-        userId: DEFAULT_USER_ID,
+        userId: SIGNED_IN_USER_ID,
         cardId: CARD_ID,
         content: {
           front: 'Câu hỏi mới',
@@ -342,7 +344,7 @@ describe('E3-S1-T2 — DELETE /api/cards/:id', () => {
     expect(res.json()).toEqual({ deleted: true });
     expect(deleteInputs).toEqual([
       {
-        userId: DEFAULT_USER_ID,
+        userId: SIGNED_IN_USER_ID,
         cardId: CARD_ID,
       },
     ]);
@@ -361,6 +363,27 @@ describe('E3-S1-T2 — DELETE /api/cards/:id', () => {
     expect(res.statusCode).toBe(400);
     expect(res.json().error.code).toBe('ERR_BAD_REQUEST');
     expect(deleteInputs).toHaveLength(0);
+
+    await app.close();
+  });
+});
+
+describe('E4-S1-T3 — route thẻ yêu cầu đăng nhập', () => {
+  it('không có phiên trả 401 ERR_UNAUTHORIZED và không chạm repository', async () => {
+    listInputs.length = 0;
+    const app = buildApp();
+    registerCardsRoutes(app, {
+      cards: fakeCards,
+      cardList: fakeCardList,
+      sources: { belongsToUser: async () => true },
+      now: () => NOW,
+    });
+
+    const res = await app.inject({ method: 'GET', url: '/api/cards' });
+
+    expect(res.statusCode).toBe(401);
+    expect(res.json().error.code).toBe('ERR_UNAUTHORIZED');
+    expect(listInputs).toEqual([]);
 
     await app.close();
   });
