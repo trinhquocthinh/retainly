@@ -21,8 +21,8 @@ export async function resetDatabase(): Promise<void> {
 
   await testPrisma.user.createMany({
     data: [
-      { id: TEST_USER_ID, displayName: 'Người dùng test' },
-      { id: OTHER_USER_ID, displayName: 'Người dùng khác' },
+      { id: TEST_USER_ID, externalAuthId: 'test:user', displayName: 'Người dùng test' },
+      { id: OTHER_USER_ID, externalAuthId: 'test:other', displayName: 'Người dùng khác' },
     ],
   });
 }

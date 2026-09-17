@@ -2,7 +2,7 @@ import { PrismaPg } from '@prisma/adapter-pg';
 
 import { PrismaClient } from '../src/generated/prisma/client';
 
-import { DEFAULT_USER_ID } from '../src/shared/default-user';
+import { DEFAULT_USER_EXTERNAL_AUTH_ID, DEFAULT_USER_ID } from '../src/shared/default-user';
 
 const connectionString = process.env['DATABASE_URL'];
 if (connectionString === undefined) {
@@ -15,7 +15,11 @@ async function main(): Promise<void> {
   const user = await prisma.user.upsert({
     where: { id: DEFAULT_USER_ID },
     update: {},
-    create: { id: DEFAULT_USER_ID, displayName: 'Chủ dự án' },
+    create: {
+      id: DEFAULT_USER_ID,
+      externalAuthId: DEFAULT_USER_EXTERNAL_AUTH_ID,
+      displayName: 'Chủ dự án',
+    },
   });
   console.log(`Seed xong: user mặc định ${user.id}`);
 }

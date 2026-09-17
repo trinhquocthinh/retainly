@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Retainly - Đăng nhập</title>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+          },
+          colors: {
+            "primary": "#855300",
+            "accent-amber": "#F59E0B",
+            "accent-amber-hover": "#D97706",
+            "accent-amber-text": "#B45309",
+            "accent-amber-highlight": "#FDE68A",
+            "bg-light": "#FAFAF8",
+            "surface-light": "#FFFFFF",
+            "border-light": "#E5E7EB",
+            "text-secondary": "#6B7280",
+            "text-primary-light": "#1A1D23",
+            "danger-surface": "#FEF2F2",
+            "danger-border": "#FCA5A5",
+            "danger-active": "#991B1B",
+            "success-remember": "#16A34A",
+          },
+          boxShadow: {
+            card: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
+            'amber-glow': '0 0 25px -4px rgba(245, 158, 11, 0.45)',
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Smooth transitions and animations */
+    .ease-spring {
+      transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    @keyframes subtleGlow {
+      0%, 100% {
+        box-shadow: 0 0 15px -3px rgba(245, 158, 11, 0.35);
+        transform: scale(1);
+      }
+      50% {
+        box-shadow: 0 0 25px 2px rgba(245, 158, 11, 0.6);
+        transform: scale(1.025);
+      }
+    }
+
+    @keyframes shakeCard {
+      0%, 100% { transform: translateX(0); }
+      15%, 45%, 75% { transform: translateX(-6px); }
+      30%, 60%, 90% { transform: translateX(6px); }
+    }
+
+    @keyframes checkDraw {
+      0% { stroke-dashoffset: 24; }
+      100% { stroke-dashoffset: 0; }
+    }
+
+    @keyframes slideInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-logo-glow {
+      animation: subtleGlow 4s ease-in-out infinite;
+    }
+
+    .shake-error {
+      animation: shakeCard 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    }
+
+    .alert-enter {
+      animation: slideInDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .checkbox-icon {
+      stroke-dasharray: 24;
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 0.25s ease-in-out;
+    }
+
+    .checkbox-unchecked .checkbox-icon {
+      stroke-dashoffset: 24;
+    }
+
+    /* Accessibility: Reduced motion settings */
+    @media (prefers-reduced-motion: reduce) {
+      *, ::before, ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .animate-logo-glow {
+        animation: none !important;
+      }
+      .shake-error {
+        animation: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="h-full bg-[#FAFAF8] text-text-primary-light font-sans antialiased flex flex-col justify-between selection:bg-accent-amber/20 selection:text-text-primary-light relative">
+<!-- BEGIN: StateSimulatorToolbar -->
+<aside aria-label="Bộ điều khiển demo trạng thái" class="w-full bg-white border-b border-border-light px-4 py-2.5 text-xs transition-opacity duration-700 ease-spring opacity-100 relative z-20">
+<div class="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-2.5">
+<div class="flex items-center space-x-2 text-text-secondary font-medium">
+<svg class="w-4 h-4 text-accent-amber flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="hidden sm:inline">Chế độ xem trước kịch bản (Design Spec Interactive):</span>
+<span class="sm:hidden font-semibold">Kịch bản demo:</span>
+</div>
+<div class="flex flex-wrap items-center gap-1.5" role="tablist">
+<button class="px-2.5 py-1 rounded bg-stone-900 text-white font-semibold transition-all duration-200 active:scale-95 shadow-sm" id="btn-state-default" onclick="switchState('default')" type="button">1. Mặc định</button>
+<button class="px-2.5 py-1 rounded bg-stone-100 hover:bg-stone-200 text-stone-700 font-medium transition-all duration-200 active:scale-95" id="btn-state-sso" onclick="switchState('sso_loading')" type="button">2. Đang kết nối Authentik</button>
+<button class="px-2.5 py-1 rounded bg-stone-100 hover:bg-stone-200 text-stone-700 font-medium transition-all duration-200 active:scale-95" id="btn-state-error" onclick="switchState('invalid_credentials')" type="button">3. Lỗi mật khẩu</button>
+<button class="px-2.5 py-1 rounded bg-stone-100 hover:bg-stone-200 text-stone-700 font-medium transition-all duration-200 active:scale-95" id="btn-state-limit" onclick="switchState('registration_limit')" type="button">4. Đăng ký &amp; Giới hạn 6 user</button>
+<button class="px-2.5 py-1 rounded bg-stone-100 hover:bg-stone-200 text-stone-700 font-medium transition-all duration-200 active:scale-95 text-emerald-700 hover:text-emerald-800" id="btn-state-success" onclick="switchState('success_state')" type="button">5. Đăng nhập thành công</button>
+</div>
+</div>
+</aside>
+<!-- END: StateSimulatorToolbar -->
+<!-- BEGIN: ToastNotification -->
+<div class="fixed top-14 right-4 z-50 transform transition-all duration-300 pointer-events-none translate-y-[-20px] opacity-0" id="toast-notification">
+<div class="bg-white border border-border-light shadow-lg rounded-xl px-4 py-3 flex items-center gap-3 text-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-accent-amber animate-ping"></span>
+<span class="text-text-primary-light font-medium" id="toast-text">Thông báo</span>
+</div>
+</div>
+<!-- END: ToastNotification -->
+<!-- BEGIN: MainContent -->
+<main class="flex-grow flex items-center justify-center px-4 py-10 sm:py-14 relative z-10">
+<div class="w-full max-w-[420px] mx-auto flex flex-col items-center">
+<!-- BEGIN: BrandHeader -->
+<header class="flex flex-col items-center text-center mb-8 select-none transition-all duration-700 ease-spring opacity-100 transform translate-y-0" data-purpose="brand-identity" id="brand-header">
+<a class="group inline-flex items-center justify-center mb-3.5 focus:outline-none focus:ring-2 focus:ring-accent-amber focus:ring-offset-2 rounded-xl transition-transform active:scale-95" href="/" title="Retainly Home">
+<!-- Monogram Logo Icon chuẩn Retainly Design Specs -->
+<div class="w-12 h-12 bg-accent-amber rounded-lg flex items-center justify-center shadow-md animate-logo-glow group-hover:bg-accent-amber-hover transition-colors">
+<svg aria-hidden="true" class="w-7 h-7 text-white" fill="none" viewbox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+<path d="M11 23V9.5H17A3.75 3.75 0 0 1 17 17H11M14.75 17L20.75 23" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5"></path>
+</svg>
+</div>
+</a>
+<h1 class="text-[28px] leading-tight font-bold tracking-tight text-text-primary-light transition-all duration-300">Retainly</h1>
+<p class="mt-1 text-[15px] text-text-secondary font-normal">Đọc rồi nhớ. Ôn đúng lúc sắp quên.</p>
+</header>
+<!-- END: BrandHeader -->
+<!-- BEGIN: LoginCard -->
+<div class="w-full bg-surface-light border border-border-light rounded-2xl shadow-card p-6 sm:p-8 relative transition-all duration-500 ease-spring" data-purpose="auth-card" id="auth-card">
+<!-- Dynamic Alert Box -->
+<div class="hidden mb-5 p-3.5 rounded-lg border text-sm alert-enter" id="alert-banner" role="alert">
+<div class="flex items-start gap-2.5">
+<svg class="w-5 h-5 flex-shrink-0 mt-0.5 text-danger-active" fill="none" id="alert-icon" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<p class="leading-snug" id="alert-message"></p>
+</div>
+</div>
+<!-- Màn hình chờ chuyển tiếp SSO Authentik -->
+<div class="hidden py-8 flex flex-col items-center text-center space-y-4" id="sso-loading-view">
+<div class="relative w-14 h-14 flex items-center justify-center">
+<div class="w-12 h-12 border-3 border-border-light border-t-accent-amber rounded-full animate-spin"></div>
+<svg class="w-5 h-5 text-accent-amber-text absolute" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+</svg>
+</div>
+<div>
+<p class="font-semibold text-text-primary-light text-base">Đang kết nối tới Authentik SSO...</p>
+<p class="text-xs text-text-secondary mt-1">Đang mở cổng chứng thực an toàn OIDC/SAML.</p>
+</div>
+<button class="text-xs text-accent-amber-text hover:text-accent-amber-hover underline font-medium mt-2 transition-colors active:scale-95" onclick="switchState('default')" type="button">
+            Hủy và quay lại
+          </button>
+</div>
+<!-- Màn hình thành công hoàn tất -->
+<div class="hidden py-8 flex flex-col items-center text-center space-y-3" id="success-view">
+<div class="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mb-1 ring-8 ring-emerald-50/50">
+<svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+</svg>
+</div>
+<h3 class="text-lg font-bold text-text-primary-light">Xác thực thành công!</h3>
+<p class="text-sm text-text-secondary">Đang chuyển tiếp tới không gian học tập Retainly...</p>
+<div class="w-full bg-stone-100 h-1.5 rounded-full overflow-hidden mt-3">
+<div class="bg-emerald-500 h-full w-full rounded-full transition-all duration-1000"></div>
+</div>
+<button class="mt-4 text-xs font-semibold text-accent-amber-text hover:underline" onclick="switchState('default')">Về màn hình đăng nhập</button>
+</div>
+<!-- Khối Form Chính -->
+<div class="transition-opacity duration-300" id="auth-form-container">
+<!-- Mode Tabs (Đăng nhập / Đăng ký) -->
+<div class="flex p-1 mb-5 bg-stone-100/90 rounded-xl border border-stone-200/60 text-xs font-medium relative">
+<button class="flex-1 py-1.5 text-center rounded-lg font-semibold transition-all duration-200 shadow-sm bg-white text-text-primary-light" id="tab-login" onclick="setLoginMode()" type="button">
+              Đăng nhập
+            </button>
+<button class="flex-1 py-1.5 text-center rounded-lg text-text-secondary hover:text-text-primary-light transition-all duration-200" id="tab-register" onclick="setRegisterMode()" type="button">
+              Đăng ký
+            </button>
+</div>
+<!-- BEGIN: SSOSection -->
+<div class="mb-5">
+<button class="w-full h-11 px-4 border border-border-light rounded-lg bg-white hover:bg-stone-50 active:scale-[0.98] text-text-primary-light font-medium text-sm flex items-center justify-center gap-3 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent-amber focus:ring-offset-2 relative" id="authentik-button" onclick="triggerSSO()" type="button">
+<!-- Authentik / Key shield vector icon -->
+<span class="inline-flex items-center gap-2.5" id="authentik-btn-content">
+<svg class="w-4 h-4 text-accent-amber-text" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+<path d="M12 8v4"></path>
+<path d="M12 16h.01"></path>
+</svg>
+<span>Đăng nhập với Authentik SSO</span>
+</span>
+<span class="hidden items-center gap-2 text-text-secondary" id="authentik-btn-spinner">
+<svg class="w-4 h-4 animate-spin text-accent-amber" fill="none" viewbox="0 0 24 24">
+<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+<path class="opacity-75" d="M4 12a8 8 0 018-8v8H4z" fill="currentColor"></path>
+</svg>
+<span>Đang mở SSO...</span>
+</span>
+</button>
+</div>
+<!-- END: SSOSection -->
+<!-- BEGIN: FormDivider -->
+<div class="relative flex py-2 items-center mb-5">
+<div class="flex-grow border-t border-border-light"></div>
+<span class="flex-shrink mx-3 text-[13px] text-text-secondary font-normal" id="divider-text">hoặc đăng nhập bằng email</span>
+<div class="flex-grow border-t border-border-light"></div>
+</div>
+<!-- END: FormDivider -->
+<!-- BEGIN: CredentialsForm -->
+<form class="space-y-4" id="login-form" onsubmit="handleFormSubmit(event)">
+<!-- Tên người dùng (chỉ hiển thị khi chuyển sang tab Đăng ký) -->
+<div class="hidden transition-all duration-300" id="field-fullname">
+<label class="block text-sm font-medium text-text-primary-light mb-1.5" for="fullname">Họ và tên</label>
+<input class="w-full h-11 px-3.5 bg-white border border-border-light rounded-lg text-sm text-text-primary-light placeholder-stone-400 focus:border-accent-amber focus:ring-2 focus:ring-accent-amber/20 focus:outline-none transition-all duration-200" id="fullname" name="fullname" placeholder="Nguyễn Văn A" type="text"/>
+</div>
+<!-- Trường Email -->
+<div class="relative">
+<label class="block text-sm font-medium text-text-primary-light mb-1.5" for="email">Email</label>
+<input autocomplete="email" class="w-full h-11 px-3.5 bg-white border border-border-light rounded-lg text-sm text-text-primary-light placeholder-stone-400 focus:border-accent-amber focus:ring-2 focus:ring-accent-amber/20 focus:outline-none transition-all duration-200" id="email" name="email" placeholder="ban@vidu.com" required="" type="email" value="learner@retainly.app"/>
+</div>
+<!-- Trường Mật khẩu -->
+<div class="relative" id="password-group">
+<div class="flex items-center justify-between mb-1.5">
+<label class="block text-sm font-medium text-text-primary-light" for="password">Mật khẩu</label>
+</div>
+<div class="relative">
+<input autocomplete="current-password" class="w-full h-11 pl-3.5 pr-11 bg-white border border-border-light rounded-lg text-sm text-text-primary-light placeholder-stone-400 focus:border-accent-amber focus:ring-2 focus:ring-accent-amber/20 focus:outline-none transition-all duration-200" id="password" name="password" oninput="checkPasswordStrength(this.value)" placeholder="••••••••" required="" type="password" value="password123"/>
+<!-- Nút ẩn hiện mật khẩu -->
+<button aria-label="Hiện/Ẩn mật khẩu" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-text-secondary hover:text-text-primary-light focus:outline-none transition-colors" onclick="togglePasswordVisibility()" title="Hiện/Ẩn mật khẩu" type="button">
+<svg class="w-4 h-4 transition-transform duration-200" fill="none" id="eye-icon" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path>
+<path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path>
+</svg>
+</button>
+</div>
+<!-- Thanh độ mạnh mật khẩu (chỉ cho đăng ký) -->
+<div class="hidden mt-2" id="password-strength-bar">
+<div class="flex items-center justify-between text-xs mb-1">
+<span class="text-text-secondary">Độ an toàn (tối thiểu 12 ký tự)</span>
+<span class="font-medium text-amber-600" id="strength-label">Trung bình</span>
+</div>
+<div class="w-full h-1.5 bg-stone-100 rounded-full overflow-hidden flex gap-1">
+<div class="h-full w-1/3 bg-amber-400 rounded-full transition-all duration-300" id="str-1"></div>
+<div class="h-full w-1/3 bg-amber-400 rounded-full transition-all duration-300" id="str-2"></div>
+<div class="h-full w-1/3 bg-stone-200 rounded-full transition-all duration-300" id="str-3"></div>
+</div>
+</div>
+</div>
+<!-- Tùy chọn Ghi nhớ & Quên mật khẩu -->
+<div class="flex items-center justify-between pt-1" id="row-remember">
+<label class="flex items-center text-sm text-text-secondary select-none cursor-pointer group" onclick="toggleCheckbox(event)">
+<span class="w-4 h-4 rounded border border-border-light bg-accent-amber flex items-center justify-center mr-2 transition-all duration-200 ring-offset-1 group-focus-within:ring-2 group-focus-within:ring-accent-amber" id="custom-checkbox">
+<svg class="w-3 h-3 text-white checkbox-icon" fill="none" stroke="currentColor" stroke-width="3" viewbox="0 0 24 24">
+<polyline points="20 6 9 17 4 12"></polyline>
+</svg>
+</span>
+<input checked="" class="sr-only" id="remember-me" name="remember" type="checkbox"/>
+<span class="text-stone-700 text-sm">Ghi nhớ đăng nhập</span>
+</label>
+<a class="text-sm font-medium text-accent-amber-text hover:text-accent-amber-hover hover:underline focus:outline-none focus:underline transition-colors" href="#forgot" onclick="showForgotModal(event)">
+                Quên mật khẩu?
+              </a>
+</div>
+<!-- Nút xác nhận hành động chính -->
+<button class="w-full h-11 mt-2 bg-accent-amber hover:bg-accent-amber-hover active:scale-[0.98] text-white font-semibold text-sm rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent-amber focus:ring-offset-2 flex items-center justify-center gap-2 cursor-pointer" id="submit-button" type="submit">
+<span class="hidden" id="submit-spinner">
+<svg class="w-4 h-4 animate-spin text-white" fill="none" viewbox="0 0 24 24">
+<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+<path class="opacity-75" d="M4 12a8 8 0 018-8v8H4z" fill="currentColor"></path>
+</svg>
+</span>
+<span id="submit-text">Đăng nhập</span>
+</button>
+</form>
+<!-- END: CredentialsForm -->
+<!-- BEGIN: CardFooterLink -->
+<div class="mt-6 text-center text-sm text-text-secondary">
+<span id="toggle-prompt">Chưa có tài khoản?</span>
+<button class="ml-1 font-semibold text-accent-amber-text hover:text-accent-amber-hover hover:underline focus:outline-none focus:underline transition-colors" id="toggle-auth-mode-btn" onclick="toggleMode()" type="button">
+              Đăng ký
+            </button>
+</div>
+<!-- END: CardFooterLink -->
+</div>
+</div>
+<!-- END: LoginCard -->
+</div>
+</main>
+<!-- END: MainContent -->
+<!-- BEGIN: SiteFooter -->
+<footer class="w-full py-6 text-center text-xs text-text-secondary relative z-10 transition-opacity duration-700 ease-spring">
+<p>Retainly v0.1 · Hệ thống lặp lại ngắt quãng thuật toán FSRS</p>
+</footer>
+<!-- END: SiteFooter -->
+<!-- BEGIN: Interactive Authentik Modal Overlay -->
+<div aria-modal="true" class="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-sm hidden items-center justify-center p-4 transition-all duration-300" id="authentik-modal" role="dialog">
+<div class="bg-white max-w-sm w-full rounded-2xl p-6 shadow-2xl border border-stone-200 text-center transform transition-all scale-95 opacity-0" id="authentik-modal-card">
+<div class="w-12 h-12 bg-amber-50 text-accent-amber-text rounded-xl mx-auto flex items-center justify-center mb-3">
+<svg class="w-6 h-6 animate-pulse" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+<path d="M12 8v4"></path>
+<path d="M12 16h.01"></path>
+</svg>
+</div>
+<h3 class="font-bold text-base text-text-primary-light">Cổng xác thực Authentik</h3>
+<p class="text-xs text-text-secondary mt-1.5 leading-relaxed">
+        Đang đồng bộ phiên bảo mật SSO Authentik của Retainly. Tự động chuyển trang sau <span class="font-bold text-accent-amber-text" id="modal-countdown">3</span>s.
+      </p>
+<div class="w-full bg-stone-100 h-1.5 rounded-full overflow-hidden my-4">
+<div class="bg-accent-amber h-full w-full rounded-full transition-all duration-[3000ms] ease-linear" id="modal-progress"></div>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 py-2 px-3 rounded-lg border border-border-light text-xs font-medium text-stone-700 hover:bg-stone-50 active:scale-95 transition-all" onclick="cancelAuthentikModal()" type="button">Hủy bỏ</button>
+<button class="flex-1 py-2 px-3 rounded-lg bg-accent-amber text-white text-xs font-semibold hover:bg-accent-amber-hover active:scale-95 transition-all shadow-sm" onclick="finishAuthentikModal()" type="button">Chuyển ngay</button>
+</div>
+</div>
+</div>
+<!-- END: Interactive Authentik Modal Overlay -->
+<!-- BEGIN: InteractivityScripts -->
+<script data-purpose="auth-state-logic">
+    // State Variables
+    let currentMode = 'login'; // 'login' | 'register'
+    let currentState = 'default';
+    let countdownInterval = null;
+
+    // Toast helper
+    function showToast(text) {
+      const toast = document.getElementById('toast-notification');
+      const toastText = document.getElementById('toast-text');
+      toastText.innerText = text;
+      toast.classList.remove('translate-y-[-20px]', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      setTimeout(() => {
+        toast.classList.add('translate-y-[-20px]', 'opacity-0');
+        toast.classList.remove('translate-y-0', 'opacity-100');
+      }, 3000);
+    }
+
+    // Toggle Password Visibility
+    function togglePasswordVisibility() {
+      const pwdField = document.getElementById('password');
+      const eyeIcon = document.getElementById('eye-icon');
+      if (pwdField.type === 'password') {
+        pwdField.type = 'text';
+        eyeIcon.innerHTML = `
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+        `;
+      } else {
+        pwdField.type = 'password';
+        eyeIcon.innerHTML = `
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+        `;
+      }
+    }
+
+    // Interactive Checkbox
+    function toggleCheckbox(e) {
+      if (e.target.tagName.toLowerCase() === 'input') return;
+      const cb = document.getElementById('remember-me');
+      const box = document.getElementById('custom-checkbox');
+      cb.checked = !cb.checked;
+      if (cb.checked) {
+        box.classList.remove('bg-white', 'checkbox-unchecked');
+        box.classList.add('bg-accent-amber', 'border-accent-amber');
+      } else {
+        box.classList.remove('bg-accent-amber', 'border-accent-amber');
+        box.classList.add('bg-white', 'checkbox-unchecked');
+      }
+    }
+
+    // Password strength check
+    function checkPasswordStrength(val) {
+      if (currentMode !== 'register') return;
+      const str1 = document.getElementById('str-1');
+      const str2 = document.getElementById('str-2');
+      const str3 = document.getElementById('str-3');
+      const label = document.getElementById('strength-label');
+
+      if (!val || val.length < 6) {
+        str1.className = 'h-full w-1/3 bg-red-400 rounded-full transition-all duration-300';
+        str2.className = 'h-full w-1/3 bg-stone-200 rounded-full transition-all duration-300';
+        str3.className = 'h-full w-1/3 bg-stone-200 rounded-full transition-all duration-300';
+        label.innerText = 'Yếu';
+        label.className = 'font-medium text-red-600';
+      } else if (val.length < 12) {
+        str1.className = 'h-full w-1/3 bg-amber-400 rounded-full transition-all duration-300';
+        str2.className = 'h-full w-1/3 bg-amber-400 rounded-full transition-all duration-300';
+        str3.className = 'h-full w-1/3 bg-stone-200 rounded-full transition-all duration-300';
+        label.innerText = 'Trung bình';
+        label.className = 'font-medium text-amber-600';
+      } else {
+        str1.className = 'h-full w-1/3 bg-emerald-500 rounded-full transition-all duration-300';
+        str2.className = 'h-full w-1/3 bg-emerald-500 rounded-full transition-all duration-300';
+        str3.className = 'h-full w-1/3 bg-emerald-500 rounded-full transition-all duration-300';
+        label.innerText = 'Mạnh (FSRS Ready)';
+        label.className = 'font-medium text-emerald-600';
+      }
+    }
+
+    // Tab & Mode Switches
+    function toggleMode() {
+      if (currentMode === 'login') {
+        setRegisterMode();
+      } else {
+        setLoginMode();
+      }
+    }
+
+    function setRegisterMode() {
+      currentMode = 'register';
+      const fullname = document.getElementById('field-fullname');
+      const strengthBar = document.getElementById('password-strength-bar');
+      const tabLogin = document.getElementById('tab-login');
+      const tabRegister = document.getElementById('tab-register');
+
+      fullname.classList.remove('hidden');
+      strengthBar.classList.remove('hidden');
+      document.getElementById('row-remember').classList.add('hidden');
+      document.getElementById('submit-text').innerText = 'Tạo tài khoản mới';
+      document.getElementById('toggle-prompt').innerText = 'Đã có tài khoản?';
+      document.getElementById('toggle-auth-mode-btn').innerText = 'Đăng nhập';
+      document.getElementById('divider-text').innerText = 'hoặc đăng ký bằng email';
+
+      tabRegister.className = 'flex-1 py-1.5 text-center rounded-lg font-semibold transition-all duration-200 shadow-sm bg-white text-text-primary-light';
+      tabLogin.className = 'flex-1 py-1.5 text-center rounded-lg text-text-secondary hover:text-text-primary-light transition-all duration-200';
+    }
+
+    function setLoginMode() {
+      currentMode = 'login';
+      const fullname = document.getElementById('field-fullname');
+      const strengthBar = document.getElementById('password-strength-bar');
+      const tabLogin = document.getElementById('tab-login');
+      const tabRegister = document.getElementById('tab-register');
+
+      fullname.classList.add('hidden');
+      strengthBar.classList.add('hidden');
+      document.getElementById('row-remember').classList.remove('hidden');
+      document.getElementById('submit-text').innerText = 'Đăng nhập';
+      document.getElementById('toggle-prompt').innerText = 'Chưa có tài khoản?';
+      document.getElementById('toggle-auth-mode-btn').innerText = 'Đăng ký';
+      document.getElementById('divider-text').innerText = 'hoặc đăng nhập bằng email';
+
+      tabLogin.className = 'flex-1 py-1.5 text-center rounded-lg font-semibold transition-all duration-200 shadow-sm bg-white text-text-primary-light';
+      tabRegister.className = 'flex-1 py-1.5 text-center rounded-lg text-text-secondary hover:text-text-primary-light transition-all duration-200';
+    }
+
+    // Modal Authentik Handler
+    function triggerSSO() {
+      const modal = document.getElementById('authentik-modal');
+      const card = document.getElementById('authentik-modal-card');
+      const countdown = document.getElementById('modal-countdown');
+      const progress = document.getElementById('modal-progress');
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      setTimeout(() => {
+        card.classList.remove('scale-95', 'opacity-0');
+        card.classList.add('scale-100', 'opacity-100');
+        progress.style.width = '0%';
+      }, 20);
+
+      let timeLeft = 3;
+      countdown.innerText = timeLeft;
+      progress.style.width = '100%';
+
+      clearInterval(countdownInterval);
+      countdownInterval = setInterval(() => {
+        timeLeft -= 1;
+        countdown.innerText = timeLeft;
+        if (timeLeft <= 0) {
+          clearInterval(countdownInterval);
+          finishAuthentikModal();
+        }
+      }, 1000);
+    }
+
+    function cancelAuthentikModal() {
+      clearInterval(countdownInterval);
+      const modal = document.getElementById('authentik-modal');
+      const card = document.getElementById('authentik-modal-card');
+      card.classList.add('scale-95', 'opacity-0');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }, 200);
+    }
+
+    function finishAuthentikModal() {
+      cancelAuthentikModal();
+      switchState('success_state');
+    }
+
+    function showForgotModal(e) {
+      e.preventDefault();
+      showToast('Liên hệ Admin Authentik Retainly để cấp lại mật khẩu.');
+    }
+
+    // Handle form submit
+    function handleFormSubmit(e) {
+      e.preventDefault();
+      const spinner = document.getElementById('submit-spinner');
+      const btn = document.getElementById('submit-button');
+
+      spinner.classList.remove('hidden');
+      btn.classList.add('opacity-90', 'pointer-events-none');
+
+      setTimeout(() => {
+        spinner.classList.add('hidden');
+        btn.classList.remove('opacity-90', 'pointer-events-none');
+
+        if (currentMode === 'register') {
+          switchState('registration_limit');
+        } else {
+          switchState('success_state');
+        }
+      }, 800);
+    }
+
+    // Switch scenario states
+    function switchState(state) {
+      currentState = state;
+      const alertBanner = document.getElementById('alert-banner');
+      const alertMsg = document.getElementById('alert-message');
+      const ssoView = document.getElementById('sso-loading-view');
+      const successView = document.getElementById('success-view');
+      const formContainer = document.getElementById('auth-form-container');
+      const authCard = document.getElementById('auth-card');
+
+      // Update switcher buttons
+      ['default', 'sso', 'error', 'limit', 'success'].forEach(k => {
+        const btn = document.getElementById(`btn-state-${k}`);
+        if(btn) {
+          btn.classList.remove('bg-stone-900', 'text-white', 'font-semibold', 'shadow-sm');
+          btn.classList.add('bg-stone-100', 'text-stone-700');
+        }
+      });
+
+      // Reset blocks
+      alertBanner.classList.add('hidden');
+      alertBanner.className = 'hidden mb-5 p-3.5 rounded-lg border text-sm alert-enter';
+      ssoView.classList.add('hidden');
+      successView.classList.add('hidden');
+      formContainer.classList.remove('hidden');
+      authCard.classList.remove('shake-error');
+
+      if (state === 'default') {
+        setLoginMode();
+        highlightTab('default');
+        showToast('Chế độ: Đăng nhập mặc định');
+      } 
+      else if (state === 'sso_loading') {
+        highlightTab('sso');
+        formContainer.classList.add('hidden');
+        ssoView.classList.remove('hidden');
+      } 
+      else if (state === 'invalid_credentials') {
+        setLoginMode();
+        highlightTab('error');
+        alertBanner.classList.remove('hidden');
+        alertBanner.classList.add('bg-danger-surface', 'border-danger-border', 'text-danger-active');
+        alertMsg.innerHTML = '<strong>Đăng nhập không thành công:</strong> Email hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại.';
+        
+        // Error shake micro-interaction
+        authCard.classList.add('shake-error');
+        showToast('Lỗi mật khẩu: Vui lòng nhập lại');
+      } 
+      else if (state === 'registration_limit') {
+        setRegisterMode();
+        highlightTab('limit');
+        alertBanner.classList.remove('hidden');
+        alertBanner.classList.add('bg-amber-50', 'border-amber-200', 'text-amber-900');
+        alertMsg.innerHTML = '<strong>Đã đủ 6 tài khoản hoạt động</strong> — không thể đăng ký thêm. Liên hệ chủ dự án nếu bạn cần một chỗ.';
+        showToast('Giới hạn: Đã đủ 6 người dùng');
+      }
+      else if (state === 'success_state') {
+        highlightTab('success');
+        formContainer.classList.add('hidden');
+        successView.classList.remove('hidden');
+        showToast('Xác thực thành công!');
+      }
+    }
+
+    function highlightTab(key) {
+      const target = document.getElementById(`btn-state-${key}`);
+      if (target) {
+        target.classList.remove('bg-stone-100', 'text-stone-700');
+        target.classList.add('bg-stone-900', 'text-white', 'font-semibold', 'shadow-sm');
+      }
+    }
+
+    // Staggered Entrance on Load
+    document.addEventListener('DOMContentLoaded', () => {
+      highlightTab('default');
+    });
+  </script>
+<!-- END: InteractivityScripts -->
+</body></html>

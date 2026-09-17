@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { buildApp } from '../../../app';
-import { DEFAULT_USER_ID } from '../../../shared/default-user';
+import { DEFAULT_USER_EXTERNAL_AUTH_ID, DEFAULT_USER_ID } from '../../../shared/default-user';
 import { AppError } from '../../../shared/errors';
 import { resetDatabase, testPrisma } from '../../../shared/test/db';
 import { createArticleExtractor } from '../infrastructure/article-extractor';
@@ -19,6 +19,7 @@ beforeEach(async () => {
   await testPrisma.user.create({
     data: {
       id: DEFAULT_USER_ID,
+      externalAuthId: DEFAULT_USER_EXTERNAL_AUTH_ID,
       displayName: 'Chủ dự án test',
     },
   });

@@ -20,13 +20,15 @@ enum ReviewOutcomeValue {
 }
 
 model User {
-  id          String   @id @default(uuid()) @db.Uuid
-  displayName String   @map("display_name")
-  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  id             String   @id @default(uuid()) @db.Uuid
+  externalAuthId String?  @unique @map("external_auth_id")
+  email          String?  @unique
+  passwordHash   String?  @map("password_hash")
+  displayName    String   @map("display_name")
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
 
   cards   Card[]
   sources Source[]
-  
 
   @@map("users")
 }
@@ -40,7 +42,7 @@ model Card {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
 
   user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  source   Source?         @relation(fields: [sourceId], references: [id], onDelete: SetNull) 
+  source   Source?         @relation(fields: [sourceId], references: [id], onDelete: SetNull)
   schedule ReviewSchedule?
   outcomes ReviewOutcome[]
 
