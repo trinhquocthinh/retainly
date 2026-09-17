@@ -33,7 +33,11 @@ function formatCreatedAt(value: string) {
 
 function LoadingRows() {
   return (
-    <div className="card-library__skeleton" role="status" aria-label="Đang tải thư viện thẻ">
+    <div
+      className="card-library__skeleton surface-panel surface-panel--flush"
+      role="status"
+      aria-label="Đang tải thư viện thẻ"
+    >
       {Array.from({ length: 5 }, (_, index) => (
         <div className="card-library__skeleton-row" key={index}>
           <span className="card-library__skeleton-line card-library__skeleton-line--strong" />
@@ -111,7 +115,7 @@ export function CardLibraryPage() {
           </p>
         </div>
 
-        <Link className="card-library__create" to="/cards/new">
+        <Link className="card-library__create btn btn--primary" to="/cards/new">
           <IconNewCard />
           Tạo thẻ mới
         </Link>
@@ -136,7 +140,7 @@ export function CardLibraryPage() {
           </span>
           <h2 className="text-h2">Thư viện chưa có thẻ nào</h2>
           <p className="text-small">Tạo thẻ đầu tiên để bắt đầu xây dựng kho kiến thức của bạn.</p>
-          <Link className="card-library__create" to="/cards/new">
+          <Link className="card-library__create btn btn--primary" to="/cards/new">
             <IconNewCard />
             Tạo thẻ đầu tiên
           </Link>
@@ -144,7 +148,10 @@ export function CardLibraryPage() {
       ) : null}
 
       {!library.loading && !library.loadError && cards.length > 0 ? (
-        <section className="card-library__panel" aria-label="Danh sách thẻ">
+        <section
+          className="card-library__panel surface-panel surface-panel--flush"
+          aria-label="Danh sách thẻ"
+        >
           <div className="card-library__table-header text-caption-caps" aria-hidden="true">
             <span>Mặt hỏi &amp; đáp án tóm lược</span>
             <span>Ngày tạo</span>

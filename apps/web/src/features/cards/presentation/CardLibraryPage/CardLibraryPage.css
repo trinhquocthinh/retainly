@@ -43,36 +43,10 @@
 }
 
 .card-library__create {
-  min-height: var(--control-height);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
   padding: 0 var(--space-4);
-  border-radius: var(--radius-md);
-  background: var(--color-accent);
-  color: var(--color-text);
   font-size: 14px;
   line-height: 20px;
-  font-weight: 600;
   text-decoration: none;
-  transition:
-    background var(--duration-fast),
-    color var(--duration-fast);
-}
-
-.card-library__create:hover {
-  background: var(--color-accent-hover);
-  color: #fff;
-}
-
-.card-library__panel,
-.card-library__skeleton {
-  overflow: hidden;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
 }
 
 .card-library__table-header {
@@ -272,10 +246,6 @@
   width: min(100%, 560px);
   max-height: calc(100vh - var(--space-8));
   overflow-y: auto;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-md);
   animation: card-dialog-in var(--duration-base) ease-out;
 }
 

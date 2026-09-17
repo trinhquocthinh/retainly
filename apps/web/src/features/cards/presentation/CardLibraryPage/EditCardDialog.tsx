@@ -74,7 +74,7 @@ export function EditCardDialog({ card, saving, error, onCancel, onSave }: EditCa
       }}
     >
       <section
-        className="card-dialog card-dialog--edit"
+        className="card-dialog surface-raised card-dialog--edit"
         role="dialog"
         aria-modal="true"
         aria-labelledby="edit-card-title"

@@ -48,7 +48,7 @@ export function DeleteCardDialog({
       }}
     >
       <section
-        className="card-dialog card-dialog--delete"
+        className="card-dialog surface-raised card-dialog--delete"
         role="alertdialog"
         aria-modal="true"
         aria-labelledby="delete-card-title"

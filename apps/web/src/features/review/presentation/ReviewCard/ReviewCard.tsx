@@ -21,7 +21,7 @@ export function ReviewCard({ card, flipped, onFlip }: ReviewCardProps) {
       aria-label={flipped ? 'Mặt trả lời — chạm để lật lại' : 'Mặt hỏi — chạm để xem đáp án'}
     >
       <span className="review-card__inner">
-        <span className="review-card__face" aria-hidden={flipped}>
+        <span className="review-card__face surface-raised" aria-hidden={flipped}>
           <span className="review-card__tag text-caption-caps">Mặt hỏi</span>
           <span className="review-card__body">
             <span className="review-card__prompt">{card.front}</span>
@@ -29,7 +29,10 @@ export function ReviewCard({ card, flipped, onFlip }: ReviewCardProps) {
           <span className="review-card__foot text-caption">Chạm vào thẻ để xem đáp án</span>
         </span>
 
-        <span className="review-card__face review-card__face--back" aria-hidden={!flipped}>
+        <span
+          className="review-card__face review-card__face--back surface-raised"
+          aria-hidden={!flipped}
+        >
           <span className="review-card__tag review-card__tag--answer text-caption-caps">
             Mặt đáp án
           </span>
