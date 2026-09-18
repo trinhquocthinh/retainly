@@ -14,10 +14,12 @@ import { prismaCardListQuery } from './features/cards/infrastructure/prisma-card
 import { readAuthConfig } from './features/auth/infrastructure/auth-config';
 import { createOpenIdSsoClient } from './features/auth/infrastructure/openid-sso-client';
 import {
+  prismaLocalUserRepository,
   prismaSessionRepository,
   prismaSsoUserRepository,
 } from './features/auth/infrastructure/prisma-auth-repositories';
 import { registerAuthRoutes } from './features/auth/presentation/auth-routes';
+import { argon2PasswordHasher } from './features/auth/infrastructure/argon2-password-hasher';
 
 const port = Number(process.env['PORT'] ?? 3000);
 const host = process.env['HOST'] ?? '0.0.0.0';
@@ -28,6 +30,8 @@ const app = buildApp({ logger: true });
 registerAuthRoutes(app, {
   sso: createOpenIdSsoClient(auth.oidc),
   users: prismaSsoUserRepository,
+  localUsers: prismaLocalUserRepository,
+  hasher: argon2PasswordHasher,
   sessions: prismaSessionRepository,
   now: () => new Date(),
   appOrigin: auth.appOrigin,

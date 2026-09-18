@@ -1,4 +1,4 @@
-import { hashSessionToken } from '../domain/session-token';
+import { hashSessionToken, newSessionToken, SESSION_TTL_MS } from '../domain/session-token';
 
 export type SessionRecord = {
   userId: string;
@@ -31,6 +31,22 @@ export async function resolveSession(
   }
 
   return session;
+}
+
+/** Mở phiên 14 ngày cho user đã xác thực (SSO hay nội bộ đều đi qua đây). */
+export async function startSession(
+  deps: SessionDeps,
+  userId: string,
+): Promise<{ token: string; session: SessionRecord }> {
+  const token = newSessionToken();
+  const session: SessionRecord = {
+    userId,
+    expiresAt: new Date(deps.now().getTime() + SESSION_TTL_MS),
+  };
+
+  await deps.sessions.create({ tokenHash: hashSessionToken(token), ...session });
+
+  return { token, session };
 }
 
 /** Đăng xuất: huỷ phiên phía server, cookie cũ không dùng lại được nữa. */

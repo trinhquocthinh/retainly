@@ -1,5 +1,4 @@
-import { hashSessionToken, newSessionToken, SESSION_TTL_MS } from '../domain/session-token';
-import type { SessionRecord, SessionRepository } from './sessions';
+import { startSession, type SessionRecord, type SessionRepository } from './sessions';
 
 /** Danh tính Authentik đã xác minh xong (chữ ký, state, nonce, PKCE). */
 export type SsoIdentity = {
@@ -35,14 +34,5 @@ export async function signInWithSso(
   identity: SsoIdentity,
 ): Promise<{ token: string; session: SessionRecord }> {
   const user = await deps.users.findOrCreateBySubject(identity);
-
-  const token = newSessionToken();
-  const session: SessionRecord = {
-    userId: user.id,
-    expiresAt: new Date(deps.now().getTime() + SESSION_TTL_MS),
-  };
-
-  await deps.sessions.create({ tokenHash: hashSessionToken(token), ...session });
-
-  return { token, session };
+  return startSession(deps, user.id);
 }

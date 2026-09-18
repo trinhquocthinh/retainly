@@ -1,7 +1,12 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import { buildApp } from '../../../app';
-import { inMemorySessions, inMemorySsoUsers } from '../../../shared/test/in-memory-auth';
+import {
+  fakePasswordHasher,
+  inMemoryLocalUsers,
+  inMemorySessions,
+  inMemorySsoUsers,
+} from '../../../shared/test/in-memory-auth';
 import type { SsoClient, SsoTransaction } from '../application/sign-in-with-sso';
 import { registerAuthRoutes } from './auth-routes';
 
@@ -25,6 +30,8 @@ function setup(options: { appOrigin?: string; finishLogin?: SsoClient['finishLog
   registerAuthRoutes(app, {
     sso,
     users,
+    localUsers: inMemoryLocalUsers(),
+    hasher: fakePasswordHasher(),
     sessions,
     now: () => NOW,
     appOrigin: new URL(options.appOrigin ?? 'https://retainly.example.test'),
@@ -175,6 +182,107 @@ describe('E4-S1-T3 — phiên và đăng xuất', () => {
 
     const after = await app.inject({ method: 'GET', url: '/api/session', cookies });
     expect(after.statusCode).toBe(401);
+
+    await app.close();
+  });
+});
+
+describe('E4-S1-T4 — tài khoản nội bộ', () => {
+  const CREDENTIALS = { email: 'thinh@example.com', password: 'mat-khau-du-dai' };
+
+  function post(app: App, url: string, payload: object) {
+    return app.inject({ method: 'POST', url, payload });
+  }
+
+  it('TC-030: đăng ký trả 201, session và cookie phiên an toàn', async () => {
+    const { app } = setup();
+
+    const res = await post(app, '/api/auth/register', CREDENTIALS);
+
+    expect(res.statusCode).toBe(201);
+    expect(res.json()).toEqual({
+      session: { userId: 'local-1', expiresAt: '2026-10-01T10:00:00.000Z' },
+    });
+    expect(cookieNamed(res, 'retainly_session')).toMatchObject({
+      httpOnly: true,
+      secure: true,
+      sameSite: 'Lax',
+      path: '/',
+    });
+
+    await app.close();
+  });
+
+  it('TC-031: đăng ký trùng email trả 409 ERR_EMAIL_TAKEN', async () => {
+    const { app } = setup();
+    await post(app, '/api/auth/register', CREDENTIALS);
+
+    const res = await post(app, '/api/auth/register', CREDENTIALS);
+
+    expect(res.statusCode).toBe(409);
+    expect(res.json().error.code).toBe('ERR_EMAIL_TAKEN');
+
+    await app.close();
+  });
+
+  it('TC-032: mật khẩu 7 ký tự trả 400 ERR_WEAK_PASSWORD', async () => {
+    const { app } = setup();
+
+    const res = await post(app, '/api/auth/register', { ...CREDENTIALS, password: '1234567' });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.json().error.code).toBe('ERR_WEAK_PASSWORD');
+
+    await app.close();
+  });
+
+  it.each([
+    ['email sai định dạng', { ...CREDENTIALS, email: 'khong-phai-email' }],
+    ['thiếu mật khẩu', { email: CREDENTIALS.email }],
+    ['mật khẩu quá 1024 ký tự', { ...CREDENTIALS, password: 'a'.repeat(1025) }],
+  ])('%s trả 400 ERR_BAD_REQUEST', async (_name, payload) => {
+    const { app } = setup();
+
+    const res = await post(app, '/api/auth/register', payload);
+
+    expect(res.statusCode).toBe(400);
+    expect(res.json().error.code).toBe('ERR_BAD_REQUEST');
+
+    await app.close();
+  });
+
+  it('TC-034: đăng nhập đúng trả 200; cookie mở được /api/session', async () => {
+    const { app } = setup();
+    await post(app, '/api/auth/register', CREDENTIALS);
+
+    const login = await post(app, '/api/auth/login', CREDENTIALS);
+    expect(login.statusCode).toBe(200);
+    expect(login.json().session.userId).toBe('local-1');
+
+    const cookies = { retainly_session: cookieNamed(login, 'retainly_session')?.value ?? '' };
+    const session = await app.inject({ method: 'GET', url: '/api/session', cookies });
+    expect(session.json().session.userId).toBe('local-1');
+
+    await app.close();
+  });
+
+  it('TC-035: sai mật khẩu và email lạ trả cùng một phản hồi 401', async () => {
+    const { app } = setup();
+    await post(app, '/api/auth/register', CREDENTIALS);
+
+    const wrongPassword = await post(app, '/api/auth/login', {
+      ...CREDENTIALS,
+      password: 'sai-roi-nhe',
+    });
+    const unknownEmail = await post(app, '/api/auth/login', {
+      ...CREDENTIALS,
+      email: 'la@example.com',
+    });
+
+    expect(wrongPassword.statusCode).toBe(401);
+    expect(wrongPassword.json()).toEqual(unknownEmail.json());
+    expect(wrongPassword.json().error.code).toBe('ERR_INVALID_CREDENTIALS');
+    expect(cookieNamed(wrongPassword, 'retainly_session')).toBeUndefined();
 
     await app.close();
   });

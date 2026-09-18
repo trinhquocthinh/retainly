@@ -1,9 +1,14 @@
 import fastifyCookie from '@fastify/cookie';
-import type { FastifyInstance, FastifyRequest } from 'fastify';
+import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
 import { AppError } from '../../../shared/errors';
 import { requireAuth } from '../../../shared/request-auth';
-import { endSession, resolveSession, type SessionRepository } from '../application/sessions';
+import {
+  endSession,
+  resolveSession,
+  SessionRecord,
+  type SessionRepository,
+} from '../application/sessions';
 import {
   signInWithSso,
   type SsoClient,
@@ -11,6 +16,12 @@ import {
   type SsoTransaction,
   type SsoUserRepository,
 } from '../application/sign-in-with-sso';
+import {
+  LocalUserRepository,
+  PasswordHasher,
+  registerLocal,
+  signInLocal,
+} from '../application/local-credentials';
 
 const SESSION_COOKIE = 'retainly_session';
 const SSO_COOKIE = 'retainly_sso';
@@ -18,7 +29,24 @@ const SSO_COOKIE = 'retainly_sso';
 const SSO_COOKIE_PATH = '/api/auth/sso';
 const SSO_COOKIE_MAX_AGE_SECONDS = 10 * 60;
 
+type CredentialsBody = { email: string; password: string };
+
+const credentialsSchema = {
+  body: {
+    type: 'object',
+    required: ['email', 'password'],
+    properties: {
+      email: { type: 'string', format: 'email', maxLength: 254 },
+      // Không đặt minLength: mật khẩu ngắn phải ra ERR_WEAK_PASSWORD, không phải
+      // ERR_BAD_REQUEST. maxLength chặn chuỗi khổng lồ bắt Argon2 băm vô ích.
+      password: { type: 'string', maxLength: 1024 },
+    },
+  },
+} as const;
+
 type AuthRoutesDeps = {
+  localUsers: LocalUserRepository;
+  hasher: PasswordHasher;
   sso: SsoClient;
   users: SsoUserRepository;
   sessions: SessionRepository;
@@ -71,22 +99,32 @@ export function registerAuthRoutes(app: FastifyInstance, deps: AuthRoutesDeps): 
       throw new AppError('ERR_UNAUTHORIZED');
     }
 
-    const { token, session } = await signInWithSso(deps, identity);
-
-    reply.setCookie(SESSION_COOKIE, token, {
-      httpOnly: true,
-      secure,
-      sameSite: 'lax',
-      path: '/',
-      expires: session.expiresAt,
-    });
-
+    setSessionCookie(reply, await signInWithSso(deps, identity), secure);
     return reply.redirect('/');
   });
 
+  app.post<{ Body: CredentialsBody }>(
+    '/api/auth/register',
+    { schema: credentialsSchema },
+    async (request, reply) => {
+      const signedIn = await registerLocal(deps, request.body);
+      setSessionCookie(reply, signedIn, secure);
+      return reply.status(201).send({ session: toSessionDto(signedIn.session) });
+    },
+  );
+
+  app.post<{ Body: CredentialsBody }>(
+    '/api/auth/login',
+    { schema: credentialsSchema },
+    async (request, reply) => {
+      const signedIn = await signInLocal(deps, request.body);
+      setSessionCookie(reply, signedIn, secure);
+      return reply.status(200).send({ session: toSessionDto(signedIn.session) });
+    },
+  );
+
   app.get('/api/session', async (request) => {
-    const auth = requireAuth(request);
-    return { session: { userId: auth.userId, expiresAt: auth.expiresAt.toISOString() } };
+    return { session: toSessionDto(requireAuth(request)) };
   });
 
   app.post('/api/auth/logout', async (request, reply) => {
@@ -107,4 +145,22 @@ function readTransaction(request: FastifyRequest): SsoTransaction | null {
 
   // Chữ ký hợp lệ nghĩa là chính server này tạo ra giá trị, JSON tin được.
   return JSON.parse(unsigned.value) as SsoTransaction;
+}
+
+function setSessionCookie(
+  reply: FastifyReply,
+  { token, session }: { token: string; session: SessionRecord },
+  secure: boolean,
+): void {
+  reply.setCookie(SESSION_COOKIE, token, {
+    httpOnly: true,
+    secure,
+    sameSite: 'lax',
+    path: '/',
+    expires: session.expiresAt,
+  });
+}
+
+function toSessionDto(session: SessionRecord) {
+  return { userId: session.userId, expiresAt: session.expiresAt.toISOString() };
 }
