@@ -1,14 +1,24 @@
 import { describe, expect, it } from 'vitest';
 
-import { inMemorySessions, inMemorySsoUsers } from '../../../shared/test/in-memory-auth';
+import {
+  inMemorySessions,
+  inMemorySsoUsers,
+  userCounterAt,
+} from '../../../shared/test/in-memory-auth';
 import { hashSessionToken, SESSION_TTL_MS } from '../domain/session-token';
 import { signInWithSso } from './sign-in-with-sso';
+import { MAX_ACTIVE_USERS } from '../domain/user-limit';
 
 const NOW = new Date('2026-09-17T10:00:00Z');
 const IDENTITY = { subject: 'authentik-sub-1', displayName: 'Thịnh' };
 
 function deps() {
-  return { users: inMemorySsoUsers(), sessions: inMemorySessions(), now: () => NOW };
+  return {
+    users: inMemorySsoUsers(),
+    sessions: inMemorySessions(),
+    userCounter: userCounterAt(0),
+    now: () => NOW,
+  };
 }
 
 describe('signInWithSso', () => {
@@ -43,5 +53,25 @@ describe('signInWithSso', () => {
     const { token } = await signInWithSso(d, IDENTITY);
 
     expect(d.sessions.rows.has(token)).toBe(false);
+  });
+
+  it('TC-023: đủ 10 user thì subject mới bị chặn, không tạo user cũng không mở phiên', async () => {
+    const d = { ...deps(), userCounter: userCounterAt(MAX_ACTIVE_USERS) };
+
+    await expect(signInWithSso(d, IDENTITY)).rejects.toMatchObject({
+      code: 'ERR_USER_LIMIT_REACHED',
+    });
+    expect(d.users.created).toHaveLength(0);
+    expect(d.sessions.rows.size).toBe(0);
+  });
+
+  it('hệ thống đầy vẫn cho user SSO đã có đăng nhập lại', async () => {
+    const d = deps();
+    const first = await signInWithSso(d, IDENTITY);
+    d.userCounter.total = MAX_ACTIVE_USERS;
+
+    const again = await signInWithSso(d, IDENTITY);
+
+    expect(again.session.userId).toBe(first.session.userId);
   });
 });

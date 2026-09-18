@@ -2,6 +2,13 @@
 const MIN_PASSWORD_LENGTH = 8;
 
 /**
+ * SPEC-011: phải có đủ chữ hoa, chữ thường, số và ký hiệu. Unicode để chữ tiếng
+ * Việt có dấu vẫn được tính. Web giữ bản sao cùng luật ở
+ * `apps/web/src/features/auth/domain/passwordRules.ts` — sửa ở đây thì sửa cả đó.
+ */
+const REQUIRED_CHARACTER_KINDS = [/\p{Lu}/u, /\p{Ll}/u, /\p{N}/u, /[^\p{L}\p{N}\s]/u];
+
+/**
  * Hash Argon2id hợp lệ của một mật khẩu ngẫu nhiên không ai biết. Đăng nhập bằng
  * email không tồn tại vẫn verify với hash này để thời gian phản hồi không để lộ
  * email nào đã đăng ký. Tham số m/t/p phải giống hash thật thì thời gian mới khớp.
@@ -11,7 +18,10 @@ export const DUMMY_PASSWORD_HASH =
 
 /** Đếm theo code point: emoji hay ký tự ngoài BMP tính là 1, không phải 2. */
 export function isStrongPassword(password: string): boolean {
-  return [...password].length >= MIN_PASSWORD_LENGTH;
+  return (
+    [...password].length >= MIN_PASSWORD_LENGTH &&
+    REQUIRED_CHARACTER_KINDS.every((kind) => kind.test(password))
+  );
 }
 
 /** Email không phân biệt hoa/thường; DB lưu dạng đã chuẩn hoá để `@unique` có tác dụng. */

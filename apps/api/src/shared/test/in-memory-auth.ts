@@ -7,6 +7,7 @@ import type {
   LocalUserRepository,
   PasswordHasher,
 } from '../../features/auth/application/local-credentials';
+import type { UserCounter } from '../../features/auth/application/user-limit';
 import { AppError } from '../../shared/errors';
 
 /** Repository phiên chạy trong bộ nhớ, dùng chung cho test application và route. */
@@ -18,8 +19,12 @@ export function inMemorySessions(): SessionRepository & { rows: Map<string, Sess
     async create({ tokenHash, ...session }) {
       rows.set(tokenHash, session);
     },
+    // Không giữ bảng user nên tên hiển thị suy từ userId — đủ để test thấy nó đi qua.
     async findByTokenHash(tokenHash) {
-      return rows.get(tokenHash) ?? null;
+      const session = rows.get(tokenHash);
+      return session === undefined
+        ? null
+        : { ...session, displayName: `Người dùng ${session.userId}` };
     },
     async deleteByTokenHash(tokenHash) {
       rows.delete(tokenHash);
@@ -34,14 +39,25 @@ export function inMemorySsoUsers(): SsoUserRepository & { created: SsoIdentity[]
 
   return {
     created,
-    async findOrCreateBySubject(identity) {
-      let id = ids.get(identity.subject);
-      if (id === undefined) {
-        id = `user-${ids.size + 1}`;
-        ids.set(identity.subject, id);
-        created.push(identity);
-      }
+    async findBySubject(subject) {
+      const id = ids.get(subject);
+      return id === undefined ? null : { id };
+    },
+    async createSso(identity) {
+      const id = `user-${ids.size + 1}`;
+      ids.set(identity.subject, id);
+      created.push(identity);
       return { id };
+    },
+  };
+}
+
+/** Bộ đếm user cố định; test đổi `total` để giả lập hệ thống đã đầy hay còn suất. */
+export function userCounterAt(total: number): UserCounter & { total: number } {
+  return {
+    total,
+    async countUsers() {
+      return this.total;
     },
   };
 }

@@ -1,0 +1,449 @@
+.login {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.login__main {
+  flex: 1;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: var(--space-12) var(--space-4) var(--space-8);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-8);
+}
+
+.login__brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  text-align: center;
+
+  & h1 {
+    margin: var(--space-2) 0 0;
+  }
+}
+
+.login__tagline {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.login__card {
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+
+  /* Nút SSO và nút gửi form trải hết bề ngang card; nút Huỷ ở màn chờ thì không. */
+  & > .btn,
+  & .login-form .btn {
+    width: 100%;
+  }
+}
+
+@media (min-width: 640px) {
+  .login__card {
+    padding: var(--space-8);
+  }
+}
+
+.login__card--shake {
+  animation: login-shake 450ms cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+.login__sso-icon {
+  display: inline-flex;
+  color: var(--color-accent-active);
+}
+
+.login__divider {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-text-secondary);
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    border-top: 1px solid var(--color-border);
+  }
+}
+
+.login__switch {
+  margin: 0;
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+.login__link {
+  min-height: var(--control-height);
+  padding: 0 var(--space-2);
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-accent-active);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--color-accent-strong);
+    text-decoration: underline;
+  }
+}
+
+.login__footer {
+  padding: var(--space-6) var(--space-4);
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+/* Banner lỗi: đỏ cho sai thông tin, amber cho hết chỗ (không phải lỗi người dùng). */
+.login-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid;
+  border-radius: var(--radius-md);
+
+  & p {
+    margin: 0;
+  }
+
+  & svg {
+    flex: 0 0 auto;
+  }
+
+  &[data-tone='danger'] {
+    background: var(--color-danger-surface);
+    border-color: var(--color-danger-border);
+    color: var(--color-danger-active);
+  }
+
+  &[data-tone='warning'] {
+    background: var(--color-accent-soft);
+    border-color: var(--color-accent-highlight);
+    color: var(--color-accent-strong);
+  }
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.login-form__password {
+  position: relative;
+
+  & input {
+    padding-right: var(--control-height);
+  }
+}
+
+.login-form__reveal {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: var(--control-height);
+  height: var(--control-height);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--color-text);
+  }
+}
+
+/* Ô chỉ có ở tab Đăng ký hiện ra nhẹ nhàng thay vì bật phắt. */
+.login-form__register-only {
+  animation: login-field-in 250ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.password-meter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: calc(-1 * var(--space-1));
+
+  --meter-fill: var(--color-border);
+  --meter-text: var(--color-text-secondary);
+
+  &[data-strength='weak'] {
+    --meter-fill: var(--color-danger);
+    --meter-text: var(--color-danger);
+  }
+
+  &[data-strength='medium'] {
+    --meter-fill: var(--color-accent);
+    --meter-text: var(--color-accent-active);
+  }
+
+  &[data-strength='good'] {
+    --meter-fill: var(--color-success);
+    --meter-text: var(--color-success);
+  }
+
+  &[data-strength='strong'] {
+    --meter-fill: var(--color-success-strong);
+    --meter-text: var(--color-success-strong);
+  }
+}
+
+.password-meter__caption {
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  color: var(--color-text-secondary);
+}
+
+.password-meter__label {
+  font-weight: 600;
+  color: var(--meter-text);
+  transition: color var(--duration-base);
+}
+
+.password-meter__bars {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-1);
+}
+
+.password-meter__bar {
+  height: 6px;
+  border-radius: var(--radius-sm);
+  background: var(--color-secondary-active-bg);
+  transition: background 300ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  &[data-filled='true'] {
+    background: var(--meter-fill);
+  }
+}
+
+.password-meter__heading {
+  margin: var(--space-1) 0 0;
+  color: var(--color-text-secondary);
+}
+
+.password-meter__rules {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* Chip tiêu chuẩn: xám khi chưa đạt, xanh + dấu ✓ nảy nhẹ khi vừa đạt. */
+.password-rule {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-secondary-hover-bg);
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  transition:
+    background var(--duration-base),
+    border-color var(--duration-base),
+    color var(--duration-base);
+
+  &[data-passed='true'] {
+    border-color: var(--color-success-border);
+    background: var(--color-success-surface);
+    color: var(--color-success-strong);
+    animation: password-rule-pop 280ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+
+.password-rule__mark {
+  width: 14px;
+  height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--color-border);
+  font-size: 10px;
+  line-height: 1;
+
+  [data-passed='true'] > & {
+    background: var(--color-success);
+    color: #ffffff;
+  }
+}
+
+.login-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: login-spin 700ms linear infinite;
+
+  .password-meter__rules {
+    margin: var(--space-1) 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-3);
+    color: var(--color-text-secondary);
+  }
+
+  .password-meter__rule {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+
+    &[data-passed='true'] {
+      color: var(--color-success-strong);
+    }
+  }
+
+  .password-meter__rule-mark {
+    width: 14px;
+    height: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+  }
+}
+
+/* Màn chờ SSO và màn thành công dùng chung khung. */
+.login-status {
+  padding: var(--space-6) 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: center;
+
+  & p {
+    margin: 0;
+  }
+}
+
+.login-status__hint {
+  color: var(--color-text-secondary);
+}
+
+.login-status__icon {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.login-status__icon--sso {
+  color: var(--color-accent-active);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 3px solid var(--color-border);
+    border-top-color: var(--color-accent);
+    border-radius: 50%;
+    animation: login-spin 900ms linear infinite;
+  }
+}
+
+.login-status__icon--success {
+  background: var(--color-success-surface);
+  color: var(--color-success);
+}
+
+.login-status__progress {
+  width: 100%;
+  max-width: 200px;
+  height: 4px;
+  border-radius: var(--radius-sm);
+  background: var(--color-border);
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    display: block;
+    height: 100%;
+    background: var(--color-success);
+    transform-origin: left;
+    animation: login-progress 1200ms linear forwards;
+  }
+}
+
+@keyframes login-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes login-progress {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes login-field-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes password-rule-pop {
+  0% {
+    transform: scale(0.85);
+  }
+
+  60% {
+    transform: scale(1.06);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes login-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  15%,
+  45%,
+  75% {
+    transform: translateX(-6px);
+  }
+
+  30%,
+  60%,
+  90% {
+    transform: translateX(6px);
+  }
+}

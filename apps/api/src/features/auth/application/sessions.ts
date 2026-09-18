@@ -5,9 +5,12 @@ export type SessionRecord = {
   expiresAt: Date;
 };
 
+/** Phiên đang dùng, kèm tên hiển thị của chủ phiên để UI chào đúng người. */
+export type ActiveSession = SessionRecord & { displayName: string };
+
 export type SessionRepository = {
   create(session: SessionRecord & { tokenHash: string }): Promise<void>;
-  findByTokenHash(tokenHash: string): Promise<SessionRecord | null>;
+  findByTokenHash(tokenHash: string): Promise<ActiveSession | null>;
   deleteByTokenHash(tokenHash: string): Promise<void>;
 };
 
@@ -20,7 +23,7 @@ type SessionDeps = {
 export async function resolveSession(
   deps: SessionDeps,
   token: string,
-): Promise<SessionRecord | null> {
+): Promise<ActiveSession | null> {
   const tokenHash = hashSessionToken(token);
   const session = await deps.sessions.findByTokenHash(tokenHash);
   if (session === null) return null;

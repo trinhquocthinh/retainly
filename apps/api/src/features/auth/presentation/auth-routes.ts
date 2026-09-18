@@ -22,6 +22,7 @@ import {
   registerLocal,
   signInLocal,
 } from '../application/local-credentials';
+import { UserCounter } from '../application/user-limit';
 
 const SESSION_COOKIE = 'retainly_session';
 const SSO_COOKIE = 'retainly_sso';
@@ -50,6 +51,7 @@ type AuthRoutesDeps = {
   sso: SsoClient;
   users: SsoUserRepository;
   sessions: SessionRepository;
+  userCounter: UserCounter;
   now: () => Date;
   appOrigin: URL;
   cookieSecret: string;
@@ -68,10 +70,18 @@ export function registerAuthRoutes(app: FastifyInstance, deps: AuthRoutesDeps): 
     request.auth = token === undefined ? null : await resolveSession(deps, token);
   });
 
-  app.get('/api/auth/sso/login', async (_request, reply) => {
-    const { authorizationUrl, transaction } = await deps.sso.startLogin();
+  app.get('/api/auth/sso/login', async (request, reply) => {
+    let started: Awaited<ReturnType<SsoClient['startLogin']>>;
+    try {
+      started = await deps.sso.startLogin();
+    } catch (error) {
+      // Authentik chết thì discovery hỏng; người dùng đang đứng trên trình duyệt
+      // nên trả về màn đăng nhập kèm lý do, không trả JSON 500.
+      request.log.warn({ err: error }, 'Không mở được đăng nhập SSO');
+      return reply.redirect(loginErrorPath('sso_failed'));
+    }
 
-    reply.setCookie(SSO_COOKIE, JSON.stringify(transaction), {
+    reply.setCookie(SSO_COOKIE, JSON.stringify(started.transaction), {
       signed: true,
       httpOnly: true,
       secure,
@@ -80,14 +90,16 @@ export function registerAuthRoutes(app: FastifyInstance, deps: AuthRoutesDeps): 
       maxAge: SSO_COOKIE_MAX_AGE_SECONDS,
     });
 
-    return reply.redirect(authorizationUrl.href);
+    return reply.redirect(started.authorizationUrl.href);
   });
 
+  // Callback do trình duyệt đi tới sau Authentik, không phải fetch của SPA: mọi
+  // kết cục đều là redirect, thất bại thì về /login?error=<lý do> cho UI hiện banner.
   app.get('/api/auth/sso/callback', async (request, reply) => {
     const transaction = readTransaction(request);
     // Dùng một lần: xoá ngay dù callback thành công hay thất bại.
     reply.clearCookie(SSO_COOKIE, { path: SSO_COOKIE_PATH });
-    if (transaction === null) throw new AppError('ERR_UNAUTHORIZED');
+    if (transaction === null) return reply.redirect(loginErrorPath('sso_failed'));
 
     let identity: SsoIdentity;
     try {
@@ -96,10 +108,18 @@ export function registerAuthRoutes(app: FastifyInstance, deps: AuthRoutesDeps): 
       // Người dùng bấm từ chối, state lệch, code hết hạn, Authentik lỗi mạng...
       // đều là "chưa đăng nhập được"; chi tiết chỉ nằm trong log.
       request.log.warn({ err: error }, 'Đăng nhập SSO thất bại');
-      throw new AppError('ERR_UNAUTHORIZED');
+      return reply.redirect(loginErrorPath('sso_failed'));
     }
 
-    setSessionCookie(reply, await signInWithSso(deps, identity), secure);
+    try {
+      setSessionCookie(reply, await signInWithSso(deps, identity), secure);
+    } catch (error) {
+      if (error instanceof AppError && error.code === 'ERR_USER_LIMIT_REACHED') {
+        return reply.redirect(loginErrorPath('user_limit'));
+      }
+      throw error;
+    }
+
     return reply.redirect('/');
   });
 
@@ -124,7 +144,8 @@ export function registerAuthRoutes(app: FastifyInstance, deps: AuthRoutesDeps): 
   );
 
   app.get('/api/session', async (request) => {
-    return { session: toSessionDto(requireAuth(request)) };
+    const auth = requireAuth(request);
+    return { session: { ...toSessionDto(auth), displayName: auth.displayName } };
   });
 
   app.post('/api/auth/logout', async (request, reply) => {
@@ -134,6 +155,13 @@ export function registerAuthRoutes(app: FastifyInstance, deps: AuthRoutesDeps): 
     reply.clearCookie(SESSION_COOKIE, { path: '/' });
     return reply.status(204).send();
   });
+}
+
+/** Lý do thất bại SSO gửi kèm về màn đăng nhập. Web đọc cùng bộ giá trị này. */
+type SsoFailure = 'sso_failed' | 'user_limit';
+
+function loginErrorPath(reason: SsoFailure): string {
+  return `/login?error=${reason}`;
 }
 
 function readTransaction(request: FastifyRequest): SsoTransaction | null {

@@ -1,32 +1,70 @@
+import { lazy, Suspense } from 'react';
 import { Outlet, Route, Routes } from 'react-router';
 
 import { PlaceholderPage } from '@src/shared/ui/PlaceholderPage';
 import { AppShell } from '@src/shared/layout/AppShell/AppShell';
-import { CreateCardPage } from '@src/features/cards/presentation/CreateCardPage';
-import { ReviewPage } from '@src/features/review/presentation/ReviewPage/ReviewPage';
-import { CardLibraryPage } from '@src/features/cards/presentation/CardLibraryPage/CardLibraryPage';
+import { RequireAuth } from '@src/features/auth/presentation/RequireAuth/RequireAuth';
+
+// Mỗi màn một chunk riêng: vào /login không phải tải bộ ôn tập, vào app rồi
+// không phải tải lại zod/TanStack Form. Giữ bundle đầu dưới mốc 500 kB của Vite.
+const LoginPage = lazy(() =>
+  import('@src/features/auth/presentation/LoginPage/LoginPage').then((m) => ({
+    default: m.LoginPage,
+  })),
+);
+const ReviewPage = lazy(() =>
+  import('@src/features/review/presentation/ReviewPage/ReviewPage').then((m) => ({
+    default: m.ReviewPage,
+  })),
+);
+const CardLibraryPage = lazy(() =>
+  import('@src/features/cards/presentation/CardLibraryPage/CardLibraryPage').then((m) => ({
+    default: m.CardLibraryPage,
+  })),
+);
+const CreateCardPage = lazy(() =>
+  import('@src/features/cards/presentation/CreateCardPage').then((m) => ({
+    default: m.CreateCardPage,
+  })),
+);
+
+function RouteLoading() {
+  return (
+    <p className="text-small" role="status">
+      Đang tải…
+    </p>
+  );
+}
 
 /** Khung có sidebar + topbar. Màn Ôn tập cố tình đứng ngoài để chạy toàn màn hình. */
 function ShellLayout() {
   return (
     <AppShell>
-      <Outlet />
+      {/* Suspense bên trong shell để sidebar đứng yên khi chuyển màn. */}
+      <Suspense fallback={<RouteLoading />}>
+        <Outlet />
+      </Suspense>
     </AppShell>
   );
 }
 
 export function App() {
   return (
-    <Routes>
-      <Route path="/review" element={<ReviewPage />} />
+    <Suspense fallback={<RouteLoading />}>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
 
-      <Route element={<ShellLayout />}>
-        <Route path="/" element={<PlaceholderPage title="Trang chủ" />} />
-        <Route path="/cards" element={<CardLibraryPage />} />
-        <Route path="/cards/new" element={<CreateCardPage />} />
-        <Route path="/login" element={<PlaceholderPage title="Đăng nhập" />} />
-        <Route path="*" element={<PlaceholderPage title="Không tìm thấy trang" />} />
-      </Route>
-    </Routes>
+        <Route element={<RequireAuth />}>
+          <Route path="/review" element={<ReviewPage />} />
+
+          <Route element={<ShellLayout />}>
+            <Route path="/" element={<PlaceholderPage title="Trang chủ" />} />
+            <Route path="/cards" element={<CardLibraryPage />} />
+            <Route path="/cards/new" element={<CreateCardPage />} />
+            <Route path="*" element={<PlaceholderPage title="Không tìm thấy trang" />} />
+          </Route>
+        </Route>
+      </Routes>
+    </Suspense>
   );
 }

@@ -1,35 +1,5 @@
-.mode-tabs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-1);
-  padding: var(--space-1);
-  background: var(--color-secondary-active-bg);
-  border-radius: var(--radius-md);
-}
-
 @media (min-width: 1024px) {
   .mode-tabs {
     width: 240px;
   }
-}
-
-.mode-tabs__tab {
-  height: 36px;
-  border: 0;
-  border-radius: var(--radius-sm);
-  background: transparent;
-  color: var(--color-text-secondary);
-  font: inherit;
-  font-size: 14px;
-  cursor: pointer;
-  transition:
-    background var(--duration-fast),
-    color var(--duration-fast);
-}
-
-.mode-tabs__tab--active {
-  background: var(--color-surface);
-  color: var(--color-text);
-  font-weight: 600;
-  box-shadow: var(--shadow-sm);
 }

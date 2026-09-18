@@ -6,16 +6,20 @@ import {
   inMemoryLocalUsers,
   inMemorySessions,
   inMemorySsoUsers,
+  userCounterAt,
 } from '../../../shared/test/in-memory-auth';
 import type { SsoClient, SsoTransaction } from '../application/sign-in-with-sso';
 import { registerAuthRoutes } from './auth-routes';
+import { MAX_ACTIVE_USERS } from '../domain/user-limit';
 
 const NOW = new Date('2026-09-17T10:00:00Z');
 const AUTHORIZE_URL = new URL('https://auth.example.test/application/o/authorize/?client_id=x');
 const TRANSACTION: SsoTransaction = { state: 'state-1', nonce: 'nonce-1', codeVerifier: 'pkce-1' };
 const IDENTITY = { subject: 'authentik-sub-1', displayName: 'Thịnh' };
 
-function setup(options: { appOrigin?: string; finishLogin?: SsoClient['finishLogin'] } = {}) {
+function setup(
+  options: { appOrigin?: string; finishLogin?: SsoClient['finishLogin']; userCount?: number } = {},
+) {
   const sso = {
     startLogin: vi.fn<SsoClient['startLogin']>(async () => ({
       authorizationUrl: AUTHORIZE_URL,
@@ -33,6 +37,7 @@ function setup(options: { appOrigin?: string; finishLogin?: SsoClient['finishLog
     localUsers: inMemoryLocalUsers(),
     hasher: fakePasswordHasher(),
     sessions,
+    userCounter: userCounterAt(options.userCount ?? 0),
     now: () => NOW,
     appOrigin: new URL(options.appOrigin ?? 'https://retainly.example.test'),
     cookieSecret: 'bi-mat-test-dai-hon-ba-muoi-hai-ky-tu',
@@ -79,6 +84,33 @@ describe('E4-S1-T3 — GET /api/auth/sso/login', () => {
 
     await app.close();
   });
+
+  it('TC-023: hệ thống đủ 10 user thì callback của subject mới về /login báo đầy', async () => {
+    const { app, users, sessions } = setup({ userCount: MAX_ACTIVE_USERS });
+
+    const res = await signIn(app);
+
+    expect(res.statusCode).toBe(302);
+    expect(res.headers.location).toBe('/login?error=user_limit');
+    expect(cookieNamed(res, 'retainly_session')).toBeUndefined();
+    expect(users.created).toHaveLength(0);
+    expect(sessions.rows.size).toBe(0);
+
+    await app.close();
+  });
+
+  it('E4-S1-T6: Authentik không phản hồi thì về /login báo lỗi SSO, không đặt cookie tạm', async () => {
+    const { app, sso } = setup();
+    sso.startLogin.mockRejectedValueOnce(new Error('discovery failed'));
+
+    const res = await app.inject({ method: 'GET', url: '/api/auth/sso/login' });
+
+    expect(res.statusCode).toBe(302);
+    expect(res.headers.location).toBe('/login?error=sso_failed');
+    expect(cookieNamed(res, 'retainly_sso')).toBeUndefined();
+
+    await app.close();
+  });
 });
 
 describe('E4-S1-T3 — GET /api/auth/sso/callback', () => {
@@ -120,7 +152,7 @@ describe('E4-S1-T3 — GET /api/auth/sso/callback', () => {
   it.each([
     ['không có cookie tạm', {}],
     ['cookie tạm bị sửa chữ ký', { retainly_sso: 'gia-tri.chu-ky-gia' }],
-  ])('%s trả 401 và không gọi Authentik', async (_name, cookies) => {
+  ])('%s thì về /login báo lỗi SSO và không gọi Authentik', async (_name, cookies) => {
     const { app, sso } = setup();
 
     const res = await app.inject({
@@ -129,14 +161,14 @@ describe('E4-S1-T3 — GET /api/auth/sso/callback', () => {
       cookies,
     });
 
-    expect(res.statusCode).toBe(401);
-    expect(res.json().error.code).toBe('ERR_UNAUTHORIZED');
+    expect(res.statusCode).toBe(302);
+    expect(res.headers.location).toBe('/login?error=sso_failed');
     expect(sso.finishLogin).not.toHaveBeenCalled();
 
     await app.close();
   });
 
-  it('Authentik từ chối hoặc kiểm tra token thất bại trả 401, không tạo phiên', async () => {
+  it('Authentik từ chối hoặc kiểm tra token thất bại thì về /login, không tạo phiên', async () => {
     const { app, sessions } = setup({
       finishLogin: async () => {
         throw new Error('state mismatch');
@@ -145,8 +177,8 @@ describe('E4-S1-T3 — GET /api/auth/sso/callback', () => {
 
     const res = await signIn(app);
 
-    expect(res.statusCode).toBe(401);
-    expect(res.json().error.code).toBe('ERR_UNAUTHORIZED');
+    expect(res.statusCode).toBe(302);
+    expect(res.headers.location).toBe('/login?error=sso_failed');
     expect(sessions.rows.size).toBe(0);
 
     await app.close();
@@ -173,7 +205,11 @@ describe('E4-S1-T3 — phiên và đăng xuất', () => {
     const session = await app.inject({ method: 'GET', url: '/api/session', cookies });
     expect(session.statusCode).toBe(200);
     expect(session.json()).toEqual({
-      session: { userId: 'user-1', expiresAt: '2026-10-01T10:00:00.000Z' },
+      session: {
+        userId: 'user-1',
+        expiresAt: '2026-10-01T10:00:00.000Z',
+        displayName: 'Người dùng user-1',
+      },
     });
 
     const logout = await app.inject({ method: 'POST', url: '/api/auth/logout', cookies });
@@ -188,7 +224,7 @@ describe('E4-S1-T3 — phiên và đăng xuất', () => {
 });
 
 describe('E4-S1-T4 — tài khoản nội bộ', () => {
-  const CREDENTIALS = { email: 'thinh@example.com', password: 'mat-khau-du-dai' };
+  const CREDENTIALS = { email: 'thinh@example.com', password: 'Mat-khau-du-dai-1' };
 
   function post(app: App, url: string, payload: object) {
     return app.inject({ method: 'POST', url, payload });
@@ -225,10 +261,13 @@ describe('E4-S1-T4 — tài khoản nội bộ', () => {
     await app.close();
   });
 
-  it('TC-032: mật khẩu 7 ký tự trả 400 ERR_WEAK_PASSWORD', async () => {
+  it.each([
+    ['7 ký tự', 'Abc12!x'],
+    ['đủ dài nhưng thiếu chữ hoa và số', 'mat-khau-du-dai'],
+  ])('TC-032: mật khẩu %s trả 400 ERR_WEAK_PASSWORD', async (_name, password) => {
     const { app } = setup();
 
-    const res = await post(app, '/api/auth/register', { ...CREDENTIALS, password: '1234567' });
+    const res = await post(app, '/api/auth/register', { ...CREDENTIALS, password });
 
     expect(res.statusCode).toBe(400);
     expect(res.json().error.code).toBe('ERR_WEAK_PASSWORD');
@@ -283,6 +322,18 @@ describe('E4-S1-T4 — tài khoản nội bộ', () => {
     expect(wrongPassword.json()).toEqual(unknownEmail.json());
     expect(wrongPassword.json().error.code).toBe('ERR_INVALID_CREDENTIALS');
     expect(cookieNamed(wrongPassword, 'retainly_session')).toBeUndefined();
+
+    await app.close();
+  });
+
+  it('TC-033: hệ thống đủ 10 user thì đăng ký trả 403, không đặt cookie', async () => {
+    const { app } = setup({ userCount: MAX_ACTIVE_USERS });
+
+    const res = await post(app, '/api/auth/register', CREDENTIALS);
+
+    expect(res.statusCode).toBe(403);
+    expect(res.json().error.code).toBe('ERR_USER_LIMIT_REACHED');
+    expect(cookieNamed(res, 'retainly_session')).toBeUndefined();
 
     await app.close();
   });

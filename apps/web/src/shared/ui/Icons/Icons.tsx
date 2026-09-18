@@ -114,3 +114,39 @@ export function IconDelete({ size = 18 }: IconProps) {
     </svg>
   );
 }
+
+/** Khiên — nút và màn chờ đăng nhập Authentik SSO. */
+export function IconShield({ size = 18 }: IconProps) {
+  return (
+    <svg {...base(size)}>
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    </svg>
+  );
+}
+
+export function IconEye({ size = 18 }: IconProps) {
+  return (
+    <svg {...base(size)}>
+      <path d="M2.5 12C3.8 7.9 7.5 5 12 5s8.2 2.9 9.5 7c-1.3 4.1-5 7-9.5 7s-8.2-2.9-9.5-7z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+
+export function IconEyeOff({ size = 18 }: IconProps) {
+  return (
+    <svg {...base(size)}>
+      <path d="M10.6 5.1A10 10 0 0 1 12 5c4.5 0 8.2 2.9 9.5 7a10 10 0 0 1-2.2 3.6M6.6 6.6A10 10 0 0 0 2.5 12c1.3 4.1 5 7 9.5 7a10 10 0 0 0 5.4-1.6" />
+      <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2M3 3l18 18" />
+    </svg>
+  );
+}
+
+export function IconAlert({ size = 20 }: IconProps) {
+  return (
+    <svg {...base(size)}>
+      <path d="M10.3 4 3.3 16c-.8 1.3.2 3 1.7 3h14c1.5 0 2.5-1.7 1.7-3l-7-12c-.8-1.3-2.7-1.3-3.4 0z" />
+      <path d="M12 9v4M12 17h.01" />
+    </svg>
+  );
+}

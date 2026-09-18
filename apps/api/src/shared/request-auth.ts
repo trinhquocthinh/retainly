@@ -5,6 +5,7 @@ import { AppError } from './errors';
 type RequestAuth = {
   userId: string;
   expiresAt: Date;
+  displayName: string;
 };
 
 declare module 'fastify' {

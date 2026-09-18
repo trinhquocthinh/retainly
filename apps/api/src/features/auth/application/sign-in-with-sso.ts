@@ -1,4 +1,5 @@
 import { startSession, type SessionRecord, type SessionRepository } from './sessions';
+import { assertUserSlotAvailable, UserCounter } from './user-limit';
 
 /** Danh tính Authentik đã xác minh xong (chữ ký, state, nonce, PKCE). */
 export type SsoIdentity = {
@@ -19,13 +20,15 @@ export type SsoClient = {
 };
 
 export type SsoUserRepository = {
-  /** Tìm user theo `external_auth_id`, chưa có thì tạo mới (Just-In-Time, TC-021). */
-  findOrCreateBySubject(identity: SsoIdentity): Promise<{ id: string }>;
+  findBySubject(subject: string): Promise<{ id: string } | null>;
+  /** Tạo user Just-In-Time (TC-021). Subject đã có (request song song) thì trả lại user đó. */
+  createSso(identity: SsoIdentity): Promise<{ id: string }>;
 };
 
 type SignInDeps = {
   users: SsoUserRepository;
   sessions: SessionRepository;
+  userCounter: UserCounter;
   now: () => Date;
 };
 
@@ -33,6 +36,13 @@ export async function signInWithSso(
   deps: SignInDeps,
   identity: SsoIdentity,
 ): Promise<{ token: string; session: SessionRecord }> {
-  const user = await deps.users.findOrCreateBySubject(identity);
+  let user = await deps.users.findBySubject(identity.subject);
+
+  // BR-020 chỉ chặn tạo mới: user đã có vẫn đăng nhập được khi hệ thống đầy.
+  if (user === null) {
+    await assertUserSlotAvailable(deps);
+    user = await deps.users.createSso(identity);
+  }
+
   return startSession(deps, user.id);
 }

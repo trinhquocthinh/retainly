@@ -3,14 +3,19 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { resetDatabase, testPrisma } from '../../../shared/test/db';
 import { registerLocal, signInLocal } from '../application/local-credentials';
 import { argon2PasswordHasher } from './argon2-password-hasher';
-import { prismaLocalUserRepository, prismaSessionRepository } from './prisma-auth-repositories';
+import {
+  prismaLocalUserRepository,
+  prismaSessionRepository,
+  prismaUserCounter,
+} from './prisma-auth-repositories';
 
-const CREDENTIALS = { email: 'thinh@example.com', password: 'mat-khau-du-dai' };
+const CREDENTIALS = { email: 'thinh@example.com', password: 'Mat-khau-du-dai-1' };
 
 const deps = {
   localUsers: prismaLocalUserRepository,
   hasher: argon2PasswordHasher,
   sessions: prismaSessionRepository,
+  userCounter: prismaUserCounter,
   now: () => new Date(),
 };
 

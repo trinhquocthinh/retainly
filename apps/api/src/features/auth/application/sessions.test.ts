@@ -21,6 +21,7 @@ describe('resolveSession', () => {
     await expect(resolveSession({ sessions, now: () => NOW }, TOKEN)).resolves.toEqual({
       userId: 'user-1',
       expiresAt,
+      displayName: 'Người dùng user-1',
     });
   });
 

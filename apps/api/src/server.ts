@@ -17,6 +17,7 @@ import {
   prismaLocalUserRepository,
   prismaSessionRepository,
   prismaSsoUserRepository,
+  prismaUserCounter,
 } from './features/auth/infrastructure/prisma-auth-repositories';
 import { registerAuthRoutes } from './features/auth/presentation/auth-routes';
 import { argon2PasswordHasher } from './features/auth/infrastructure/argon2-password-hasher';
@@ -33,6 +34,7 @@ registerAuthRoutes(app, {
   localUsers: prismaLocalUserRepository,
   hasher: argon2PasswordHasher,
   sessions: prismaSessionRepository,
+  userCounter: prismaUserCounter,
   now: () => new Date(),
   appOrigin: auth.appOrigin,
   cookieSecret: auth.cookieSecret,

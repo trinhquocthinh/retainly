@@ -4,19 +4,22 @@ import {
   fakePasswordHasher,
   inMemoryLocalUsers,
   inMemorySessions,
+  userCounterAt,
 } from '../../../shared/test/in-memory-auth';
 import { DUMMY_PASSWORD_HASH } from '../domain/local-credentials';
 import { hashSessionToken, SESSION_TTL_MS } from '../domain/session-token';
 import { registerLocal, signInLocal } from './local-credentials';
+import { MAX_ACTIVE_USERS } from '../domain/user-limit';
 
 const NOW = new Date('2026-09-17T10:00:00Z');
-const CREDENTIALS = { email: 'thinh@example.com', password: 'mat-khau-du-dai' };
+const CREDENTIALS = { email: 'thinh@example.com', password: 'Mat-khau-du-dai-1' };
 
 function deps() {
   return {
     localUsers: inMemoryLocalUsers(),
     hasher: fakePasswordHasher(),
     sessions: inMemorySessions(),
+    userCounter: userCounterAt(0),
     now: () => NOW,
   };
 }
@@ -31,7 +34,7 @@ describe('registerLocal', () => {
       {
         id: 'local-1',
         email: 'thinh@example.com',
-        passwordHash: 'hashed:mat-khau-du-dai',
+        passwordHash: 'hashed:Mat-khau-du-dai-1',
         displayName: 'thinh',
       },
     ]);
@@ -60,6 +63,24 @@ describe('registerLocal', () => {
     });
     expect(d.localUsers.rows).toHaveLength(0);
     expect(d.sessions.rows.size).toBe(0);
+  });
+
+  it('TC-023: đủ 10 user thì chặn user thứ 11 bằng ERR_USER_LIMIT_REACHED', async () => {
+    const d = { ...deps(), userCounter: userCounterAt(MAX_ACTIVE_USERS) };
+
+    await expect(registerLocal(d, CREDENTIALS)).rejects.toMatchObject({
+      code: 'ERR_USER_LIMIT_REACHED',
+    });
+    expect(d.localUsers.rows).toHaveLength(0);
+    expect(d.sessions.rows.size).toBe(0);
+  });
+
+  it('còn đúng một suất (9 user) thì vẫn đăng ký được', async () => {
+    const d = { ...deps(), userCounter: userCounterAt(MAX_ACTIVE_USERS - 1) };
+
+    await expect(registerLocal(d, CREDENTIALS)).resolves.toMatchObject({
+      session: { userId: 'local-1' },
+    });
   });
 });
 

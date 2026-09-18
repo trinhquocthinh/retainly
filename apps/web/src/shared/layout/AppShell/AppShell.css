@@ -225,6 +225,7 @@
 }
 
 .shell__user-name {
+  flex: 1;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -239,6 +240,22 @@
   max-width: var(--content-max);
   margin: 0 auto;
   padding: var(--space-4);
+}
+
+.shell__logout {
+  min-height: var(--control-height);
+  padding: 0 var(--space-2);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: none;
+  font: inherit;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.shell__logout:hover:not(:disabled) {
+  color: var(--color-text);
+  background: var(--color-secondary-hover-bg);
 }
 
 /* Desktop ≥1024px — sidebar đứng yên, không còn ngăn kéo */

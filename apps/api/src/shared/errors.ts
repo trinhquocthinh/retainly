@@ -13,7 +13,10 @@ export const errorCatalog = {
   ERR_FORBIDDEN: { status: 403, message: 'Bạn không có quyền truy cập nội dung này' },
   ERR_USER_LIMIT_REACHED: { status: 403, message: 'Đã đạt giới hạn số tài khoản cho phép' },
   ERR_EMAIL_TAKEN: { status: 409, message: 'Email này đã được đăng ký' },
-  ERR_WEAK_PASSWORD: { status: 400, message: 'Mật khẩu cần ít nhất 8 ký tự' },
+  ERR_WEAK_PASSWORD: {
+    status: 400,
+    message: 'Mật khẩu cần ít nhất 8 ký tự, gồm chữ hoa, chữ thường, số và ký hiệu',
+  },
   ERR_INVALID_CREDENTIALS: { status: 401, message: 'Email hoặc mật khẩu không đúng' },
 
   // Hạ tầng — chưa có trong SDD, xem ghi chú cuối bài

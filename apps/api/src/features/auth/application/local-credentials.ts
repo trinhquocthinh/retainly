@@ -6,6 +6,7 @@ import {
   normalizeEmail,
 } from '../domain/local-credentials';
 import { startSession, type SessionRecord, type SessionRepository } from './sessions';
+import { assertUserSlotAvailable, UserCounter } from './user-limit';
 
 export type PasswordHasher = {
   hash(password: string): Promise<string>;
@@ -25,6 +26,7 @@ type LocalCredentialsDeps = {
   localUsers: LocalUserRepository;
   hasher: PasswordHasher;
   sessions: SessionRepository;
+  userCounter: UserCounter;
   now: () => Date;
 };
 
@@ -37,6 +39,8 @@ export async function registerLocal(
   input: Credentials,
 ): Promise<SignedIn> {
   if (!isStrongPassword(input.password)) throw new AppError('ERR_WEAK_PASSWORD');
+  // trước khi băm Argon2: hệ thống đã đầy thì khỏi tốn CPU.
+  await assertUserSlotAvailable(deps);
 
   const email = normalizeEmail(input.email);
   // Kiểm tra trước để khỏi tốn một lần băm Argon2 cho email đã có.

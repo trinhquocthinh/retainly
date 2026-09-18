@@ -11,6 +11,8 @@ import {
   IconUser,
 } from '@src/shared/ui/Icons/Icons';
 import { useDueCount } from '@src/features/review/application/useDueCount';
+import { useSession, useSignOut } from '@src/features/auth/application/useSession';
+import { fetchSession, signOut as signOutRequest } from '@src/features/auth/infrastructure/authApi';
 
 import './AppShell.css';
 
@@ -20,13 +22,14 @@ const TITLE_BY_PATH: Record<string, string> = {
   '/review': 'Ôn tập',
   '/cards': 'Thư viện thẻ',
   '/cards/new': 'Thẻ mới',
-  '/login': 'Đăng nhập',
 };
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { pathname } = useLocation();
   const [navOpen, setNavOpen] = useState(false);
   const dueCount = useDueCount();
+  const signOut = useSignOut({ signOut: signOutRequest });
+  const session = useSession({ fetchSession });
 
   // Điều hướng xong thì đóng ngăn kéo, nếu không nó che mất màn hình vừa mở.
   useEffect(() => {
@@ -107,12 +110,20 @@ export function AppShell({ children }: { children: ReactNode }) {
           </NavLink>
         </div>
 
-        {/* Alpha chạy một người dùng mặc định; danh tính thật gắn vào ở Epic 4 (SSO). */}
         <div className="shell__user">
           <span className="shell__user-avatar icon-disc">
             <IconUser />
           </span>
-          <span className="shell__user-name text-small">Người dùng mặc định</span>
+          {/* Shell chỉ render sau RequireAuth nên phiên luôn có sẵn trong cache. */}
+          <span className="shell__user-name text-small">{session.data?.displayName}</span>
+          <button
+            type="button"
+            className="shell__logout text-small"
+            disabled={signOut.isPending}
+            onClick={() => signOut.mutate()}
+          >
+            Đăng xuất
+          </button>
         </div>
       </nav>
 

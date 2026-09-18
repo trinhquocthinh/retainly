@@ -4,16 +4,38 @@ import { prisma } from '../../../shared/prisma';
 import type { LocalUserRepository } from '../application/local-credentials';
 import type { SessionRepository } from '../application/sessions';
 import type { SsoUserRepository } from '../application/sign-in-with-sso';
+import { UserCounter } from '../application/user-limit';
+
+function isUniqueViolation(error: unknown): boolean {
+  return error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002';
+}
+
+export const prismaUserCounter: UserCounter = {
+  async countUsers() {
+    return prisma.user.count();
+  },
+};
 
 export const prismaSsoUserRepository: SsoUserRepository = {
-  async findOrCreateBySubject({ subject, displayName }) {
-    // update rỗng: tên hiển thị chỉ lấy từ Authentik ở lần đầu, về sau thuộc về app.
-    return prisma.user.upsert({
-      where: { externalAuthId: subject },
-      update: {},
-      create: { externalAuthId: subject, displayName },
-      select: { id: true },
-    });
+  async findBySubject(subject) {
+    return prisma.user.findUnique({ where: { externalAuthId: subject }, select: { id: true } });
+  },
+
+  async createSso({ subject, displayName }) {
+    try {
+      // Tên hiển thị chỉ lấy từ Authentik ở lần đầu, về sau thuộc về app.
+      return await prisma.user.create({
+        data: { externalAuthId: subject, displayName },
+        select: { id: true },
+      });
+    } catch (error) {
+      // Hai callback cùng subject chạy song song: request sau dùng lại user vừa tạo.
+      if (!isUniqueViolation(error)) throw error;
+      return prisma.user.findUniqueOrThrow({
+        where: { externalAuthId: subject },
+        select: { id: true },
+      });
+    }
   },
 };
 
@@ -31,9 +53,7 @@ export const prismaLocalUserRepository: LocalUserRepository = {
     } catch (error) {
       // Hai request đăng ký cùng email chạy song song đều qua được bước kiểm tra
       // trước; unique index chặn request sau, đổi thành lỗi nghiệp vụ thay vì 500.
-      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
-        throw new AppError('ERR_EMAIL_TAKEN');
-      }
+      if (isUniqueViolation(error)) throw new AppError('ERR_EMAIL_TAKEN');
       throw error;
     }
   },
@@ -45,10 +65,14 @@ export const prismaSessionRepository: SessionRepository = {
   },
 
   async findByTokenHash(tokenHash) {
-    return prisma.session.findUnique({
+    // Lấy luôn tên hiển thị trong cùng một query: hook phiên chạy ở mọi request.
+    const row = await prisma.session.findUnique({
       where: { tokenHash },
-      select: { userId: true, expiresAt: true },
+      select: { userId: true, expiresAt: true, user: { select: { displayName: true } } },
     });
+    if (row === null) return null;
+
+    return { userId: row.userId, expiresAt: row.expiresAt, displayName: row.user.displayName };
   },
 
   async deleteByTokenHash(tokenHash) {
