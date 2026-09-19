@@ -3,14 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { buildApp } from '../../../app';
 import { resetDatabase, testPrisma } from '../../../shared/test/db';
 import { MAX_ACTIVE_USERS } from '../domain/user-limit';
-import { argon2PasswordHasher } from '../infrastructure/argon2-password-hasher';
-import {
-  prismaLocalUserRepository,
-  prismaSessionRepository,
-  prismaSsoUserRepository,
-  prismaUserCounter,
-} from '../infrastructure/prisma-auth-repositories';
-import { registerAuthRoutes } from './auth-routes';
+import { registerPrismaAuthRoutes } from '../../../shared/test/prisma-auth-routes';
 
 const CREDENTIALS = { email: 'nguoi-thu-11@example.com', password: 'Mat-khau-du-dai-1' };
 
@@ -20,20 +13,7 @@ beforeEach(async () => {
 
 function buildAuthApp() {
   const app = buildApp();
-  registerAuthRoutes(app, {
-    sso: {
-      startLogin: () => Promise.reject(new Error('Test này không đi qua SSO')),
-      finishLogin: () => Promise.reject(new Error('Test này không đi qua SSO')),
-    },
-    users: prismaSsoUserRepository,
-    localUsers: prismaLocalUserRepository,
-    hasher: argon2PasswordHasher,
-    sessions: prismaSessionRepository,
-    userCounter: prismaUserCounter,
-    now: () => new Date(),
-    appOrigin: new URL('https://retainly.example.test'),
-    cookieSecret: 'bi-mat-test-dai-hon-ba-muoi-hai-ky-tu',
-  });
+  registerPrismaAuthRoutes(app);
   return app;
 }
 

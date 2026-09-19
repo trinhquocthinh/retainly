@@ -9,7 +9,7 @@ import {
   userCounterAt,
 } from '../../../shared/test/in-memory-auth';
 import type { SsoClient, SsoTransaction } from '../application/sign-in-with-sso';
-import { registerAuthRoutes } from './auth-routes';
+import { CREDENTIALS_RATE_LIMIT, registerAuthRoutes } from './auth-routes';
 import { MAX_ACTIVE_USERS } from '../domain/user-limit';
 
 const NOW = new Date('2026-09-17T10:00:00Z');
@@ -334,6 +334,85 @@ describe('E4-S1-T4 — tài khoản nội bộ', () => {
     expect(res.statusCode).toBe(403);
     expect(res.json().error.code).toBe('ERR_USER_LIMIT_REACHED');
     expect(cookieNamed(res, 'retainly_session')).toBeUndefined();
+
+    await app.close();
+  });
+});
+
+describe('E4-S1-T7 — giới hạn số lần thử đăng nhập', () => {
+  const WRONG = { email: 'thinh@example.com', password: 'Sai-mat-khau-1' };
+  const CADDY_IP = '172.18.0.2';
+
+  /** Đi qua Caddy: kết nối từ network edge, IP thật của client nằm trong X-Forwarded-For. */
+  function loginFrom(app: App, clientIp: string) {
+    return app.inject({
+      method: 'POST',
+      url: '/api/auth/login',
+      payload: WRONG,
+      remoteAddress: CADDY_IP,
+      headers: { 'x-forwarded-for': clientIp },
+    });
+  }
+
+  async function exhaust(app: App, clientIp: string) {
+    for (let i = 0; i < CREDENTIALS_RATE_LIMIT.max; i++) {
+      expect((await loginFrom(app, clientIp)).statusCode).toBe(401);
+    }
+  }
+
+  it('quá 10 lần trong 15 phút thì trả 429 ERR_TOO_MANY_REQUESTS kèm Retry-After', async () => {
+    const { app } = setup();
+    await exhaust(app, '203.0.113.7');
+
+    const res = await loginFrom(app, '203.0.113.7');
+
+    expect(res.statusCode).toBe(429);
+    expect(res.json().error.code).toBe('ERR_TOO_MANY_REQUESTS');
+    expect(Number(res.headers['retry-after'])).toBeGreaterThan(0);
+
+    await app.close();
+  });
+
+  it('đếm theo IP thật sau Caddy: IP khác vẫn đăng nhập được', async () => {
+    const { app } = setup();
+    await exhaust(app, '203.0.113.7');
+
+    expect((await loginFrom(app, '198.51.100.9')).statusCode).toBe(401);
+
+    await app.close();
+  });
+
+  it('client ngoài internet tự gắn X-Forwarded-For không lách được giới hạn', async () => {
+    const { app } = setup();
+    const direct = (fakeIp: string) =>
+      app.inject({
+        method: 'POST',
+        url: '/api/auth/login',
+        payload: WRONG,
+        remoteAddress: '203.0.113.7',
+        headers: { 'x-forwarded-for': fakeIp },
+      });
+
+    for (let i = 0; i < CREDENTIALS_RATE_LIMIT.max; i++) await direct(`10.0.0.${i}`);
+
+    expect((await direct('10.0.0.99')).statusCode).toBe(429);
+
+    await app.close();
+  });
+
+  it('đăng ký có bộ đếm riêng, không bị lần thử đăng nhập chiếm suất', async () => {
+    const { app } = setup();
+    await exhaust(app, '203.0.113.7');
+
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/auth/register',
+      payload: { email: 'moi@example.com', password: 'Mat-khau-du-dai-1' },
+      remoteAddress: CADDY_IP,
+      headers: { 'x-forwarded-for': '203.0.113.7' },
+    });
+
+    expect(res.statusCode).toBe(201);
 
     await app.close();
   });

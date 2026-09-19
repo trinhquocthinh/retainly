@@ -1,4 +1,5 @@
 import fastifyCookie from '@fastify/cookie';
+import fastifyRateLimit from '@fastify/rate-limit';
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
 import { AppError } from '../../../shared/errors';
@@ -31,6 +32,13 @@ const SSO_COOKIE_PATH = '/api/auth/sso';
 const SSO_COOKIE_MAX_AGE_SECONDS = 10 * 60;
 
 type CredentialsBody = { email: string; password: string };
+
+/**
+ * Chống dò mật khẩu: mỗi IP được 10 request / 15 phút cho từng route đăng nhập,
+ * đăng ký (hai bộ đếm riêng). Đếm mọi request chứ không chỉ lần sai. Cố ý không
+ * khoá theo email: kẻ xấu sẽ gõ sai 10 lần để khoá tài khoản của nạn nhân.
+ */
+export const CREDENTIALS_RATE_LIMIT = { max: 10, timeWindow: 15 * 60 * 1000 };
 
 const credentialsSchema = {
   body: {
@@ -123,25 +131,39 @@ export function registerAuthRoutes(app: FastifyInstance, deps: AuthRoutesDeps): 
     return reply.redirect('/');
   });
 
-  app.post<{ Body: CredentialsBody }>(
-    '/api/auth/register',
-    { schema: credentialsSchema },
-    async (request, reply) => {
-      const signedIn = await registerLocal(deps, request.body);
-      setSessionCookie(reply, signedIn, secure);
-      return reply.status(201).send({ session: toSessionDto(signedIn.session) });
-    },
-  );
+  // Plugin rate limit gắn hook qua onRoute nên phải nạp xong trước khi khai báo
+  // route; bọc trong một scope riêng để chờ được mà registerAuthRoutes vẫn đồng bộ.
+  void app.register(async (scope) => {
+    await scope.register(fastifyRateLimit, {
+      global: false,
+      errorResponseBuilder: () => new AppError('ERR_TOO_MANY_REQUESTS'),
+    });
 
-  app.post<{ Body: CredentialsBody }>(
-    '/api/auth/login',
-    { schema: credentialsSchema },
-    async (request, reply) => {
-      const signedIn = await signInLocal(deps, request.body);
-      setSessionCookie(reply, signedIn, secure);
-      return reply.status(200).send({ session: toSessionDto(signedIn.session) });
-    },
-  );
+    const routeOptions = {
+      schema: credentialsSchema,
+      config: { rateLimit: CREDENTIALS_RATE_LIMIT },
+    };
+
+    scope.post<{ Body: CredentialsBody }>(
+      '/api/auth/register',
+      routeOptions,
+      async (request, reply) => {
+        const signedIn = await registerLocal(deps, request.body);
+        setSessionCookie(reply, signedIn, secure);
+        return reply.status(201).send({ session: toSessionDto(signedIn.session) });
+      },
+    );
+
+    scope.post<{ Body: CredentialsBody }>(
+      '/api/auth/login',
+      routeOptions,
+      async (request, reply) => {
+        const signedIn = await signInLocal(deps, request.body);
+        setSessionCookie(reply, signedIn, secure);
+        return reply.status(200).send({ session: toSessionDto(signedIn.session) });
+      },
+    );
+  });
 
   app.get('/api/session', async (request) => {
     const auth = requireAuth(request);

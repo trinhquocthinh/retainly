@@ -26,11 +26,6 @@ services:
     environment:
       TZ: Asia/Ho_Chi_Minh
       DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@retainly-${STACK}-db:5432/${DB_NAME}?schema=public&options=-c%20timezone%3DUTC
-      APP_ORIGIN: ${APP_ORIGIN:?APP_ORIGIN chua duoc dat}
-      OIDC_ISSUER: ${OIDC_ISSUER:?OIDC_ISSUER chua duoc dat}
-      OIDC_CLIENT_ID: ${OIDC_CLIENT_ID:?OIDC_CLIENT_ID chua duoc dat}
-      OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET:?OIDC_CLIENT_SECRET chua duoc dat}
-      SESSION_COOKIE_SECRET: ${SESSION_COOKIE_SECRET:?SESSION_COOKIE_SECRET chua duoc dat}
     depends_on:
       db:
         condition: service_healthy
@@ -47,6 +42,11 @@ services:
       NODE_ENV: production
       PORT: 3000
       DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@retainly-${STACK}-db:5432/${DB_NAME}?schema=public&options=-c%20timezone%3DUTC
+      APP_ORIGIN: ${APP_ORIGIN:?APP_ORIGIN chua duoc dat}
+      OIDC_ISSUER: ${OIDC_ISSUER:?OIDC_ISSUER chua duoc dat}
+      OIDC_CLIENT_ID: ${OIDC_CLIENT_ID:?OIDC_CLIENT_ID chua duoc dat}
+      OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET:?OIDC_CLIENT_SECRET chua duoc dat}
+      SESSION_COOKIE_SECRET: ${SESSION_COOKIE_SECRET:?SESSION_COOKIE_SECRET chua duoc dat}
     depends_on:
       migrate:
         condition: service_completed_successfully

@@ -18,6 +18,10 @@ export const errorCatalog = {
     message: 'Mật khẩu cần ít nhất 8 ký tự, gồm chữ hoa, chữ thường, số và ký hiệu',
   },
   ERR_INVALID_CREDENTIALS: { status: 401, message: 'Email hoặc mật khẩu không đúng' },
+  ERR_TOO_MANY_REQUESTS: {
+    status: 429,
+    message: 'Bạn đã thử quá nhiều lần, vui lòng đợi 15 phút rồi thử lại',
+  },
 
   // Hạ tầng — chưa có trong SDD, xem ghi chú cuối bài
   ERR_BAD_REQUEST: { status: 400, message: 'Yêu cầu không hợp lệ' },

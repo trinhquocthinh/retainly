@@ -4,8 +4,15 @@ import { AppError, errorCatalog } from './shared/errors';
 
 import './shared/request-auth';
 
+/**
+ * Chỉ tin `X-Forwarded-For` khi kết nối tới từ mạng nội bộ — tức là Caddy trên
+ * network `edge` (hoặc Vite proxy lúc dev). Client ngoài internet không bao giờ
+ * có IP private, nên không giả được IP để lách rate limit.
+ */
+const TRUSTED_PROXIES = ['127.0.0.0/8', '::1/128', '10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16'];
+
 export function buildApp(options: { logger?: boolean } = {}): FastifyInstance {
-  const app = Fastify({ logger: options.logger ?? false });
+  const app = Fastify({ logger: options.logger ?? false, trustProxy: TRUSTED_PROXIES });
 
   // Mặc định chưa đăng nhập. Hook của auth-routes gắn phiên thật nếu có cookie.
   app.decorateRequest('auth', null);

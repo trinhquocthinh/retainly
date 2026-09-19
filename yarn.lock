@@ -769,6 +769,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@fastify/rate-limit@npm:11.2.0":
+  version: 11.2.0
+  resolution: "@fastify/rate-limit@npm:11.2.0"
+  dependencies:
+    "@lukeed/ms": "npm:^2.0.2"
+    fastify-plugin: "npm:^6.0.0"
+    ip-address: "npm:^10.2.0"
+    toad-cache: "npm:^3.7.0"
+  checksum: 10c0/f782431e2b3a1374cfb042e978789b0f2b1409c058d8ade40c8968c2728b8bcc185a808a2dad011ed9b1e746a9f9f810fa68fc01affb46cfbfc714a55c7b7f05
+  languageName: node
+  linkType: hard
+
 "@fontsource/inter@npm:^5.3.0":
   version: 5.3.0
   resolution: "@fontsource/inter@npm:5.3.0"
@@ -831,6 +843,13 @@ __metadata:
     "@jridgewell/resolve-uri": "npm:^3.1.0"
     "@jridgewell/sourcemap-codec": "npm:^1.4.14"
   checksum: 10c0/4b30ec8cd56c5fd9a661f088230af01e0c1a3888d11ffb6b47639700f71225be21d1f7e168048d6d4f9449207b978a235c07c8f15c07705685d16dc06280e9d9
+  languageName: node
+  linkType: hard
+
+"@lukeed/ms@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "@lukeed/ms@npm:2.0.2"
+  checksum: 10c0/843b922717313bcde4943f478145d8bc13115b9b91d83bbaed53739b5644122984412310aed574792f4e6b492f2cbda178175f601856d310f67e14834c3f17a0
   languageName: node
   linkType: hard
 
@@ -2836,6 +2855,7 @@ __metadata:
   dependencies:
     "@extractus/article-extractor": "npm:^9.0.1"
     "@fastify/cookie": "npm:11.1.2"
+    "@fastify/rate-limit": "npm:11.2.0"
     "@node-rs/argon2": "npm:2.2.1"
     "@prisma/adapter-pg": "npm:^7.10.0"
     "@prisma/client": "npm:7.10.0"
@@ -5029,6 +5049,13 @@ __metadata:
   version: 2.0.3
   resolution: "internmap@npm:2.0.3"
   checksum: 10c0/8cedd57f07bbc22501516fbfc70447f0c6812871d471096fad9ea603516eacc2137b633633daf432c029712df0baefd793686388ddf5737e3ea15074b877f7ed
+  languageName: node
+  linkType: hard
+
+"ip-address@npm:^10.2.0":
+  version: 10.7.2
+  resolution: "ip-address@npm:10.7.2"
+  checksum: 10c0/290b9c63289b2a89a442dac19eff88d919e65cd41d1a720fa963be736e126f3b0cf4f88f6056b06abbf4a95300dc9ce5362a773e012ef30e0400074d175b9d31
   languageName: node
   linkType: hard
 

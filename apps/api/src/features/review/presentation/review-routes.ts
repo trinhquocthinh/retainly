@@ -22,7 +22,11 @@ export function registerReviewRoutes(
         body: {
           type: 'object',
           required: ['cardId', 'outcome'],
-          properties: { cardId: { type: 'string' }, outcome: { type: 'string' } },
+          properties: {
+            // Cột card_id là UUID: chuỗi sai dạng xuống tới Postgres thành 500.
+            cardId: { type: 'string', format: 'uuid' },
+            outcome: { type: 'string' },
+          },
         },
       },
     },
