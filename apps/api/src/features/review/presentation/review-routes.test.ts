@@ -2,13 +2,14 @@ import { describe, it, expect } from 'vitest';
 
 import { buildApp } from '../../../app';
 import { registerReviewRoutes } from './review-routes';
+import type { StreakQuery } from '../application/get-current-streak';
 import type { DueCard, DueCardQuery } from '../application/list-due-cards';
 import type { ReviewRepository } from '../application/record-outcome';
 import { signInAs } from '../../../shared/test/sign-in-as';
 
 const NOW = new Date('2026-09-12T13:49:00Z');
 
-function appWith(rows: DueCard[]) {
+function appWith(rows: DueCard[], reviewDays: string[] = []) {
   const schedules: DueCardQuery = {
     async findDueBy() {
       return rows;
@@ -26,10 +27,16 @@ function appWith(rows: DueCard[]) {
     },
   };
 
+  const streaks: StreakQuery = {
+    async findReviewDaysBy() {
+      return reviewDays;
+    },
+  };
+
   const app = buildApp();
   signInAs(app);
 
-  registerReviewRoutes(app, { schedules, reviews, now: () => NOW });
+  registerReviewRoutes(app, { schedules, reviews, streaks, now: () => NOW });
   return app;
 }
 
@@ -52,6 +59,49 @@ describe('E1-S2-T4 — GET /api/cards/due', () => {
 
     expect(res.json().dueCount).toBe(2);
     expect(res.json().dueCards.map((c: DueCard) => c.id)).toEqual(['a', 'b']);
+    await app.close();
+  });
+});
+
+describe('E5-S1-T1 — GET /api/streak', () => {
+  it('GET /api/streak trả currentStreak của người dùng hiện tại', async () => {
+    const app = appWith([], ['2026-09-12', '2026-09-10']);
+
+    const res = await app.inject({ method: 'GET', url: '/api/streak' });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toEqual({ currentStreak: 2 });
+    await app.close();
+  });
+
+  it('GET /api/streak không có phiên trả 401 ERR_UNAUTHORIZED', async () => {
+    const app = buildApp();
+
+    // Không cài hook signInAs lên app này.
+    registerReviewRoutes(app, {
+      schedules: {
+        async findDueBy() {
+          return [];
+        },
+      },
+      reviews: {
+        async findScheduleFor() {
+          return null;
+        },
+        async save() {},
+      },
+      streaks: {
+        async findReviewDaysBy() {
+          return [];
+        },
+      },
+      now: () => NOW,
+    });
+
+    const res = await app.inject({ method: 'GET', url: '/api/streak' });
+
+    expect(res.statusCode).toBe(401);
+    expect(res.json().error.code).toBe('ERR_UNAUTHORIZED');
     await app.close();
   });
 });

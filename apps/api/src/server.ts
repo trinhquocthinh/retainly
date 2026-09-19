@@ -21,6 +21,7 @@ import {
 } from './features/auth/infrastructure/prisma-auth-repositories';
 import { registerAuthRoutes } from './features/auth/presentation/auth-routes';
 import { argon2PasswordHasher } from './features/auth/infrastructure/argon2-password-hasher';
+import { prismaStreakQuery } from './features/review/infrastructure/prisma-streak-query';
 
 const port = Number(process.env['PORT'] ?? 3000);
 const host = process.env['HOST'] ?? '0.0.0.0';
@@ -50,6 +51,7 @@ registerCardsRoutes(app, {
 registerReviewRoutes(app, {
   schedules: prismaDueCardQuery,
   reviews: prismaReviewRepository,
+  streaks: prismaStreakQuery,
   now: () => new Date(),
 });
 registerSourcesRoutes(app, {

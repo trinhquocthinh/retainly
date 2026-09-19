@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 
+import { getCurrentStreak, type StreakQuery } from '../application/get-current-streak';
 import { listDueCards, type DueCardQuery } from '../application/list-due-cards';
 import { recordOutcome, type ReviewRepository } from '../application/record-outcome';
 import { parseOutcome } from '../domain/review-scheduler';
@@ -9,7 +10,12 @@ type OutcomeBody = { cardId: string; outcome: string };
 
 export function registerReviewRoutes(
   app: FastifyInstance,
-  deps: { schedules: DueCardQuery; reviews: ReviewRepository; now: () => Date },
+  deps: {
+    schedules: DueCardQuery;
+    reviews: ReviewRepository;
+    streaks: StreakQuery;
+    now: () => Date;
+  },
 ): void {
   app.get('/api/cards/due', async (request) =>
     listDueCards(deps, { userId: requireAuth(request).userId }),
@@ -36,5 +42,9 @@ export function registerReviewRoutes(
         cardId: request.body.cardId,
         outcome: parseOutcome(request.body.outcome),
       }),
+  );
+
+  app.get('/api/streak', async (request) =>
+    getCurrentStreak(deps, { userId: requireAuth(request).userId }),
   );
 }

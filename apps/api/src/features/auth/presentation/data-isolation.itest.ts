@@ -13,6 +13,7 @@ import { registerReviewRoutes } from '../../review/presentation/review-routes';
 import { startSession } from '../application/sessions';
 import { prismaSessionRepository } from '../infrastructure/prisma-auth-repositories';
 import { registerPrismaAuthRoutes } from '../../../shared/test/prisma-auth-routes';
+import { prismaStreakQuery } from '../../review/infrastructure/prisma-streak-query';
 
 /**
  * TC-022 (BR-002, BR-008): user B cầm id dữ liệu của user A. Đi trọn đường thật
@@ -33,6 +34,7 @@ function buildFullApp() {
   registerReviewRoutes(app, {
     schedules: prismaDueCardQuery,
     reviews: prismaReviewRepository,
+    streaks: prismaStreakQuery,
     now,
   });
   return app;
@@ -159,9 +161,34 @@ describe('E4-S1-T7 — TC-022 cô lập dữ liệu giữa các tài khoản', (
     expect(due.json()).toEqual({ dueCards: [], dueCount: 0 });
   });
 
+  it('streak chỉ tính kết quả ôn tập của tài khoản đang đăng nhập', async () => {
+    const reviewed = await app.inject({
+      method: 'POST',
+      url: '/api/review-outcomes',
+      cookies: ownerCookies,
+      payload: { cardId: owned.cardId, outcome: 'remembered' },
+    });
+    expect(reviewed.statusCode).toBe(200);
+
+    const ownerStreak = await app.inject({
+      method: 'GET',
+      url: '/api/streak',
+      cookies: ownerCookies,
+    });
+    const intruderStreak = await app.inject({
+      method: 'GET',
+      url: '/api/streak',
+      cookies: intruderCookies,
+    });
+
+    expect(ownerStreak.json()).toEqual({ currentStreak: 1 });
+    expect(intruderStreak.json()).toEqual({ currentStreak: 0 });
+  });
+
   it.each<[string, (ids: typeof owned) => InjectOptions]>([
     ['GET /api/cards', () => ({ method: 'GET', url: '/api/cards' })],
     ['GET /api/cards/due', () => ({ method: 'GET', url: '/api/cards/due' })],
+    ['GET /api/streak', () => ({ method: 'GET', url: '/api/streak' })],
     ['DELETE /api/cards/:id', ({ cardId }) => ({ method: 'DELETE', url: `/api/cards/${cardId}` })],
   ])('%s không có phiên trả 401 ERR_UNAUTHORIZED', async (_name, toRequest) => {
     const res = await app.inject(toRequest(owned));
