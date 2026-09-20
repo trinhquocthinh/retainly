@@ -117,33 +117,9 @@
   margin-right: calc(var(--space-2) * -1);
 }
 
-/* CTA chính — cùng thông số với .btn--primary, giữ độc lập để shell không phụ thuộc Button.css */
+/* CTA chính — dáng nút do .link-button lo, ở đây chỉ kéo tràn hết chiều ngang cột. */
 .shell__cta {
-  height: var(--control-height);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  border-radius: var(--radius-md);
-  background: var(--color-accent);
-  color: var(--color-text);
-  font-size: 14px;
-  line-height: 20px;
-  font-weight: 600;
-  text-decoration: none;
-  transition:
-    background var(--duration-fast),
-    color var(--duration-fast);
-}
-
-.shell__cta:hover {
-  background: var(--color-accent-hover);
-  color: #ffffff;
-}
-
-.shell__cta:active {
-  background: var(--color-accent-active);
-  color: #ffffff;
+  align-self: stretch;
 }
 
 .shell__links {

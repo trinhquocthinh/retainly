@@ -14,7 +14,7 @@ export type ForgetRateResponse = {
  * Sắc thái của một nhánh kiến thức. Ngưỡng đặt theo design statistical:
  * đỏ khi quên từ 20% trở lên, xanh khi dưới hoặc bằng 10%, còn lại trung tính.
  */
-export type ForgetTone = 'danger' | 'neutral' | 'success';
+type ForgetTone = 'danger' | 'neutral' | 'success';
 
 const DANGER_FROM = 0.2;
 const SUCCESS_UPTO = 0.1;

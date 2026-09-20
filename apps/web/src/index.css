@@ -170,6 +170,56 @@ body {
   color: var(--color-danger-active);
 }
 
+/* Link mang dáng nút. Component `Button` chỉ phục vụ <button>; mọi CTA là
+   <Link>/<a> dùng primitive này thay vì mỗi màn tự chép lại một bản. */
+.link-button {
+  min-height: var(--control-height);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    background var(--duration-fast),
+    border-color var(--duration-fast),
+    color var(--duration-fast);
+}
+
+.link-button--accent {
+  padding: 0 var(--space-6);
+  background: var(--color-accent);
+  color: var(--color-text);
+}
+
+.link-button--accent:hover,
+.link-button--accent:active {
+  color: #fff;
+}
+
+.link-button--accent:hover {
+  background: var(--color-accent-hover);
+}
+
+.link-button--accent:active {
+  background: var(--color-accent-active);
+}
+
+.link-button--outline {
+  padding: 0 var(--space-4);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.link-button--outline:hover {
+  border-color: var(--color-secondary-hover-border);
+  background: var(--color-secondary-hover-bg);
+}
+
 /* Chip nhỏ dùng cho phím tắt và nhãn trạng thái gọn. */
 .compact-chip {
   padding: 2px var(--space-2);

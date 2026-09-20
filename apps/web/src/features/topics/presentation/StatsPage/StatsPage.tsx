@@ -80,7 +80,7 @@ export function StatsPage() {
               Báo cáo xuất hiện sau khi bạn hoàn tất những lượt ôn đầu tiên trên một chủ đề.
             </p>
           </div>
-          <Link className="stats__cta" to="/cards/new">
+          <Link className="link-button link-button--accent" to="/cards/new">
             <IconNewCard />
             Tạo thẻ mới
           </Link>
@@ -160,7 +160,7 @@ export function StatsPage() {
                 )}
               </div>
 
-              <Link className="stats-advice__link text-small" to="/review">
+              <Link className="link-button link-button--outline" to="/review">
                 Ôn tập ngay
                 <IconArrowRight />
               </Link>

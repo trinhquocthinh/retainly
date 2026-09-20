@@ -76,7 +76,7 @@ export function HomePage() {
               Không còn thẻ đến hạn. Bạn có thể tạo thêm thẻ cho lần ôn tiếp theo.
             </p>
           </div>
-          <Link className="home__primary-link" to="/cards/new">
+          <Link className="link-button link-button--accent home__primary-link" to="/cards/new">
             <IconNewCard />
             Tạo thẻ mới
           </Link>

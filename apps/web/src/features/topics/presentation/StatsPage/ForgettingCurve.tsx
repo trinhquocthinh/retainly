@@ -18,17 +18,17 @@ export function ForgettingCurve() {
         <path d="M60 30h540M60 83h540M60 137h540M60 190h540" />
       </g>
 
-      <g className="stats-curve__axis-label">
-        <text x="48" y="34">
+      <g className="stats-curve__axis-label" textAnchor="end">
+        <text x="52" y="34">
           100%
         </text>
-        <text x="48" y="87">
+        <text x="52" y="87">
           75%
         </text>
-        <text x="48" y="141">
+        <text x="52" y="141">
           50%
         </text>
-        <text x="48" y="194">
+        <text x="52" y="194">
           25%
         </text>
       </g>
@@ -61,13 +61,13 @@ export function ForgettingCurve() {
         <text x="60" y="212">
           Học mới
         </text>
-        <text x="160" y="212">
+        <text x="160" y="212" textAnchor="middle">
           Ngày 1
         </text>
-        <text x="280" y="212">
+        <text x="280" y="212" textAnchor="middle">
           Ngày 4
         </text>
-        <text x="420" y="212">
+        <text x="420" y="212" textAnchor="middle">
           Ngày 12
         </text>
         <text x="600" y="212" textAnchor="end">

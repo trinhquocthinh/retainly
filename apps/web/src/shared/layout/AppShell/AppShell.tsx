@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation } from 'react-router';
 
 import { Logo } from '@src/shared/ui/Logo/Logo';
 import {
+  IconChart,
   IconClose,
   IconLibrary,
   IconMenu,
@@ -22,6 +23,7 @@ const TITLE_BY_PATH: Record<string, string> = {
   '/review': 'Ôn tập',
   '/cards': 'Thư viện thẻ',
   '/cards/new': 'Thẻ mới',
+  '/stats': 'Thống kê',
 };
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -93,7 +95,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </button>
         </div>
 
-        <Link className="shell__cta" to="/cards/new">
+        <Link className="link-button link-button--accent shell__cta" to="/cards/new">
           <IconNewCard />
           Tạo thẻ mới
         </Link>
@@ -107,6 +109,10 @@ export function AppShell({ children }: { children: ReactNode }) {
           <NavLink to="/cards" end className="shell__link">
             <IconLibrary />
             <span className="shell__link-label">Thư viện</span>
+          </NavLink>
+          <NavLink to="/stats" end className="shell__link">
+            <IconChart />
+            <span className="shell__link-label">Thống kê</span>
           </NavLink>
         </div>
 

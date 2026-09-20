@@ -209,28 +209,6 @@
   color: var(--color-success-strong);
 }
 
-.stats-advice__link {
-  min-height: var(--control-height);
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: 0 var(--space-4);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-  color: var(--color-text);
-  font-weight: 600;
-  text-decoration: none;
-  transition:
-    background var(--duration-fast),
-    border-color var(--duration-fast);
-}
-
-.stats-advice__link:hover {
-  border-color: var(--color-secondary-hover-border);
-  background: var(--color-secondary-hover-bg);
-}
-
 /* Đồ thị minh hoạ */
 .stats-curve {
   border: 1px solid var(--color-border);
@@ -330,6 +308,14 @@
   fill: var(--color-text-secondary);
 }
 
+/* Dưới 640px đồ thị co lại quá nửa nên nhãn trục nhỏ tới mức không đọc được.
+   Bỏ hẳn nhãn còn hơn để lại chữ mờ — phần chú thích bên dưới đã nói rõ hai trục. */
+@media (max-width: 639px) {
+  .stats-curve__axis-label {
+    display: none;
+  }
+}
+
 /* Trạng thái rỗng, lỗi, đang tải */
 .stats__empty {
   display: flex;
@@ -341,29 +327,6 @@
 .stats__empty-icon {
   background: var(--color-accent-soft);
   color: var(--color-accent-strong);
-}
-
-.stats__cta {
-  min-height: var(--control-height);
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: 0 var(--space-6);
-  border-radius: var(--radius-md);
-  background: var(--color-accent);
-  color: var(--color-text);
-  font-size: 14px;
-  line-height: 20px;
-  font-weight: 600;
-  text-decoration: none;
-  transition:
-    background var(--duration-fast),
-    color var(--duration-fast);
-}
-
-.stats__cta:hover {
-  background: var(--color-accent-hover);
-  color: #fff;
 }
 
 .stats-error {
