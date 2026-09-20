@@ -19,6 +19,7 @@ import {
   prismaTopicRepository,
 } from '../../topics/infrastructure/prisma-topic-repository';
 import { registerTopicsRoutes } from '../../topics/presentation/topics-routes';
+import { prismaTopicForgetRateQuery } from '../../topics/infrastructure/prisma-topic-forget-rate-query';
 
 /**
  * TC-022 (BR-002, BR-008): user B cầm id dữ liệu của user A. Đi trọn đường thật
@@ -46,6 +47,7 @@ function buildFullApp() {
   registerTopicsRoutes(app, {
     topics: prismaTopicRepository,
     cards: prismaCardTopicRepository,
+    forgetRates: prismaTopicForgetRateQuery,
   });
   return app;
 }

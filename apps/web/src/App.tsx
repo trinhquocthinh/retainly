@@ -27,6 +27,11 @@ const CreateCardPage = lazy(() =>
     default: m.CreateCardPage,
   })),
 );
+const StatsPage = lazy(() =>
+  import('@src/features/topics/presentation/StatsPage/StatsPage').then((m) => ({
+    default: m.StatsPage,
+  })),
+);
 const HomePage = lazy(() =>
   import('@src/features/review/presentation/HomePage/HomePage').then((m) => ({
     default: m.HomePage,
@@ -66,6 +71,7 @@ export function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/cards" element={<CardLibraryPage />} />
             <Route path="/cards/new" element={<CreateCardPage />} />
+            <Route path="/stats" element={<StatsPage />} />
             <Route path="*" element={<PlaceholderPage title="Không tìm thấy trang" />} />
           </Route>
         </Route>

@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>
+  @layer base {
+    html, body { margin: 0; padding: 0; }
+    body { overscroll-behavior: none; }
+    main > :first-child { margin-top: 0 !important; }
+    main > :last-child { margin-bottom: 0 !important; }
+  }
+  ::-webkit-scrollbar { display: none; }
+
+  /* Keyframe Animations */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes radarPulse {
+    0% { transform: scale(1); opacity: 0.8; }
+    70% { transform: scale(2.2); opacity: 0; }
+    100% { transform: scale(2.2); opacity: 0; }
+  }
+  @keyframes shimmerSweep {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(200%); }
+  }
+  @keyframes badgePulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.92); }
+  }
+
+  .animate-stagger-1 { animation: fadeInUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both; }
+  .animate-stagger-2 { animation: fadeInUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both; }
+  .animate-stagger-3 { animation: fadeInUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.19s both; }
+  .animate-stagger-4 { animation: fadeInUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.26s both; }
+  .animate-stagger-5 { animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.33s both; }
+  .animate-stagger-6 { animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.40s both; }
+
+  .radar-ring {
+    transform-origin: center;
+    animation: radarPulse 2.4s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+  }
+  .radar-ring-delayed {
+    transform-origin: center;
+    animation: radarPulse 2.4s cubic-bezier(0.25, 1, 0.5, 1) 0.8s infinite;
+  }
+
+  .shimmer-btn::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 50%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+    transform: skewX(-20deg) translateX(-150%);
+    animation: shimmerSweep 3.5s infinite;
+  }
+
+  .badge-beacon {
+    animation: badgePulse 2s ease-in-out infinite;
+  }
+
+  /* SVG Draw animation */
+  .chart-curve-draw {
+    stroke-dasharray: 800;
+    stroke-dashoffset: 800;
+    transition: stroke-dashoffset 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .chart-curve-drawn {
+    stroke-dashoffset: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+    .chart-curve-draw { stroke-dashoffset: 0 !important; }
+  }
+</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"on-surface":"#151c27","surface-neutral-hover":"#F9FAFB","surface-bright":"#f9f9ff","secondary-fixed-dim":"#c4c6ce","danger-border":"#FCA5A5","on-error":"#ffffff","surface-light":"#FFFFFF","border-dark":"#2D3138","success-remember":"#16A34A","surface-container":"#e7eefe","on-background":"#151c27","accent-amber-text-hover":"#92400E","surface-tint":"#855300","surface-container-high":"#e2e8f8","text-primary-light":"#1A1D23","border-hover":"#D1D5DB","primary-container":"#f59e0b","inverse-surface":"#2a313d","on-primary-fixed-variant":"#653e00","accent-amber":"#F59E0B","surface-neutral-active":"#F3F4F6","on-primary-container":"#613b00","danger-forgot":"#DC2626","error":"#ba1a1a","primary-fixed-dim":"#ffb95f","error-container":"#ffdad6","accent-amber-highlight":"#FDE68A","tertiary":"#00658b","on-tertiary-fixed":"#001e2d","outline-variant":"#d8c3ad","surface-container-low":"#f0f3ff","text-primary-dark":"#ECEDEE","surface-dark":"#1E2126","text-secondary":"#6B7280","on-primary":"#ffffff","tertiary-fixed-dim":"#7fd0ff","on-error-container":"#93000a","accent-amber-hover":"#D97706","on-tertiary":"#ffffff","surface-dim":"#d3daea","on-secondary-fixed":"#191c22","tertiary-container":"#1abdff","surface":"#f9f9ff","tertiary-fixed":"#c5e7ff","on-secondary":"#ffffff","accent-amber-text":"#B45309","on-primary-fixed":"#2a1700","secondary-container":"#dedfe8","outline":"#867461","primary-fixed":"#ffddb8","border-light":"#E5E7EB","on-tertiary-fixed-variant":"#004c6a","on-tertiary-container":"#004966","bg-light":"#FAFAF8","surface-variant":"#dce2f3","surface-container-lowest":"#ffffff","scrim-backdrop":"rgba(26, 29, 35, 0.4)","surface-container-highest":"#dce2f3","on-secondary-fixed-variant":"#44474d","danger-active":"#991B1B","on-surface-variant":"#534434","inverse-on-surface":"#ebf1ff","on-secondary-container":"#60626a","background":"#f9f9ff","secondary-fixed":"#e1e2ea","secondary":"#5c5e65","text-muted":"#9CA3AF","primary":"#855300","danger-surface":"#FEF2F2","inverse-primary":"#ffb95f","bg-dark":"#14161A"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"gutter":"1rem","margin-desktop":"2rem","space-2xl":"3rem","space-md":"0.75rem","space-lg":"1.5rem","margin-tablet":"1.5rem","space-base":"1rem","space-xs":"0.25rem","space-sm":"0.5rem","space-3xl":"4rem","margin":"1rem","space-xl":"2rem"},"fontFamily":{"caption":["Inter"],"body-default":["Inter"],"display":["Inter"],"label-small-semibold":["Inter"],"body-semibold":["Inter"],"label-small":["Inter"],"label-small-medium":["Inter"],"body-medium":["Inter"],"caption-caps":["Inter"],"headline-h1":["Inter"],"headline-h2":["Inter"]},"fontSize":{"caption":["12px",{"lineHeight":"16px","letterSpacing":"0em","fontWeight":"400"}],"body-default":["16px",{"lineHeight":"24px","letterSpacing":"0em","fontWeight":"400"}],"display":["36px",{"lineHeight":"44px","letterSpacing":"-0.02em","fontWeight":"700"}],"label-small-semibold":["14px",{"lineHeight":"20px","letterSpacing":"0em","fontWeight":"600"}],"body-semibold":["16px",{"lineHeight":"24px","letterSpacing":"0em","fontWeight":"600"}],"label-small":["14px",{"lineHeight":"20px","letterSpacing":"0em","fontWeight":"400"}],"label-small-medium":["14px",{"lineHeight":"20px","letterSpacing":"0em","fontWeight":"500"}],"body-medium":["16px",{"lineHeight":"24px","letterSpacing":"0em","fontWeight":"500"}],"caption-caps":["12px",{"lineHeight":"16px","letterSpacing":"0.08em","fontWeight":"600"}],"headline-h1":["24px",{"lineHeight":"32px","letterSpacing":"-0.01em","fontWeight":"600"}],"headline-h2":["18px",{"lineHeight":"26px","letterSpacing":"0em","fontWeight":"600"}]}}}}</script></head><body class="bg-bg-light font-body-default text-text-primary-light min-h-screen">
+<!-- Global Feedback Toast (Hidden by default) -->
+<div class="fixed top-5 right-5 z-50 transform -translate-y-10 opacity-0 pointer-events-none transition-all duration-300 bg-surface-dark text-text-primary-dark px-4 py-3 rounded-xl shadow-lg flex items-center gap-3 border border-border-dark" id="export-toast">
+<span class="material-symbols-outlined text-accent-amber animate-spin text-[20px]" id="toast-icon">sync</span>
+<div class="flex flex-col">
+<span class="text-xs font-label-small-semibold" id="toast-title">Đang kết xuất báo cáo FSRS...</span>
+<span class="text-[11px] text-text-muted" id="toast-desc">Tập tin CSV &amp; PDF thống kê đang được xử lý.</span>
+</div>
+</div>
+<!-- Modal Quick Review Notification (Hidden) -->
+<div class="fixed inset-0 z-50 bg-scrim-backdrop backdrop-blur-sm flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-200" id="quick-review-modal">
+<div class="bg-surface-light w-full max-w-md rounded-2xl shadow-xl border border-border-light p-6 flex flex-col gap-4 transform scale-95 transition-transform duration-200" id="modal-card">
+<div class="flex items-center justify-between">
+<div class="w-10 h-10 rounded-xl bg-danger-surface text-danger-forgot flex items-center justify-center">
+<span class="material-symbols-outlined text-[24px]">bolt</span>
+</div>
+<button class="w-8 h-8 rounded-lg hover:bg-surface-neutral-hover text-text-secondary hover:text-text-primary-light flex items-center justify-center transition-colors" onclick="closeReviewModal()">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<div class="flex flex-col gap-1">
+<h3 class="font-headline-h2 text-text-primary-light">Sẵn sàng củng cố 3 thẻ trọng yếu?</h3>
+<p class="font-label-small text-text-secondary leading-relaxed">
+        Các khái niệm <strong class="text-text-primary-light">CAP Theorem, Saga Pattern, Two-Phase Commit</strong> thuộc nhánh Kiến trúc phần mềm đang ở điểm rơi rủi ro lãng quên.
+      </p>
+</div>
+<div class="bg-surface-neutral-hover p-3 rounded-xl border border-border-light flex items-center justify-between text-xs">
+<span class="text-text-secondary">Thời lượng ước tính:</span>
+<span class="font-semibold text-accent-amber-text flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">timer</span> ~2.5 phút
+      </span>
+</div>
+<div class="flex items-center justify-end gap-2 pt-2">
+<button class="px-4 py-2 rounded-lg text-text-secondary hover:bg-surface-neutral-hover font-label-small text-xs transition-colors" onclick="closeReviewModal()">Để sau</button>
+<button class="px-5 py-2 rounded-lg bg-accent-amber hover:bg-accent-amber-hover text-text-primary-light font-label-small-semibold text-xs shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-1.5" onclick="confirmReviewStart()">
+<span>Bắt đầu phiên ôn ngay</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<aside class="fixed left-0 top-0 h-full w-64 bg-surface-light border-r border-border-light z-50 flex flex-col justify-between p-space-base"><div class="flex flex-col gap-space-lg"><div class="flex items-center gap-space-sm px-space-xs"><img alt="Retainly Logo" class="w-8 h-8 rounded-xl object-contain shadow-sm transition-transform hover:scale-105 duration-200" src="https://lh3.googleusercontent.com/aida/AEtjO1USgZDzNoqtyzTcQvS8uT1JjXxDqTYwlmLKj64L2WneEy50tm_PwjOkvs0iSf9jhuoyZ8kvb-Qils-SsetoN89GBVbDb1DVZ5L6sRlffXm0RrJvKETBkV3OT-8zEub5N-r_HaAhmKxvf8Poru_L43lTNNGky8MauNHIULLRyj9C7tWJadvyAU6EOhus4HmQ6N8pxDsvOZxkoK0LSuXFAgAla2JDOCNjC6zB4POCGDVp2iXK4vXBZmrfbIM"/><div class="flex flex-col"><span class="font-label-small-semibold text-text-primary-light leading-none">Retainly</span><span class="font-caption text-text-muted mt-space-xs leading-none">Spaced Focus</span></div></div><a class="flex items-center justify-center gap-space-sm h-11 px-space-base rounded-lg bg-accent-amber hover:bg-accent-amber-hover text-text-primary-light font-label-small-semibold transition-all duration-200 hover:shadow-sm active:scale-[0.98]" data-path="tao-the-moi" href="#"><span class="material-symbols-outlined text-[20px] transition-transform group-hover:rotate-90">add</span>Tạo thẻ mới</a><nav class="flex flex-col gap-space-xs" data-active-classes="bg-surface-neutral-active text-text-primary-light font-label-small-semibold"><a class="flex items-center justify-between px-space-base py-space-sm rounded-lg text-text-secondary hover:bg-surface-neutral-hover hover:text-text-primary-light transition-all duration-150" data-path="trang-chu" href="#"><div class="flex items-center gap-space-md"><span class="material-symbols-outlined text-[20px]">today</span><span class="font-label-small-medium">Hôm nay</span></div><span class="px-space-sm py-0.5 rounded-full bg-accent-amber-highlight text-accent-amber-text font-caption-caps">18</span></a><a class="flex items-center justify-between px-space-base py-space-sm rounded-lg text-text-secondary hover:bg-surface-neutral-hover hover:text-text-primary-light transition-all duration-150" data-path="thu-vien-the" href="#"><div class="flex items-center gap-space-md"><span class="material-symbols-outlined text-[20px]">style</span><span class="font-label-small-medium">Thư viện</span></div></a><a aria-current="page" class="flex items-center justify-between px-space-base py-space-sm rounded-lg transition-all duration-150 bg-surface-neutral-active text-text-primary-light font-label-small-semibold border-l-[3px] border-accent-amber shadow-sm" data-path="thong-ke" href="#"><div class="flex items-center gap-space-md"><span class="material-symbols-outlined text-[20px] text-accent-amber">query_stats</span><span class="font-label-small-medium">Thống kê</span></div></a></nav></div><div class="flex flex-col gap-space-md pt-space-md border-t border-border-light"><div class="flex items-center justify-between px-space-xs py-space-sm rounded-lg bg-surface-neutral-hover border border-border-light hover:border-amber-200 transition-colors"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-accent-amber text-[20px] badge-beacon" style="font-variation-settings: 'FILL' 1;">local_fire_department</span><span class="font-caption font-semibold text-text-primary-light">Chuỗi 7 ngày</span></div><span class="font-caption text-text-muted">Kỷ lục</span></div><div class="flex items-center justify-between px-space-xs"><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="flex flex-col"><span class="font-label-small-medium text-text-primary-light leading-tight">Minh Quân</span><span class="font-caption text-text-muted leading-none">Pro Scholar</span></div></div><button class="text-text-secondary hover:text-text-primary-light p-space-xs rounded transition-colors active:scale-95" type="button"><span class="material-symbols-outlined text-[18px]">more_vert</span></button></div></div></aside><div class="pl-64"><header class="fixed top-0 left-64 right-0 h-16 bg-surface-light border-b border-border-light z-40 flex items-center justify-between px-space-xl"><div class="flex items-center gap-space-md"><img alt="Retainly Logo" class="w-8 h-8 rounded-xl object-contain shadow-sm" src="https://lh3.googleusercontent.com/aida/AEtjO1USgZDzNoqtyzTcQvS8uT1JjXxDqTYwlmLKj64L2WneEy50tm_PwjOkvs0iSf9jhuoyZ8kvb-Qils-SsetoN89GBVbDb1DVZ5L6sRlffXm0RrJvKETBkV3OT-8zEub5N-r_HaAhmKxvf8Poru_L43lTNNGky8MauNHIULLRyj9C7tWJadvyAU6EOhus4HmQ6N8pxDsvOZxkoK0LSuXFAgAla2JDOCNjC6zB4POCGDVp2iXK4vXBZmrfbIM"/><span class="font-label-small-semibold text-text-primary-light">Retainly Studio</span></div><div class="flex items-center gap-space-lg"><div class="flex items-center gap-space-xs px-space-base py-space-xs rounded-full bg-accent-amber-highlight text-accent-amber-text border border-accent-amber hover:scale-105 transition-transform duration-200"><span class="material-symbols-outlined text-[16px]">bolt</span><span class="font-caption font-semibold">42/50 mục tiêu hôm nay</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center hover:ring-2 hover:ring-accent-amber transition-all"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></header><main class="relative pt-16 bg-bg-light min-h-screen"><div class="flex flex-col w-full">
+<div class="max-w-[1120px] w-full mx-auto px-gutter md:px-margin-desktop py-space-xl flex flex-col gap-space-xl">
+<!-- Top Bar: Header & Interactive Period Switcher -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-base pb-space-xs animate-stagger-1">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-xs text-text-muted">
+<span class="material-symbols-outlined text-[18px]">insights</span>
+<span class="font-caption-caps uppercase tracking-wider text-accent-amber-text">FSRS v4.5 Adaptive Analytics</span>
+</div>
+<h1 class="font-display text-display text-text-primary-light">Thống kê &amp; Hiệu quả ghi nhớ</h1>
+<p class="font-body-default text-text-secondary">Dữ liệu phản ánh độ vững chắc của mạng nơ-ron liên kết qua từng chu kỳ ôn tập ngắt quãng.</p>
+</div>
+<!-- Action Area: Scope Selector & Quick Trigger -->
+<div class="flex items-center gap-space-sm bg-surface-light p-1.5 rounded-xl shadow-sm border border-border-light self-start md:self-auto">
+<div class="inline-flex rounded-lg bg-surface-neutral-hover p-1 gap-1">
+<button class="px-space-base py-space-xs rounded-lg font-label-small-semibold bg-surface-light text-text-primary-light shadow-sm transition-all duration-200 flex items-center gap-1.5 active:scale-95" id="btn-30d" onclick="switchFilter('30d')">
+<span class="w-1.5 h-1.5 rounded-full bg-accent-amber transition-transform duration-300 scale-100" id="dot-indicator"></span>
+<span id="label-30d">30 ngày gần nhất</span>
+</button>
+<button class="px-space-base py-space-xs rounded-lg font-label-small-medium text-text-secondary hover:text-text-primary-light transition-all duration-200 active:scale-95" id="btn-all" onclick="switchFilter('all')">
+<span id="label-all">Toàn bộ thời gian</span>
+</button>
+</div>
+<button class="h-10 px-space-base rounded-lg bg-surface-light hover:bg-surface-neutral-hover border border-border-light hover:border-border-hover text-text-primary-light font-label-small-semibold flex items-center gap-space-xs transition-all duration-150 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 shadow-sm" onclick="triggerExportReport()" title="Xuất dữ liệu CSV &amp; Báo cáo">
+<span class="material-symbols-outlined text-[18px] text-text-secondary">ios_share</span>
+<span class="hidden sm:inline">Xuất báo cáo</span>
+</button>
+</div>
+</div>
+<!-- 4 High-Impact Visual Metric Tiles (With hover elevation, micro-tooltips & dynamic meters) -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-base">
+<!-- Metric 1: Retention Discipline Arc -->
+<div class="bg-surface-light rounded-xl p-space-base shadow-sm border border-border-light hover:border-accent-amber/60 hover:shadow-md transition-all duration-200 flex flex-col justify-between group cursor-default animate-stagger-2">
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<span class="font-caption-caps text-text-muted">Tính kỷ luật</span>
+<span class="font-headline-h2 text-text-primary-light mt-space-xs">Duy trì ôn tập</span>
+</div>
+<div class="w-9 h-9 rounded-lg bg-accent-amber-highlight flex items-center justify-center text-accent-amber-text transition-transform duration-200 group-hover:scale-110">
+<span class="material-symbols-outlined text-[20px]">calendar_today</span>
+</div>
+</div>
+<div class="flex items-center gap-space-md my-space-sm">
+<div class="relative w-16 h-16 flex-shrink-0 flex items-center justify-center" title="Tỷ lệ duy trì lịch học: 86%">
+<svg class="w-16 h-16 transform -rotate-90" viewbox="0 0 48 48">
+<circle cx="24" cy="24" fill="none" r="19" stroke="#E5E7EB" stroke-width="4.5"></circle>
+<circle class="transition-all duration-1000 ease-out" cx="24" cy="24" fill="none" id="circle-discipline" r="19" stroke="#F59E0B" stroke-dasharray="119.38" stroke-dashoffset="16.71" stroke-linecap="round" stroke-width="4.5"></circle>
+</svg>
+<span class="absolute font-headline-h2 text-text-primary-light text-[15px] font-bold" id="val-discipline">86%</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-small-semibold text-text-primary-light" id="sub-discipline">26 / 30 ngày</span>
+<span class="font-caption text-success-remember flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[14px]">trending_up</span> +4.2% tháng này
+</span>
+</div>
+</div>
+<div class="font-caption text-text-secondary bg-surface-neutral-hover group-hover:bg-amber-50/50 px-space-sm py-space-xs rounded-lg flex items-center justify-between transition-colors">
+<span>Chuỗi hiện tại:</span>
+<span class="font-label-small-semibold text-text-primary-light">7 ngày</span>
+</div>
+</div>
+<!-- Metric 2: Longest Streak -->
+<div class="bg-surface-light rounded-xl p-space-base shadow-sm border border-border-light hover:border-accent-amber/60 hover:shadow-md transition-all duration-200 flex flex-col justify-between group cursor-default animate-stagger-2">
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<span class="font-caption-caps text-text-muted">Kỷ lục thói quen</span>
+<span class="font-headline-h2 text-text-primary-light mt-space-xs">Chuỗi ôn tập</span>
+</div>
+<div class="w-9 h-9 rounded-lg bg-surface-neutral-hover flex items-center justify-center text-accent-amber transition-transform duration-200 group-hover:scale-110">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+</div>
+</div>
+<div class="my-space-sm">
+<div class="flex items-baseline gap-space-xs">
+<span class="font-display text-display text-text-primary-light tracking-tight transition-all duration-300" id="val-streak">19</span>
+<span class="font-headline-h2 text-text-muted">ngày liên tiếp</span>
+</div>
+<div class="flex gap-1.5 mt-space-sm">
+<div class="h-2 flex-1 rounded-full bg-accent-amber transition-all duration-500 hover:opacity-80" title="Ngày 1-5"></div>
+<div class="h-2 flex-1 rounded-full bg-accent-amber transition-all duration-500 hover:opacity-80" title="Ngày 6-10"></div>
+<div class="h-2 flex-1 rounded-full bg-accent-amber transition-all duration-500 hover:opacity-80" title="Ngày 11-15"></div>
+<div class="h-2 flex-1 rounded-full bg-accent-amber transition-all duration-500 hover:opacity-80" title="Ngày 16-19"></div>
+<div class="h-2 flex-1 rounded-full bg-border-light" title="Mục tiêu: 25 ngày"></div>
+</div>
+</div>
+<div class="font-caption text-text-secondary bg-surface-neutral-hover group-hover:bg-amber-50/50 px-space-sm py-space-xs rounded-lg flex items-center justify-between transition-colors">
+<span>Mục tiêu tiếp theo:</span>
+<span class="font-label-small-semibold text-accent-amber-text">25 ngày</span>
+</div>
+</div>
+<!-- Metric 3: Deep Stability (> 30 days) -->
+<div class="bg-surface-light rounded-xl p-space-base shadow-sm border border-border-light hover:border-tertiary/60 hover:shadow-md transition-all duration-200 flex flex-col justify-between group cursor-default animate-stagger-3">
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<span class="font-caption-caps text-text-muted">Vùng bền vững</span>
+<span class="font-headline-h2 text-text-primary-light mt-space-xs">Nhớ sâu (Deep)</span>
+</div>
+<div class="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-tertiary transition-transform duration-200 group-hover:scale-110">
+<span class="material-symbols-outlined text-[20px]">psychology</span>
+</div>
+</div>
+<div class="my-space-sm">
+<div class="flex items-baseline gap-space-xs">
+<span class="font-display text-display text-text-primary-light tracking-tight" id="val-cards">38</span>
+<span class="font-headline-h2 text-text-muted">thẻ</span>
+</div>
+<p class="font-caption text-text-secondary mt-1">Độ ổn định (Stability) &gt; 30 ngày, miễn nhiễm với sự quên thông thường.</p>
+</div>
+<div class="font-caption text-tertiary bg-surface-container-low group-hover:bg-blue-50/60 px-space-sm py-space-xs rounded-lg flex items-center justify-between transition-colors">
+<span>Chiếm tỷ trọng:</span>
+<span class="font-label-small-semibold" id="val-ratio">41.8% kho thẻ</span>
+</div>
+</div>
+<!-- Metric 4: Actual vs Target Retention -->
+<div class="bg-surface-light rounded-xl p-space-base shadow-sm border border-border-light hover:border-success-remember/60 hover:shadow-md transition-all duration-200 flex flex-col justify-between group cursor-default animate-stagger-3">
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<span class="font-caption-caps text-text-muted">Độ chính xác thực nghiệm</span>
+<span class="font-headline-h2 text-text-primary-light mt-space-xs">Tỷ lệ nhớ lại</span>
+</div>
+<div class="w-9 h-9 rounded-lg bg-surface-neutral-hover flex items-center justify-center text-success-remember transition-transform duration-200 group-hover:scale-110">
+<span class="material-symbols-outlined text-[20px]">verified</span>
+</div>
+</div>
+<div class="my-space-sm">
+<div class="flex items-baseline gap-space-xs">
+<span class="font-display text-display text-success-remember tracking-tight" id="val-retention">94.2%</span>
+<span class="font-label-small text-text-muted">/ 90% mục tiêu</span>
+</div>
+<!-- Gauge mini visual with animated progress bar -->
+<div class="w-full bg-surface-neutral-active h-2 rounded-full overflow-hidden mt-space-sm relative">
+<div class="bg-success-remember h-full rounded-full transition-all duration-1000 ease-out" id="bar-retention" style="width: 94.2%"></div>
+<!-- Target line marker at 90% -->
+<div class="absolute top-0 bottom-0 left-[90%] w-0.5 bg-text-primary-light" title="Ngưỡng chuẩn FSRS: 90%"></div>
+</div>
+</div>
+<div class="font-caption text-text-secondary bg-surface-neutral-hover group-hover:bg-green-50/50 px-space-sm py-space-xs rounded-lg flex items-center justify-between transition-colors">
+<span>FSRS Target:</span>
+<span class="font-label-small-semibold text-text-primary-light">90.0% (Vượt 4.2%)</span>
+</div>
+</div>
+</div>
+<!-- Section 2: Spaced Repetition Matrix / Forgetting Curve Visualization -->
+<div class="bg-surface-light rounded-xl p-space-base md:p-space-xl shadow-sm border border-border-light flex flex-col gap-space-base animate-stagger-4">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm pb-space-xs">
+<div>
+<div class="flex items-center gap-space-xs">
+<span class="w-2.5 h-2.5 rounded-full bg-tertiary"></span>
+<h2 class="font-headline-h1 text-headline-h1 text-text-primary-light">Mô phỏng đường cong lãng quên Ebbinghaus vs. FSRS</h2>
+</div>
+<p class="font-label-small text-text-secondary mt-1">Sự can thiệp đúng nhịp vào điểm rơi trí nhớ (Review Spikes) giúp biến đổi đường dốc thoái trào thành đường nằm ngang vĩnh viễn.</p>
+</div>
+<!-- Interactive Legend badges with clickable highlight toggle -->
+<div class="flex items-center gap-space-md text-caption select-none">
+<button class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-transparent hover:border-danger-border hover:bg-danger-surface transition-all cursor-pointer" id="legend-ebbinghaus" onclick="toggleCurve('ebbinghaus')">
+<span class="w-3 h-1 bg-danger-forgot rounded-full"></span>
+<span class="text-text-secondary font-label-small">Quên tự nhiên (Ebbinghaus)</span>
+</button>
+<button class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-transparent hover:border-amber-200 hover:bg-accent-amber-highlight/30 transition-all cursor-pointer" id="legend-fsrs" onclick="toggleCurve('fsrs')">
+<span class="w-3 h-1 bg-accent-amber rounded-full"></span>
+<span class="text-text-primary-light font-label-small-semibold">Khoảng lặp FSRS</span>
+</button>
+</div>
+</div>
+<!-- Responsive SVG Forgetting Curve Chart with Interactive Tooltip Markers & Radar Rings -->
+<div class="relative w-full bg-surface-bright rounded-xl p-space-base border border-border-light overflow-hidden">
+<div class="h-64 sm:h-72 w-full flex items-center justify-center relative">
+<svg class="w-full h-full" fill="none" id="curve-svg" preserveaspectratio="none" viewbox="0 0 800 240">
+<!-- Subtle Grid Horizontal Lines -->
+<line stroke="#E5E7EB" stroke-dasharray="3 3" x1="40" x2="780" y1="30" y2="30"></line>
+<line stroke="#E5E7EB" stroke-dasharray="3 3" x1="40" x2="780" y1="90" y2="90"></line>
+<line stroke="#E5E7EB" stroke-dasharray="3 3" x1="40" x2="780" y1="150" y2="150"></line>
+<line stroke="#E5E7EB" stroke-width="1.5" x1="40" x2="780" y1="210" y2="210"></line>
+<!-- Y Axis Label Values -->
+<text fill="#9CA3AF" font-family="Inter" font-size="11" x="15" y="34">100%</text>
+<text fill="#9CA3AF" font-family="Inter" font-size="11" x="15" y="94">75%</text>
+<text fill="#9CA3AF" font-family="Inter" font-size="11" x="15" y="154">50%</text>
+<text fill="#9CA3AF" font-family="Inter" font-size="11" x="15" y="214">25%</text>
+<!-- Retention Safe Boundary Indicator -->
+<rect fill="#16A34A" fill-opacity="0.04" height="40" width="710" x="50" y="30"></rect>
+<line opacity="0.6" stroke="#16A34A" stroke-dasharray="3 3" stroke-width="1" x1="50" x2="760" y1="70" y2="70"></line>
+<text fill="#16A34A" font-family="Inter" font-size="10" font-weight="600" x="680" y="65">Ngưỡng an toàn 90%</text>
+<!-- Base Forgetting Curve (Ebbinghaus) -->
+<path class="chart-curve-draw transition-all duration-300" d="M 50 30 Q 140 180 760 215" fill="none" id="curve-ebbinghaus" opacity="0.6" stroke="#DC2626" stroke-dasharray="4 4" stroke-width="2"></path>
+<!-- FSRS Curve segments -->
+<g class="transition-opacity duration-300" id="curve-fsrs-group">
+<!-- Cycle 1: Day 1 -->
+<path class="chart-curve-draw" d="M 50 30 Q 80 120 110 145" fill="none" stroke="#F59E0B" stroke-width="2.5"></path>
+<line stroke="#B45309" stroke-dasharray="2 2" stroke-width="1.5" x1="110" x2="110" y1="145" y2="30"></line>
+<!-- Node 1 Radar Ring -->
+<circle class="radar-ring pointer-events-none" cx="110" cy="30" fill="none" r="10" stroke="#F59E0B" stroke-width="1.5"></circle>
+<circle class="cursor-pointer transition-transform duration-150 hover:scale-150" cx="110" cy="30" fill="#F59E0B" onmouseout="hideTip()" onmouseover="showTip(event, 'Lần 1: Sau 24h', 'Độ ghi nhớ khôi phục 100% (+8.4h Stability)', '#F59E0B')" r="5"></circle>
+<!-- Cycle 2: Day 4 -->
+<path class="chart-curve-draw" d="M 110 30 Q 180 90 230 135" fill="none" stroke="#F59E0B" stroke-width="2.5"></path>
+<line stroke="#B45309" stroke-dasharray="2 2" stroke-width="1.5" x1="230" x2="230" y1="135" y2="30"></line>
+<!-- Node 2 Radar Ring -->
+<circle class="radar-ring-delayed pointer-events-none" cx="230" cy="30" fill="none" r="10" stroke="#F59E0B" stroke-width="1.5"></circle>
+<circle class="cursor-pointer transition-transform duration-150 hover:scale-150" cx="230" cy="30" fill="#F59E0B" onmouseout="hideTip()" onmouseover="showTip(event, 'Lần 2: Sau 4 ngày', 'Độ ổn định tăng vọt lên 9.2 ngày, R=94.2%', '#F59E0B')" r="5"></circle>
+<!-- Cycle 3: Day 12 -->
+<path class="chart-curve-draw" d="M 230 30 Q 340 70 430 110" fill="none" stroke="#F59E0B" stroke-width="2.5"></path>
+<line stroke="#B45309" stroke-dasharray="2 2" stroke-width="1.5" x1="430" x2="430" y1="110" y2="30"></line>
+<!-- Node 3 Radar Ring -->
+<circle class="radar-ring pointer-events-none" cx="430" cy="30" fill="none" r="10" stroke="#F59E0B" stroke-width="1.5"></circle>
+<circle class="cursor-pointer transition-transform duration-150 hover:scale-150" cx="430" cy="30" fill="#F59E0B" onmouseout="hideTip()" onmouseover="showTip(event, 'Lần 3: Sau 12 ngày', 'Đạt ngưỡng bộ nhớ dài hạn, chuyển hóa nơ-ron', '#F59E0B')" r="5"></circle>
+<!-- Cycle 4: Deep Stabilization (Flattened Curve) -->
+<path class="chart-curve-draw" d="M 430 30 Q 600 50 760 65" fill="none" stroke="#16A34A" stroke-width="3"></path>
+<circle class="radar-ring-delayed pointer-events-none" cx="760" cy="65" fill="none" r="12" stroke="#16A34A" stroke-width="1.5"></circle>
+<circle class="cursor-pointer transition-transform duration-150 hover:scale-150" cx="760" cy="65" fill="#16A34A" onmouseout="hideTip()" onmouseover="showTip(event, 'Vùng nhớ vĩnh viễn (30+ ngày)', 'Khả năng thu hồi thông tin duy trì ổn định &gt;90%', '#16A34A')" r="6"></circle>
+</g>
+<!-- X Axis Timestamps -->
+<text fill="#6B7280" font-family="Inter" font-size="11" x="45" y="230">Học mới</text>
+<text fill="#6B7280" font-family="Inter" font-size="11" x="100" y="230">Ngày 1</text>
+<text fill="#6B7280" font-family="Inter" font-size="11" x="220" y="230">Ngày 4</text>
+<text fill="#6B7280" font-family="Inter" font-size="11" x="415" y="230">Ngày 12</text>
+<text fill="#6B7280" font-family="Inter" font-size="11" x="730" y="230">Ngày 30+</text>
+</svg>
+<!-- Floating Chart Tooltip Box -->
+<div class="absolute pointer-events-none opacity-0 transition-all duration-150 bg-surface-dark text-on-primary text-xs py-2 px-3.5 rounded-xl shadow-xl max-w-xs z-30 border border-border-dark" id="chart-tooltip">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-accent-amber" id="tooltip-dot"></span>
+<p class="font-label-small-semibold leading-tight text-accent-amber-highlight" id="tooltip-title">Lần 1</p>
+</div>
+<p class="text-surface-light text-[11px] mt-1 leading-snug" id="tooltip-body">Chi tiết FSRS</p>
+</div>
+</div>
+<div class="flex flex-wrap items-center justify-between gap-space-sm pt-space-sm border-t border-border-light text-caption text-text-muted">
+<span>Trục hoành: Khoảng thời gian dãn cách (ngày) • Trục tung: Xác suất nhớ lại (Retrievability R)</span>
+<span class="text-text-primary-light font-label-small-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-accent-amber badge-beacon">tune</span> Thuật toán FSRS v4.5 đang tối ưu hóa nhịp lặp tự động
+</span>
+</div>
+</div>
+</div>
+<!-- Section 3: Branch Difficulty & Decay Rates + Actionable Callout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-base items-start">
+<!-- Horizontal Distribution Breakdown (8 Cols) -->
+<div class="lg:col-span-8 bg-surface-light rounded-xl p-space-base md:p-space-lg shadow-sm border border-border-light flex flex-col gap-space-base animate-stagger-5">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs">
+<div>
+<h2 class="font-headline-h2 text-headline-h2 text-text-primary-light">Tỷ lệ quên &amp; Độ khó theo nhánh kiến thức</h2>
+<p class="font-caption text-text-secondary">Phân bổ trọng số sai sót và độ phức tạp trung bình của từng bộ chủ đề.</p>
+</div>
+<span class="text-caption font-label-small-medium text-text-muted px-2.5 py-1 bg-surface-neutral-hover rounded-full border border-border-light">Tổng: 4 chủ đề active</span>
+</div>
+<!-- Segmented Stack Bar with Hover interaction -->
+<div class="flex w-full h-3.5 rounded-full overflow-hidden bg-surface-neutral-active p-0.5">
+<div class="bg-primary hover:opacity-90 transition-all rounded-l-full cursor-pointer duration-300" style="width: 42%" title="Kiến trúc phần mềm: 42% (48 thẻ)"></div>
+<div class="bg-accent-amber hover:opacity-90 transition-all cursor-pointer duration-300" style="width: 31%" title="Trí nhớ &amp; học tập: 31% (35 thẻ)"></div>
+<div class="bg-tertiary hover:opacity-90 transition-all cursor-pointer duration-300" style="width: 18%" title="Phương pháp học: 18% (21 thẻ)"></div>
+<div class="bg-secondary hover:opacity-90 transition-all rounded-r-full cursor-pointer duration-300" style="width: 9%" title="Kinh tế học: 9% (10 thẻ)"></div>
+</div>
+<!-- Detailed Branch Metrics List with hover accent & sliding arrows -->
+<div class="flex flex-col gap-space-xs pt-space-xs">
+<!-- Branch 1 -->
+<div class="group flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs p-space-sm rounded-xl hover:bg-amber-50/50 border border-transparent hover:border-amber-200 transition-all duration-150 cursor-pointer">
+<div class="flex items-center gap-space-sm min-w-0">
+<span class="w-3.5 h-3.5 rounded-full bg-primary flex-shrink-0 transition-transform group-hover:scale-125"></span>
+<div class="flex flex-col min-w-0">
+<span class="font-label-small-semibold text-text-primary-light truncate group-hover:text-accent-amber-text transition-colors">Kiến trúc phần mềm</span>
+<span class="font-caption text-danger-forgot">Tỷ lệ quên: 14.8% • Độ khó FSRS: 6.8/10</span>
+</div>
+</div>
+<div class="flex items-center gap-space-lg self-end sm:self-center">
+<div class="flex flex-col items-end">
+<span class="font-label-small-semibold text-text-primary-light">42%</span>
+<span class="font-caption text-text-muted">48 thẻ ôn</span>
+</div>
+<button class="px-space-sm py-1.5 rounded-lg border border-border-light group-hover:border-amber-300 group-hover:bg-surface-light text-text-primary-light font-label-small text-xs transition-all flex items-center gap-1 shadow-sm active:scale-95" onclick="openReviewModal()">
+<span>Ôn ngay</span>
+<span class="material-symbols-outlined text-[14px] transition-transform duration-150 group-hover:translate-x-1">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Branch 2 -->
+<div class="group flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs p-space-sm rounded-xl hover:bg-amber-50/50 border border-transparent hover:border-amber-200 transition-all duration-150 cursor-pointer">
+<div class="flex items-center gap-space-sm min-w-0">
+<span class="w-3.5 h-3.5 rounded-full bg-accent-amber flex-shrink-0 transition-transform group-hover:scale-125"></span>
+<div class="flex flex-col min-w-0">
+<span class="font-label-small-semibold text-text-primary-light truncate group-hover:text-accent-amber-text transition-colors">Trí nhớ &amp; học tập</span>
+<span class="font-caption text-text-secondary">Tỷ lệ quên: 6.2% • Độ khó FSRS: 4.2/10</span>
+</div>
+</div>
+<div class="flex items-center gap-space-lg self-end sm:self-center">
+<div class="flex flex-col items-end">
+<span class="font-label-small-semibold text-text-primary-light">31%</span>
+<span class="font-caption text-text-muted">35 thẻ ôn</span>
+</div>
+<button class="px-space-sm py-1.5 rounded-lg border border-border-light group-hover:border-amber-300 group-hover:bg-surface-light text-text-primary-light font-label-small text-xs transition-all flex items-center gap-1 shadow-sm active:scale-95" onclick="openReviewModal()">
+<span>Ôn ngay</span>
+<span class="material-symbols-outlined text-[14px] transition-transform duration-150 group-hover:translate-x-1">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Branch 3 -->
+<div class="group flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs p-space-sm rounded-xl hover:bg-amber-50/50 border border-transparent hover:border-amber-200 transition-all duration-150 cursor-pointer">
+<div class="flex items-center gap-space-sm min-w-0">
+<span class="w-3.5 h-3.5 rounded-full bg-tertiary flex-shrink-0 transition-transform group-hover:scale-125"></span>
+<div class="flex flex-col min-w-0">
+<span class="font-label-small-semibold text-text-primary-light truncate group-hover:text-accent-amber-text transition-colors">Phương pháp học</span>
+<span class="font-caption text-text-secondary">Tỷ lệ quên: 4.1% • Độ khó FSRS: 3.5/10</span>
+</div>
+</div>
+<div class="flex items-center gap-space-lg self-end sm:self-center">
+<div class="flex flex-col items-end">
+<span class="font-label-small-semibold text-text-primary-light">18%</span>
+<span class="font-caption text-text-muted">21 thẻ ôn</span>
+</div>
+<button class="px-space-sm py-1.5 rounded-lg border border-border-light group-hover:border-amber-300 group-hover:bg-surface-light text-text-primary-light font-label-small text-xs transition-all flex items-center gap-1 shadow-sm active:scale-95" onclick="openReviewModal()">
+<span>Ôn ngay</span>
+<span class="material-symbols-outlined text-[14px] transition-transform duration-150 group-hover:translate-x-1">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Branch 4 -->
+<div class="group flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs p-space-sm rounded-xl hover:bg-amber-50/50 border border-transparent hover:border-amber-200 transition-all duration-150 cursor-pointer">
+<div class="flex items-center gap-space-sm min-w-0">
+<span class="w-3.5 h-3.5 rounded-full bg-secondary flex-shrink-0 transition-transform group-hover:scale-125"></span>
+<div class="flex flex-col min-w-0">
+<span class="font-label-small-semibold text-text-primary-light truncate group-hover:text-accent-amber-text transition-colors">Kinh tế học</span>
+<span class="font-caption text-success-remember">Tỷ lệ quên: 2.3% • Độ khó FSRS: 2.8/10</span>
+</div>
+</div>
+<div class="flex items-center gap-space-lg self-end sm:self-center">
+<div class="flex flex-col items-end">
+<span class="font-label-small-semibold text-text-primary-light">9%</span>
+<span class="font-caption text-text-muted">10 thẻ ôn</span>
+</div>
+<button class="px-space-sm py-1.5 rounded-lg border border-border-light group-hover:border-amber-300 group-hover:bg-surface-light text-text-primary-light font-label-small text-xs transition-all flex items-center gap-1 shadow-sm active:scale-95" onclick="openReviewModal()">
+<span>Ôn ngay</span>
+<span class="material-symbols-outlined text-[14px] transition-transform duration-150 group-hover:translate-x-1">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Actionable Smart Insight Callout Card (4 Cols) -->
+<div class="lg:col-span-4 flex flex-col gap-space-base animate-stagger-5">
+<!-- Priority Alert Block with beacon badge & shimmer button -->
+<div class="bg-surface-light rounded-xl p-space-base shadow-sm border border-border-light border-l-4 border-l-danger-forgot flex flex-col justify-between gap-space-md hover:shadow-md transition-shadow duration-200">
+<div class="flex items-start gap-space-sm">
+<div class="w-8 h-8 rounded-lg bg-danger-surface flex items-center justify-center flex-shrink-0 text-danger-forgot badge-beacon">
+<span class="material-symbols-outlined text-[20px]">warning_amber</span>
+</div>
+<div class="flex flex-col">
+<span class="font-caption-caps text-danger-active">Đề xuất thích ứng thông minh</span>
+<h3 class="font-headline-h2 text-text-primary-light mt-0.5">Cảnh báo phân rã trí nhớ</h3>
+</div>
+</div>
+<p class="font-label-small text-text-secondary leading-relaxed">
+Nhánh <strong class="text-text-primary-light">Kiến trúc phần mềm</strong> có độ phân rã trí nhớ cao nhất (14.8% sai sót) — nên ưu tiên ôn thêm <strong>3 thẻ</strong> hôm nay để củng cố trước ngưỡng thoái trào 48 giờ.
+</p>
+<div class="bg-surface-neutral-hover rounded-lg p-space-sm flex flex-col gap-space-xs text-caption border border-border-light">
+<div class="flex justify-between text-text-muted">
+<span>Thẻ cần cứu nguy:</span>
+<span class="font-label-small-semibold text-text-primary-light truncate ml-2">CAP Theorem, Saga Pattern</span>
+</div>
+<div class="flex justify-between text-text-muted">
+<span>Thời gian ước tính:</span>
+<span class="font-label-small-semibold text-text-primary-light">2.5 phút</span>
+</div>
+</div>
+<button class="shimmer-btn relative overflow-hidden w-full h-11 px-space-base rounded-lg bg-accent-amber hover:bg-accent-amber-hover text-text-primary-light font-label-small-semibold flex items-center justify-center gap-space-xs transition-all duration-200 shadow-sm active:scale-[0.98]" onclick="openReviewModal()">
+<span class="material-symbols-outlined text-[18px]">bolt</span>
+<span>Ôn cố định 3 thẻ ngay</span>
+</button>
+</div>
+<!-- Weekly Mastery Pulse Card with interactive column bars -->
+<div class="bg-surface-light rounded-xl p-space-base shadow-sm border border-border-light flex flex-col gap-space-sm hover:shadow-md transition-shadow duration-200">
+<div class="flex items-center justify-between">
+<span class="font-label-small-semibold text-text-primary-light">Hiệu suất học sâu tuần này</span>
+<span class="material-symbols-outlined text-text-muted text-[18px]">auto_graph</span>
+</div>
+<!-- Mon to Sun visual columns with hover data tooltips -->
+<div class="relative">
+<div class="flex items-end justify-between gap-2 h-20 pt-3">
+<!-- T2 -->
+<div class="flex flex-col items-center gap-1 flex-1 group cursor-pointer" onmouseout="hideBarTip()" onmouseover="showBarTip(this, 'Thứ 2: 24 thẻ ôn')">
+<div class="w-full bg-accent-amber-highlight group-hover:bg-accent-amber rounded-t-sm transition-all duration-300" style="height: 60%"></div>
+<span class="text-[10px] text-text-muted group-hover:text-text-primary-light">T2</span>
+</div>
+<!-- T3 -->
+<div class="flex flex-col items-center gap-1 flex-1 group cursor-pointer" onmouseout="hideBarTip()" onmouseover="showBarTip(this, 'Thứ 3: 32 thẻ ôn')">
+<div class="w-full bg-accent-amber-highlight group-hover:bg-accent-amber rounded-t-sm transition-all duration-300" style="height: 80%"></div>
+<span class="text-[10px] text-text-muted group-hover:text-text-primary-light">T3</span>
+</div>
+<!-- T4 -->
+<div class="flex flex-col items-center gap-1 flex-1 group cursor-pointer" onmouseout="hideBarTip()" onmouseover="showBarTip(this, 'Thứ 4: 18 thẻ ôn')">
+<div class="w-full bg-accent-amber-highlight group-hover:bg-accent-amber rounded-t-sm transition-all duration-300" style="height: 45%"></div>
+<span class="text-[10px] text-text-muted group-hover:text-text-primary-light">T4</span>
+</div>
+<!-- T5 (Peak Record) -->
+<div class="flex flex-col items-center gap-1 flex-1 group cursor-pointer" onmouseout="hideBarTip()" onmouseover="showBarTip(this, 'Thứ 5: 46 thẻ ôn (Kỷ lục tuần!)')">
+<div class="w-full bg-accent-amber group-hover:bg-accent-amber-hover rounded-t-sm transition-all duration-300 relative" style="height: 100%">
+<span class="absolute -top-2 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-accent-amber-text"></span>
+</div>
+<span class="text-[10px] font-label-small-semibold text-text-primary-light">T5</span>
+</div>
+<!-- T6 -->
+<div class="flex flex-col items-center gap-1 flex-1 group cursor-pointer" onmouseout="hideBarTip()" onmouseover="showBarTip(this, 'Thứ 6: 38 thẻ ôn')">
+<div class="w-full bg-accent-amber-highlight group-hover:bg-accent-amber rounded-t-sm transition-all duration-300" style="height: 90%"></div>
+<span class="text-[10px] text-text-muted group-hover:text-text-primary-light">T6</span>
+</div>
+<!-- T7 -->
+<div class="flex flex-col items-center gap-1 flex-1 group cursor-pointer" onmouseout="hideBarTip()" onmouseover="showBarTip(this, 'Thứ 7: 28 thẻ ôn')">
+<div class="w-full bg-accent-amber-highlight group-hover:bg-accent-amber rounded-t-sm transition-all duration-300" style="height: 70%"></div>
+<span class="text-[10px] text-text-muted group-hover:text-text-primary-light">T7</span>
+</div>
+<!-- CN -->
+<div class="flex flex-col items-center gap-1 flex-1 group cursor-pointer" onmouseout="hideBarTip()" onmouseover="showBarTip(this, 'Chủ Nhật: 8 thẻ ôn')">
+<div class="w-full bg-border-light group-hover:bg-accent-amber-highlight rounded-t-sm transition-all duration-300" style="height: 20%"></div>
+<span class="text-[10px] text-text-muted group-hover:text-text-primary-light">CN</span>
+</div>
+</div>
+<!-- Floating Bar Tooltip -->
+<div class="absolute -top-7 left-1/2 -translate-x-1/2 opacity-0 pointer-events-none transition-opacity duration-150 bg-text-primary-light text-on-primary text-[10px] font-semibold py-1 px-2 rounded shadow whitespace-nowrap z-20" id="bar-tooltip">
+    Thứ 5: 46 thẻ
+  </div>
+</div>
+<p class="font-caption text-text-secondary text-right pt-1 flex items-center justify-end gap-1">
+<span class="material-symbols-outlined text-[14px] text-accent-amber">workspace_premium</span>
+Thứ 5 ghi nhận số thẻ ôn tập kỷ lục (+46 thẻ)
+</p>
+</div>
+</div>
+</div>
+<!-- Visual Learning Context Card (Image pipeline compliant) -->
+<div class="bg-surface-light rounded-xl overflow-hidden shadow-sm border border-border-light flex flex-col md:flex-row items-center justify-between animate-stagger-6 hover:shadow-md transition-shadow duration-200">
+<div class="p-space-base md:p-space-xl flex flex-col gap-space-xs max-w-xl">
+<span class="font-caption-caps text-accent-amber-text">Bí quyết củng cố trí nhớ dài hạn</span>
+<h3 class="font-headline-h1 text-headline-h1 text-text-primary-light">Đọc lại thụ động không tạo ra nơ-ron mới</h3>
+<p class="font-body-default text-text-secondary">Chính khoảnh khắc não bộ nỗ lực trích xuất ký ức (Active Recall) tại thời điểm sắp quên mới kích hoạt quá trình bọc myelin cho các sợi trục thần kinh.</p>
+<div class="flex items-center gap-space-md mt-space-sm">
+<button class="h-10 px-space-base rounded-lg bg-surface-neutral-active hover:bg-border-light text-text-primary-light font-label-small-semibold transition-all duration-150 flex items-center gap-1.5 active:scale-95" onclick="triggerWhitepaperInfo()">
+<span class="material-symbols-outlined text-[18px] text-text-secondary">menu_book</span>
+<span>Đọc tài liệu khoa học FSRS</span>
+</button>
+</div>
+</div>
+<div class="w-full md:w-80 h-48 md:h-full self-stretch relative bg-surface-neutral-active overflow-hidden group">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="A clean minimalist conceptual photograph of an organized study desk with warm natural sunlight, featuring an open notebook with mind-maps, a sleek mechanical timer, and warm amber stationery, representing deep cognitive retention and focused spaced repetition study sessions." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbnnvcZ0TxoV4AYGqO5RjOCEIszuIy6UWx0zz3dwmGwjnz1AflW0MMQ8XJ_jmjcNVuNnW6YZe22bf39ouG_kOUDyvEIf5E1ixD4fypVrAsqfpWQqH-DuY1TJkDp4PPtif82sgTtwR0v-f5yGoZZf4eqo3WRkx81B0L91nLcB84Zv4DS5MivtZ49RrR85OPqmXJJvPYkBrO4_mZa4ylrjAmb5-b9xv6zvH29HYVvDSB"/>
+</div>
+</div>
+</div>
+</div></main>
+</div>
+<!-- Micro-interactions Script -->
+<script>
+  // Initial animation trigger for SVG curves
+  window.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      document.querySelectorAll('.chart-curve-draw').forEach(el => {
+        el.classList.add('chart-curve-drawn');
+      });
+    }, 150);
+  });
+
+  // Chart Tooltip
+  function showTip(e, title, body, dotColor = '#F59E0B') {
+    const tip = document.getElementById('chart-tooltip');
+    const tipTitle = document.getElementById('tooltip-title');
+    const tipBody = document.getElementById('tooltip-body');
+    const tipDot = document.getElementById('tooltip-dot');
+    
+    tipTitle.textContent = title;
+    tipBody.textContent = body;
+    if (tipDot) tipDot.style.backgroundColor = dotColor;
+    
+    const container = e.target.closest('.relative');
+    const parentRect = container.getBoundingClientRect();
+    const circleRect = e.target.getBoundingClientRect();
+    
+    const left = circleRect.left - parentRect.left - (tip.offsetWidth / 2) + 4;
+    const top = circleRect.top - parentRect.top - tip.offsetHeight - 10;
+    
+    tip.style.left = `${Math.max(12, Math.min(parentRect.width - tip.offsetWidth - 12, left))}px`;
+    tip.style.top = `${top}px`;
+    tip.style.opacity = '1';
+  }
+
+  function hideTip() {
+    const tip = document.getElementById('chart-tooltip');
+    if (tip) tip.style.opacity = '0';
+  }
+
+  // Bar Chart Column Tooltip
+  function showBarTip(el, text) {
+    const tip = document.getElementById('bar-tooltip');
+    tip.textContent = text;
+    const rect = el.getBoundingClientRect();
+    const parentRect = el.parentElement.getBoundingClientRect();
+    const leftPos = rect.left - parentRect.left + (rect.width / 2);
+    tip.style.left = `${leftPos}px`;
+    tip.style.opacity = '1';
+  }
+
+  function hideBarTip() {
+    const tip = document.getElementById('bar-tooltip');
+    if (tip) tip.style.opacity = '0';
+  }
+
+  // Filter Switcher (30 days vs All time)
+  function switchFilter(type) {
+    const btn30 = document.getElementById('btn-30d');
+    const btnAll = document.getElementById('btn-all');
+    const dot = document.getElementById('dot-indicator');
+    
+    const valDiscipline = document.getElementById('val-discipline');
+    const subDiscipline = document.getElementById('sub-discipline');
+    const circleDiscipline = document.getElementById('circle-discipline');
+    const valStreak = document.getElementById('val-streak');
+    const valCards = document.getElementById('val-cards');
+    const valRatio = document.getElementById('val-ratio');
+    const valRetention = document.getElementById('val-retention');
+    const barRetention = document.getElementById('bar-retention');
+
+    if (type === '30d') {
+      btn30.className = "px-space-base py-space-xs rounded-lg font-label-small-semibold bg-surface-light text-text-primary-light shadow-sm transition-all duration-200 flex items-center gap-1.5 active:scale-95";
+      btnAll.className = "px-space-base py-space-xs rounded-lg font-label-small-medium text-text-secondary hover:text-text-primary-light transition-all duration-200 active:scale-95";
+      
+      valDiscipline.textContent = "86%";
+      subDiscipline.textContent = "26 / 30 ngày";
+      circleDiscipline.setAttribute('stroke-dashoffset', '16.71');
+      valStreak.textContent = "19";
+      valCards.textContent = "38";
+      valRatio.textContent = "41.8% kho thẻ";
+      valRetention.textContent = "94.2%";
+      barRetention.style.width = "94.2%";
+    } else {
+      btnAll.className = "px-space-base py-space-xs rounded-lg font-label-small-semibold bg-surface-light text-text-primary-light shadow-sm transition-all duration-200 flex items-center gap-1.5 active:scale-95";
+      btn30.className = "px-space-base py-space-xs rounded-lg font-label-small-medium text-text-secondary hover:text-text-primary-light transition-all duration-200 active:scale-95";
+      
+      valDiscipline.textContent = "91%";
+      subDiscipline.textContent = "142 / 156 ngày";
+      circleDiscipline.setAttribute('stroke-dashoffset', '10.74');
+      valStreak.textContent = "34";
+      valCards.textContent = "186";
+      valRatio.textContent = "68.4% kho thẻ";
+      valRetention.textContent = "95.8%";
+      barRetention.style.width = "95.8%";
+    }
+  }
+
+  // Curve Toggle in Legend
+  let ebbinghausVisible = true;
+  let fsrsVisible = true;
+
+  function toggleCurve(type) {
+    if (type === 'ebbinghaus') {
+      const curve = document.getElementById('curve-ebbinghaus');
+      const legend = document.getElementById('legend-ebbinghaus');
+      ebbinghausVisible = !ebbinghausVisible;
+      curve.style.opacity = ebbinghausVisible ? '0.6' : '0.1';
+      legend.style.opacity = ebbinghausVisible ? '1' : '0.4';
+    } else if (type === 'fsrs') {
+      const group = document.getElementById('curve-fsrs-group');
+      const legend = document.getElementById('legend-fsrs');
+      fsrsVisible = !fsrsVisible;
+      group.style.opacity = fsrsVisible ? '1' : '0.15';
+      legend.style.opacity = fsrsVisible ? '1' : '0.4';
+    }
+  }
+
+  // Export report feedback toast
+  function triggerExportReport() {
+    const toast = document.getElementById('export-toast');
+    const toastTitle = document.getElementById('toast-title');
+    const toastDesc = document.getElementById('toast-desc');
+    const toastIcon = document.getElementById('toast-icon');
+
+    toast.classList.remove('opacity-0', '-translate-y-10', 'pointer-events-none');
+    toast.classList.add('opacity-100', 'translate-y-0');
+    toastTitle.textContent = "Đang kết xuất báo cáo...";
+    toastIcon.classList.add('animate-spin');
+
+    setTimeout(() => {
+      toastTitle.textContent = "Báo cáo CSV đã sẵn sàng!";
+      toastDesc.textContent = "Đã tải xuống tập tin retainly-analytics-fsrs.csv";
+      toastIcon.classList.remove('animate-spin');
+      toastIcon.textContent = "check_circle";
+      toastIcon.classList.remove('text-accent-amber');
+      toastIcon.classList.add('text-success-remember');
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', '-translate-y-10', 'pointer-events-none');
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        // Reset state after transition
+        setTimeout(() => {
+          toastIcon.textContent = "sync";
+          toastIcon.classList.add('text-accent-amber');
+          toastIcon.classList.remove('text-success-remember');
+        }, 300);
+      }, 2500);
+    }, 1200);
+  }
+
+  // Review Modal Controls
+  function openReviewModal() {
+    const modal = document.getElementById('quick-review-modal');
+    const card = document.getElementById('modal-card');
+    modal.classList.remove('opacity-0', 'pointer-events-none');
+    modal.classList.add('opacity-100');
+    card.classList.remove('scale-95');
+    card.classList.add('scale-100');
+  }
+
+  function closeReviewModal() {
+    const modal = document.getElementById('quick-review-modal');
+    const card = document.getElementById('modal-card');
+    modal.classList.add('opacity-0', 'pointer-events-none');
+    modal.classList.remove('opacity-100');
+    card.classList.add('scale-95');
+    card.classList.remove('scale-100');
+  }
+
+  function confirmReviewStart() {
+    closeReviewModal();
+    const toast = document.getElementById('export-toast');
+    const toastTitle = document.getElementById('toast-title');
+    const toastDesc = document.getElementById('toast-desc');
+    const toastIcon = document.getElementById('toast-icon');
+
+    toast.classList.remove('opacity-0', '-translate-y-10', 'pointer-events-none');
+    toast.classList.add('opacity-100', 'translate-y-0');
+    toastTitle.textContent = "Khởi tạo phiên ôn tập 3 thẻ...";
+    toastDesc.textContent = "Đang áp dụng ma trận FSRS Interval...";
+    toastIcon.textContent = "bolt";
+
+    setTimeout(() => {
+      toast.classList.add('opacity-0', '-translate-y-10', 'pointer-events-none');
+      toast.classList.remove('opacity-100', 'translate-y-0');
+    }, 1800);
+  }
+
+  function triggerWhitepaperInfo() {
+    const toast = document.getElementById('export-toast');
+    const toastTitle = document.getElementById('toast-title');
+    const toastDesc = document.getElementById('toast-desc');
+    const toastIcon = document.getElementById('toast-icon');
+
+    toast.classList.remove('opacity-0', '-translate-y-10', 'pointer-events-none');
+    toast.classList.add('opacity-100', 'translate-y-0');
+    toastTitle.textContent = "Mở tài liệu khoa học FSRS v4.5";
+    toastDesc.textContent = "Dựa trên mô hình Free Spaced Repetition Scheduler.";
+    toastIcon.textContent = "menu_book";
+
+    setTimeout(() => {
+      toast.classList.add('opacity-0', '-translate-y-10', 'pointer-events-none');
+      toast.classList.remove('opacity-100', 'translate-y-0');
+    }, 2000);
+  }
+</script>
+</body></html>

@@ -28,6 +28,13 @@
 
   --color-scrim: rgb(26 29 35 / 40%);
 
+  /* Màu phân loại cho biểu đồ — lấy từ bảng màu design statistical, quay vòng
+     khi số nhánh kiến thức vượt quá 4. Không mang ý nghĩa tốt/xấu. */
+  --color-chart-1: #855300;
+  --color-chart-2: #f59e0b;
+  --color-chart-3: #00658b;
+  --color-chart-4: #5c5e65;
+
   --color-secondary-hover-bg: #f9fafb;
   --color-secondary-hover-border: #d1d5db;
   --color-secondary-active-bg: #f3f4f6;

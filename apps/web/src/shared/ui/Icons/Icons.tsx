@@ -142,6 +142,16 @@ export function IconEyeOff({ size = 18 }: IconProps) {
   );
 }
 
+/** Đường gấp khúc đi lên — điều hướng và tiêu đề màn Thống kê. */
+export function IconChart({ size = 18 }: IconProps) {
+  return (
+    <svg {...base(size)}>
+      <path d="M3 17l5-6 4 3.5L21 6" />
+      <path d="M21 6h-5M21 6v5" />
+    </svg>
+  );
+}
+
 export function IconAlert({ size = 20 }: IconProps) {
   return (
     <svg {...base(size)}>

@@ -5,12 +5,15 @@ import { signInAs } from '../../../shared/test/sign-in-as';
 import type { CardTopicRepository } from '../application/assign-topic-to-card';
 import type { TopicRepository } from '../application/create-topic';
 import { registerTopicsRoutes } from './topics-routes';
+import { TopicForgetRate, TopicForgetRateQuery } from '../application/get-topic-forget-rates';
 
 const CARD_ID = '00000000-0000-0000-0000-0000000000c1';
 const TOPIC_ID = '00000000-0000-0000-0000-0000000000a1';
 const CREATED_AT = new Date('2026-09-19T12:00:00.000Z');
 
-function appWithTopics(options: { signedIn?: boolean; duplicate?: boolean } = {}) {
+function appWithTopics(
+  options: { signedIn?: boolean; duplicate?: boolean; forgetRates?: TopicForgetRate[] } = {},
+) {
   const topics: TopicRepository = {
     async create(input) {
       if (options.duplicate === true) return null;
@@ -36,9 +39,15 @@ function appWithTopics(options: { signedIn?: boolean; duplicate?: boolean } = {}
     },
   };
 
+  const forgetRates: TopicForgetRateQuery = {
+    async findByUser() {
+      return options.forgetRates ?? [];
+    },
+  };
+
   const app = buildApp();
   if (options.signedIn !== false) signInAs(app);
-  registerTopicsRoutes(app, { topics, cards });
+  registerTopicsRoutes(app, { topics, cards, forgetRates });
   return app;
 }
 
@@ -134,6 +143,7 @@ describe('E5-S1-T2 — topic routes', () => {
   it.each([
     { method: 'POST' as const, url: '/api/topics', payload: { name: 'Khoa học' } },
     { method: 'GET' as const, url: '/api/topics' },
+    { method: 'GET' as const, url: '/api/topics/forget-rate' },
     {
       method: 'PATCH' as const,
       url: `/api/cards/${CARD_ID}/topic`,
@@ -146,6 +156,34 @@ describe('E5-S1-T2 — topic routes', () => {
 
     expect(res.statusCode).toBe(401);
     expect(res.json().error.code).toBe('ERR_UNAUTHORIZED');
+    await app.close();
+  });
+
+  it('GET /api/topics/forget-rate trả tỷ lệ quên theo topic', async () => {
+    const app = appWithTopics({
+      forgetRates: [
+        {
+          topicId: TOPIC_ID,
+          topicName: 'Khoa học',
+          forgetRate: 0.3,
+          totalReviews: 10,
+        },
+      ],
+    });
+
+    const res = await app.inject({ method: 'GET', url: '/api/topics/forget-rate' });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toEqual({
+      topics: [
+        {
+          topicId: TOPIC_ID,
+          topicName: 'Khoa học',
+          forgetRate: 0.3,
+          totalReviews: 10,
+        },
+      ],
+    });
     await app.close();
   });
 });
