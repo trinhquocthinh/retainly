@@ -27,8 +27,9 @@ model User {
   displayName    String   @map("display_name")
   createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
 
-  cards   Card[]
-  sources Source[]
+  cards    Card[]
+  sources  Source[]
+  topics   KnowledgeTopic[]
   sessions Session[]
 
   @@map("users")
@@ -51,20 +52,36 @@ model Card {
   id        String   @id @default(uuid()) @db.Uuid
   userId    String   @map("user_id") @db.Uuid
   sourceId  String?  @map("source_id") @db.Uuid
+  topicId   String?  @map("topic_id") @db.Uuid
   front     String
   back      String
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
 
   user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   source   Source?         @relation(fields: [sourceId], references: [id], onDelete: SetNull)
+  topic    KnowledgeTopic? @relation(fields: [topicId], references: [id], onDelete: SetNull)
   schedule ReviewSchedule?
   outcomes ReviewOutcome[]
 
   @@index([userId])
   @@index([sourceId])
+  @@index([topicId])
   @@index([userId, createdAt, id], map: "cards_user_id_created_at_id_idx")
   @@index([userId, sourceId, createdAt, id], map: "cards_user_id_source_id_created_at_id_idx")
   @@map("cards")
+}
+
+model KnowledgeTopic {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  name      String   @db.VarChar(100)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cards Card[]
+
+  @@unique([userId, name])
+  @@map("knowledge_topics")
 }
 
 model Source {

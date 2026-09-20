@@ -22,6 +22,11 @@ import {
 import { registerAuthRoutes } from './features/auth/presentation/auth-routes';
 import { argon2PasswordHasher } from './features/auth/infrastructure/argon2-password-hasher';
 import { prismaStreakQuery } from './features/review/infrastructure/prisma-streak-query';
+import {
+  prismaCardTopicRepository,
+  prismaTopicRepository,
+} from './features/topics/infrastructure/prisma-topic-repository';
+import { registerTopicsRoutes } from './features/topics/presentation/topics-routes';
 
 const port = Number(process.env['PORT'] ?? 3000);
 const host = process.env['HOST'] ?? '0.0.0.0';
@@ -53,6 +58,10 @@ registerReviewRoutes(app, {
   reviews: prismaReviewRepository,
   streaks: prismaStreakQuery,
   now: () => new Date(),
+});
+registerTopicsRoutes(app, {
+  topics: prismaTopicRepository,
+  cards: prismaCardTopicRepository,
 });
 registerSourcesRoutes(app, {
   extractor: createArticleExtractor(),

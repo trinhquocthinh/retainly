@@ -14,6 +14,11 @@ import { startSession } from '../application/sessions';
 import { prismaSessionRepository } from '../infrastructure/prisma-auth-repositories';
 import { registerPrismaAuthRoutes } from '../../../shared/test/prisma-auth-routes';
 import { prismaStreakQuery } from '../../review/infrastructure/prisma-streak-query';
+import {
+  prismaCardTopicRepository,
+  prismaTopicRepository,
+} from '../../topics/infrastructure/prisma-topic-repository';
+import { registerTopicsRoutes } from '../../topics/presentation/topics-routes';
 
 /**
  * TC-022 (BR-002, BR-008): user B cầm id dữ liệu của user A. Đi trọn đường thật
@@ -36,6 +41,10 @@ function buildFullApp() {
     reviews: prismaReviewRepository,
     streaks: prismaStreakQuery,
     now,
+  });
+  registerTopicsRoutes(app, {
+    topics: prismaTopicRepository,
+    cards: prismaCardTopicRepository,
   });
   return app;
 }
@@ -65,7 +74,19 @@ async function seedOwnerData(app: App, ownerCookies: Record<string, string>) {
   });
   expect(created.statusCode).toBe(201);
 
-  return { sourceId: source.id, cardId: created.json().id as string };
+  const topic = await app.inject({
+    method: 'POST',
+    url: '/api/topics',
+    cookies: ownerCookies,
+    payload: { name: 'Topic của A' },
+  });
+  expect(topic.statusCode).toBe(201);
+
+  return {
+    sourceId: source.id,
+    cardId: created.json().id as string,
+    topicId: topic.json().id as string,
+  };
 }
 
 function snapshotOwnerRows() {
@@ -78,7 +99,7 @@ function snapshotOwnerRows() {
 let app: App;
 let ownerCookies: Record<string, string>;
 let intruderCookies: Record<string, string>;
-let owned: { sourceId: string; cardId: string };
+let owned: { sourceId: string; cardId: string; topicId: string };
 
 beforeEach(async () => {
   await resetDatabase();
@@ -185,10 +206,52 @@ describe('E4-S1-T7 — TC-022 cô lập dữ liệu giữa các tài khoản', (
     expect(intruderStreak.json()).toEqual({ currentStreak: 0 });
   });
 
+  it('danh sách topic của B không chứa topic của A', async () => {
+    const res = await app.inject({ method: 'GET', url: '/api/topics', cookies: intruderCookies });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toEqual({ topics: [] });
+  });
+
+  it('B không thể gán topic của A, cũng không thể sửa card của A bằng topic của B', async () => {
+    const foreignTopic = await app.inject({
+      method: 'PATCH',
+      url: `/api/cards/${owned.cardId}/topic`,
+      cookies: intruderCookies,
+      payload: { topicId: owned.topicId },
+    });
+    expect(foreignTopic.statusCode).toBe(404);
+    expect(foreignTopic.json().error.code).toBe('ERR_TOPIC_NOT_FOUND');
+
+    const intruderTopic = await app.inject({
+      method: 'POST',
+      url: '/api/topics',
+      cookies: intruderCookies,
+      payload: { name: 'Topic của B' },
+    });
+    expect(intruderTopic.statusCode).toBe(201);
+
+    const foreignCard = await app.inject({
+      method: 'PATCH',
+      url: `/api/cards/${owned.cardId}/topic`,
+      cookies: intruderCookies,
+      payload: { topicId: intruderTopic.json().id },
+    });
+    expect(foreignCard.statusCode).toBe(404);
+    expect(foreignCard.json().error.code).toBe('ERR_CARD_NOT_FOUND');
+
+    await expect(
+      testPrisma.card.findUniqueOrThrow({ where: { id: owned.cardId } }),
+    ).resolves.toMatchObject({
+      topicId: null,
+    });
+  });
+
   it.each<[string, (ids: typeof owned) => InjectOptions]>([
     ['GET /api/cards', () => ({ method: 'GET', url: '/api/cards' })],
     ['GET /api/cards/due', () => ({ method: 'GET', url: '/api/cards/due' })],
     ['GET /api/streak', () => ({ method: 'GET', url: '/api/streak' })],
+    ['GET /api/topics', () => ({ method: 'GET', url: '/api/topics' })],
     ['DELETE /api/cards/:id', ({ cardId }) => ({ method: 'DELETE', url: `/api/cards/${cardId}` })],
   ])('%s không có phiên trả 401 ERR_UNAUTHORIZED', async (_name, toRequest) => {
     const res = await app.inject(toRequest(owned));

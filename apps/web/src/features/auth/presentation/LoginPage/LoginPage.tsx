@@ -42,7 +42,9 @@ export function LoginPage() {
         <header className="login__brand">
           <Logo size={48} />
           <h1 className="text-h1">Retainly</h1>
-          <p className="login__tagline">Đọc rồi nhớ. Ôn đúng lúc sắp quên.</p>
+          <p className="login__tagline">
+            Khỏi lo&nbsp;<strong>brain drain</strong>, đã có Retain!
+          </p>
         </header>
 
         <section
