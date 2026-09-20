@@ -5,16 +5,35 @@ import { renderWithProviders } from '@src/shared/test/renderWithProviders';
 
 import { CreateCardPage } from './CreateCardPage';
 
+type FakeResponse = {
+  ok: boolean;
+  status: number;
+  json: () => Promise<unknown>;
+};
+
+type FakeFetch = (url: string, option?: RequestInit) => Promise<FakeResponse>;
+
 function renderPage() {
   renderWithProviders(<CreateCardPage />);
 }
 
 function mockFetch(status: number, body: unknown) {
-  const fetchMock = vi.fn().mockResolvedValue({
-    ok: status < 400,
-    status,
-    json: async () => body,
+  const fetchMock = vi.fn<FakeFetch>(async (url) => {
+    if (url === '/api/topics') {
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({ topics: [] }),
+      };
+    }
+
+    return {
+      ok: status < 400,
+      status,
+      json: async () => body,
+    };
   });
+
   vi.stubGlobal('fetch', fetchMock);
   return fetchMock;
 }
@@ -50,10 +69,17 @@ describe('E1-S3-T6 — màn tạo thẻ', () => {
     await userEvent.type(screen.getByLabelText('Mặt trả lời'), 'Paris');
     await userEvent.click(screen.getByRole('button', { name: 'Lưu thẻ' }));
 
-    await waitFor(() => expect(fetchGia).toHaveBeenCalledTimes(1));
-    const [url, option] = fetchGia.mock.calls[0];
-    expect(url).toBe('/api/cards');
-    expect(JSON.parse(option.body)).toEqual({ front: 'Thủ đô Pháp?', back: 'Paris' });
+    await waitFor(() => {
+      expect(fetchGia.mock.calls.some(([url]) => url === '/api/cards')).toBe(true);
+    });
+
+    const cardCall = fetchGia.mock.calls.find(([url]) => url === '/api/cards');
+    const [, option] = cardCall ?? [];
+
+    expect(JSON.parse(String(option?.body))).toEqual({
+      front: 'Thủ đô Pháp?',
+      back: 'Paris',
+    });
   });
 
   it('lỗi ERR_EMPTY_BACK hiện ngay dưới ô Mặt trả lời', async () => {
@@ -72,7 +98,20 @@ describe('E1-S3-T6 — màn tạo thẻ', () => {
   });
 
   it('lỗi mạng hiện banner chung, không gán vào ô nào', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('Failed to fetch')));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string) => {
+        if (url === '/api/topics') {
+          return {
+            ok: true,
+            status: 200,
+            json: async () => ({ topics: [] }),
+          };
+        }
+
+        throw new TypeError('Failed to fetch');
+      }),
+    );
     renderPage();
 
     await userEvent.type(screen.getByLabelText('Mặt hỏi'), 'Thủ đô Pháp?');
@@ -95,5 +134,59 @@ describe('E1-S3-T6 — màn tạo thẻ', () => {
     expect(await screen.findByRole('status')).toHaveTextContent('Đã lưu thẻ');
     expect(screen.getByLabelText('Mặt hỏi')).toHaveValue('');
     expect(screen.getByRole('button', { name: 'Lưu thẻ' })).toBeDisabled();
+  });
+
+  it('gửi topicId đã chọn trong cùng request tạo thẻ', async () => {
+    const topicId = '00000000-0000-0000-0000-0000000000a1';
+
+    const fetchMock = vi.fn<FakeFetch>(async (url) => {
+      if (url === '/api/topics') {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            topics: [
+              {
+                id: topicId,
+                name: 'Khoa học',
+                createdAt: '2026-09-20T00:00:00.000Z',
+              },
+            ],
+          }),
+        };
+      }
+
+      return {
+        ok: true,
+        status: 201,
+        json: async () => ({
+          id: 'card-1',
+          topicId,
+        }),
+      };
+    });
+
+    vi.stubGlobal('fetch', fetchMock);
+    renderPage();
+
+    await screen.findByRole('option', { name: 'Khoa học' });
+
+    await userEvent.selectOptions(screen.getByLabelText('Nhánh kiến thức'), topicId);
+    await userEvent.type(screen.getByLabelText('Mặt hỏi'), 'Hỏi');
+    await userEvent.type(screen.getByLabelText('Mặt trả lời'), 'Đáp');
+    await userEvent.click(screen.getByRole('button', { name: 'Lưu thẻ' }));
+
+    await waitFor(() => {
+      expect(fetchMock.mock.calls.some(([url]) => url === '/api/cards')).toBe(true);
+    });
+
+    const cardCall = fetchMock.mock.calls.find(([url]) => url === '/api/cards');
+    const [, option] = cardCall ?? [];
+
+    expect(JSON.parse(String(option?.body))).toEqual({
+      front: 'Hỏi',
+      back: 'Đáp',
+      topicId,
+    });
   });
 });

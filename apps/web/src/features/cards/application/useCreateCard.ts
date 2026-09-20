@@ -1,5 +1,5 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { ApiError, NetworkError } from '@src/shared/api/client';
 
@@ -11,7 +11,9 @@ import {
 } from '../domain/cardDraft';
 
 /** Cổng lưu thẻ. Hiện thực thật do page container tiêm vào. */
-type CreateCardPort = (card: CardDraft & { sourceId?: string }) => Promise<unknown>;
+type CreateCardPort = (
+  card: CardDraft & { sourceId?: string; topicId?: string },
+) => Promise<unknown>;
 
 const EMPTY_DRAFT: CardDraft = { front: '', back: '' };
 
@@ -23,7 +25,13 @@ function bannerFor(error: unknown): string | null {
   return error instanceof Error ? error.message : 'Không lưu được thẻ, thử lại sau';
 }
 
-export function useCreateCard(deps: { createCard: CreateCardPort; sourceId?: string }) {
+export function useCreateCard(deps: {
+  createCard: CreateCardPort;
+  sourceId?: string;
+  topicId?: string;
+}) {
+  const queryClient = useQueryClient();
+
   const [draft, setDraft] = useState<CardDraft>(EMPTY_DRAFT);
   const [justSaved, setJustSaved] = useState(false);
 
@@ -31,9 +39,14 @@ export function useCreateCard(deps: { createCard: CreateCardPort; sourceId?: str
     mutationFn: deps.createCard,
     // Chỉ xoá hai mặt thẻ. Nguồn do page giữ nên vẫn còn đó: một bài viết đọc
     // một lần, rút được nhiều thẻ mà không phải nạp lại.
-    onSuccess: () => {
+    onSuccess: async () => {
       setDraft(EMPTY_DRAFT);
       setJustSaved(true);
+
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['cards', 'due'] }),
+        queryClient.invalidateQueries({ queryKey: ['cards', 'library'] }),
+      ]);
     },
   });
 
@@ -63,7 +76,13 @@ export function useCreateCard(deps: { createCard: CreateCardPort; sourceId?: str
       if (!isDraftComplete(draft) || mutation.isPending) return;
 
       setJustSaved(false);
-      mutation.mutate(deps.sourceId ? { ...draft, sourceId: deps.sourceId } : draft);
+      const input = {
+        ...draft,
+        ...(deps.sourceId ? { sourceId: deps.sourceId } : {}),
+        ...(deps.topicId ? { topicId: deps.topicId } : {}),
+      };
+
+      mutation.mutate(input);
     },
   };
 }

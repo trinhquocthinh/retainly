@@ -20,6 +20,14 @@ function mockApi(routes: Record<string, { status: number; body: unknown }>) {
   // Khai kiểu qua generic chứ không qua tham số: thân hàm không cần `option`,
   // nhưng `mock.calls` thì cần biết lời gọi có kèm option — chỗ chứa body.
   const fetchMock = vi.fn<FakeFetch>(async (url) => {
+    if (url === '/api/topics') {
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({ topics: [] }),
+      };
+    }
+
     const route = routes[url];
     if (!route) throw new TypeError(`Không có route giả cho ${url}`);
     return { ok: route.status < 400, status: route.status, json: async () => route.body };
@@ -110,8 +118,13 @@ describe('E2-S2-T5 — tạo thẻ từ URL', () => {
     await userEvent.type(screen.getByLabelText('Mặt trả lời'), 'Hermann Ebbinghaus');
     await userEvent.click(screen.getByRole('button', { name: 'Lưu thẻ' }));
 
-    await waitFor(() => expect(fetchGia).toHaveBeenCalledTimes(2));
-    const [, option] = fetchGia.mock.calls[1] ?? [];
+    await waitFor(() => {
+      expect(fetchGia.mock.calls.some(([url]) => url === '/api/cards')).toBe(true);
+    });
+
+    const cardCall = fetchGia.mock.calls.find(([url]) => url === '/api/cards');
+    const [, option] = cardCall ?? [];
+
     expect(JSON.parse(String(option?.body))).toEqual({
       front: 'Đường cong quên do ai mô tả?',
       back: 'Hermann Ebbinghaus',

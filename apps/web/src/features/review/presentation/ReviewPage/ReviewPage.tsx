@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { useReviewSession } from '../../application/useReviewSession';
 import { fetchDueCards, recordOutcome } from '../../infrastructure/reviewApi';
@@ -9,7 +10,22 @@ import { ReviewMessage, ReviewSkeleton } from '../ReviewStates/ReviewStates';
 
 export function ReviewPage() {
   const navigate = useNavigate();
-  const onFinish = useCallback(() => navigate('/'), [navigate]);
+  const queryClient = useQueryClient();
+
+  const onFinish = useCallback(() => {
+    // Chỉ đánh dấu stale khi rời phiên. `refetchType: 'none'` ngăn danh sách
+    // thẻ đang ôn bị nạp lại và thay đổi ngay trước khi điều hướng.
+    void queryClient.invalidateQueries({
+      queryKey: ['cards', 'due'],
+      refetchType: 'none',
+    });
+    void queryClient.invalidateQueries({
+      queryKey: ['review', 'streak'],
+      refetchType: 'none',
+    });
+
+    navigate('/');
+  }, [navigate, queryClient]);
 
   const session = useReviewSession({ fetchDueCards, recordOutcome, onFinish });
 

@@ -1,10 +1,13 @@
-import { screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { renderWithProviders } from '@src/shared/test/renderWithProviders';
 
 import { ReviewPage } from './ReviewPage';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { MemoryRouter, Routes, Route } from 'react-router';
+import { HomePage } from '../HomePage/HomePage';
 
 type Handler = { status: number; body: unknown };
 
@@ -126,5 +129,86 @@ describe('E1-S3-T7 — màn ôn tập', () => {
 
     await userEvent.click(skip);
     expect(await screen.findByText('Hỏi B')).toBeInTheDocument();
+  });
+
+  it('hoàn thành phiên thì Home tải lại due count và streak, không cần F5', async () => {
+    let reviewed = false;
+
+    const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
+      if (url === '/api/cards/due') {
+        return {
+          ok: true,
+          status: 200,
+          json: async () =>
+            reviewed
+              ? { dueCount: 0, dueCards: [] }
+              : {
+                  dueCount: 1,
+                  dueCards: [
+                    {
+                      id: 'card-1',
+                      front: 'Hỏi A',
+                      back: 'Đáp A',
+                      dueDate: '2026-09-20T09:00:00.000Z',
+                    },
+                  ],
+                },
+        };
+      }
+
+      if (url === '/api/review-outcomes' && init?.method === 'POST') {
+        reviewed = true;
+
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({ updatedSchedule: {} }),
+        };
+      }
+
+      if (url === '/api/streak') {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({ currentStreak: reviewed ? 1 : 0 }),
+        };
+      }
+
+      throw new TypeError(`Không có route giả cho ${init?.method ?? 'GET'} ${url}`);
+    });
+
+    vi.stubGlobal('fetch', fetchMock);
+
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { retry: false },
+        mutations: { retry: false },
+      },
+    });
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={['/review']}>
+          <Routes>
+            <Route path="/review" element={<ReviewPage />} />
+            <Route path="/" element={<HomePage />} />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>,
+    );
+
+    await userEvent.click(await screen.findByText('Hỏi A'));
+    await userEvent.click(screen.getByRole('button', { name: /Nhớ/ }));
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Về trang chủ' }));
+
+    expect(await screen.findByText('Bạn đã hoàn thành hôm nay')).toBeVisible();
+    expect(screen.getByLabelText('Chuỗi 1 ngày')).toBeVisible();
+
+    const dueRequests = fetchMock.mock.calls.filter(
+      ([url, init]) => url === '/api/cards/due' && (init?.method ?? 'GET') === 'GET',
+    );
+
+    expect(dueRequests).toHaveLength(2);
   });
 });

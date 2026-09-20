@@ -51,6 +51,7 @@ registerCardsRoutes(app, {
   cards: prismaCardRepository,
   cardList: prismaCardListQuery,
   sources: prismaSourceOwnership,
+  topics: prismaTopicRepository,
   now: () => new Date(),
 });
 registerReviewRoutes(app, {

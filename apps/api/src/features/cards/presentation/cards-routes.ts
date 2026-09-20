@@ -1,6 +1,11 @@
 import type { FastifyInstance } from 'fastify';
 
-import { createCard, type CardRepository, type SourceOwnership } from '../application/create-card';
+import {
+  createCard,
+  type CardRepository,
+  type SourceOwnership,
+  type TopicOwnership,
+} from '../application/create-card';
 import { listCards, type CardListQuery } from '../application/list-cards';
 import { deleteCard, type CardDeleteRepository } from '../application/delete-card';
 import { updateCard, type CardUpdateRepository } from '../application/update-card';
@@ -8,6 +13,7 @@ import { requireAuth } from '../../../shared/request-auth';
 
 type CreateBody = {
   sourceId?: string;
+  topicId?: string;
   front: string;
   back: string;
 };
@@ -31,6 +37,7 @@ type CardsRouteDeps = {
   cards: CardRepository & CardUpdateRepository & CardDeleteRepository;
   cardList: CardListQuery;
   sources: SourceOwnership;
+  topics: TopicOwnership;
   now: () => Date;
 };
 
@@ -88,6 +95,7 @@ export function registerCardsRoutes(app: FastifyInstance, deps: CardsRouteDeps):
             // format uuid chặn ngay ở tầng schema: cột source_id là UUID, chuỗi
             // sai dạng mà xuống tới Postgres sẽ thành lỗi 500 thay vì 400.
             sourceId: { type: 'string', format: 'uuid' },
+            topicId: { type: 'string', format: 'uuid' },
             front: { type: 'string', maxLength: 2000 },
             back: { type: 'string', maxLength: 2000 },
           },

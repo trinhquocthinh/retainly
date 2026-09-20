@@ -8,8 +8,8 @@ import type {
   UpdateCardInput,
 } from '../domain/cardLibrary';
 
-export type NewCard = CardDraft & { sourceId?: string };
-export type CreatedCard = { id: string };
+export type NewCard = CardDraft & { sourceId?: string; topicId?: string };
+export type CreatedCard = { id: string; topicId?: string | null };
 
 /** POST /api/cards — SPEC-002. */
 export function createCard(card: NewCard): Promise<CreatedCard> {

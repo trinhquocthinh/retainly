@@ -1,4 +1,4 @@
-import type { ChangeEvent, FormEvent, KeyboardEvent } from 'react';
+import type { ChangeEvent, FormEvent, KeyboardEvent, ReactNode } from 'react';
 
 import { Button } from '@src/shared/ui/Button/Button';
 import { Field } from '@src/shared/ui/Field/Field';
@@ -8,6 +8,7 @@ import type { CardDraft, CardField } from '../domain/cardDraft';
 import './CreateCardForm.css';
 
 type CreateCardFormProps = {
+  topicSelector: ReactNode;
   draft: CardDraft;
   canSave: boolean;
   saving: boolean;
@@ -19,6 +20,7 @@ type CreateCardFormProps = {
 };
 
 export function CreateCardForm({
+  topicSelector,
   draft,
   canSave,
   saving,
@@ -85,6 +87,8 @@ export function CreateCardForm({
           />
         )}
       </Field>
+
+      {topicSelector}
 
       <div className="create-card__actions">
         <p className="create-card__shortcut text-caption">

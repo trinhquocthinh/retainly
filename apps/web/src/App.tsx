@@ -27,6 +27,11 @@ const CreateCardPage = lazy(() =>
     default: m.CreateCardPage,
   })),
 );
+const HomePage = lazy(() =>
+  import('@src/features/review/presentation/HomePage/HomePage').then((m) => ({
+    default: m.HomePage,
+  })),
+);
 
 function RouteLoading() {
   return (
@@ -58,7 +63,7 @@ export function App() {
           <Route path="/review" element={<ReviewPage />} />
 
           <Route element={<ShellLayout />}>
-            <Route path="/" element={<PlaceholderPage title="Trang chủ" />} />
+            <Route path="/" element={<HomePage />} />
             <Route path="/cards" element={<CardLibraryPage />} />
             <Route path="/cards/new" element={<CreateCardPage />} />
             <Route path="*" element={<PlaceholderPage title="Không tìm thấy trang" />} />

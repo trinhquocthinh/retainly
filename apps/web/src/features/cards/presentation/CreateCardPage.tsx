@@ -13,6 +13,9 @@ import { useCreateCard } from '../application/useCreateCard';
 import { createCard } from '../infrastructure/cardsApi';
 import { CreateCardForm } from './CreateCardForm';
 import { ModeTabs, type CreateMode } from './ModeTabs';
+import { useTopics } from '@src/features/topics/application/useTopics';
+import { createTopic, fetchTopics } from '@src/features/topics/infrastructure/topicsApi';
+import { TopicSelector } from '@src/features/topics/presentation/TopicSelector/TopicSelector';
 
 const ATOMIC_RULES = [
   'Một ý chính trên mỗi thẻ: nếu câu hỏi có hơn 3 ý con, hãy chia nhỏ thành nhiều thẻ độc lập.',
@@ -23,11 +26,17 @@ const ATOMIC_RULES = [
 export function CreateCardPage() {
   const navigate = useNavigate();
   const [mode, setMode] = useState<CreateMode>('manual');
+  const [topicId, setTopicId] = useState('');
   const sourceContentRef = useRef<HTMLDivElement>(null);
 
+  const topics = useTopics({ fetchTopics, createTopic });
   const loader = useSourceLoader({ extractSource });
   const source = mode === 'url' ? loader.source : null;
-  const form = useCreateCard({ createCard, sourceId: source?.sourceId });
+  const form = useCreateCard({
+    createCard,
+    sourceId: source?.sourceId,
+    topicId: topicId || undefined,
+  });
 
   // Không đè lên câu trả lời người dùng đã gõ — bôi đen là để đỡ gõ, không
   // phải để mất chữ.
@@ -66,6 +75,20 @@ export function CreateCardPage() {
         ) : null}
 
         <CreateCardForm
+          topicSelector={
+            <TopicSelector
+              topics={topics.topics}
+              value={topicId}
+              loading={topics.loading}
+              loadError={topics.loadError}
+              creating={topics.creating}
+              createError={topics.createError}
+              onChange={setTopicId}
+              onReload={topics.reload}
+              onCreate={topics.addTopic}
+              onResetCreate={topics.resetCreate}
+            />
+          }
           draft={form.draft}
           canSave={form.canSave}
           saving={form.saving}

@@ -11,6 +11,7 @@ export const prismaCardRepository: PrismaCardRepository = {
       data: {
         userId: card.userId,
         sourceId: card.sourceId,
+        topicId: card.topicId,
         front: card.front,
         back: card.back,
         schedule: {

@@ -53,7 +53,7 @@ afterEach(() => vi.unstubAllGlobals());
 
 describe('E0-S2-T4 — khung định tuyến', () => {
   it.each([
-    ['/', 'Trang chủ'],
+    ['/', 'Hôm nay'],
     ['/cards', 'Thư viện thẻ'],
     ['/cards/new', 'Thẻ mới'],
   ])('route %s render màn hình "%s"', async (path, title) => {

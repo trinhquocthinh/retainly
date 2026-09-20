@@ -34,6 +34,7 @@ function buildFullApp() {
     cards: prismaCardRepository,
     cardList: prismaCardListQuery,
     sources: prismaSourceOwnership,
+    topics: prismaTopicRepository,
     now,
   });
   registerReviewRoutes(app, {

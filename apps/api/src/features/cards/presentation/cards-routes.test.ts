@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 
 import { buildApp } from '../../../app';
 import { registerCardsRoutes } from './cards-routes';
-import type { CardRepository, SourceOwnership } from '../application/create-card';
+import type { CardRepository, SourceOwnership, TopicOwnership } from '../application/create-card';
 import type { CardListQuery, CardListQueryInput } from '../application/list-cards';
 import type { CardDeleteRepository } from '../application/delete-card';
 import type { CardUpdateRepository } from '../application/update-card';
@@ -11,6 +11,7 @@ import { SIGNED_IN_USER_ID, signInAs } from '../../../shared/test/sign-in-as';
 const NOW = new Date('2026-06-15T09:00:00Z');
 const SOURCE = '00000000-0000-0000-0000-0000000000b1';
 const CARD_ID = '00000000-0000-0000-0000-0000000000c1';
+const TOPIC = '00000000-0000-0000-0000-0000000000a1';
 
 type UpdateInput = Parameters<CardUpdateRepository['updateOwned']>[0];
 
@@ -54,7 +55,12 @@ const fakeCardList: CardListQuery = {
   },
 };
 
-function appWithCards(sources: SourceOwnership = { belongsToUser: async () => true }) {
+function appWithCards(
+  options: {
+    sources?: SourceOwnership;
+    topics?: TopicOwnership;
+  } = {},
+) {
   listInputs.length = 0;
   updateInputs.length = 0;
   deleteInputs.length = 0;
@@ -65,7 +71,8 @@ function appWithCards(sources: SourceOwnership = { belongsToUser: async () => tr
   registerCardsRoutes(app, {
     cards: fakeCards,
     cardList: fakeCardList,
-    sources,
+    sources: options.sources ?? { belongsToUser: async () => true },
+    topics: options.topics ?? { belongsToUser: async () => true },
     now: () => NOW,
   });
 
@@ -204,6 +211,65 @@ describe('E1-S2-T3 — POST /api/cards', () => {
 
     await app.close();
   });
+
+  it('E5-S1-T3: tạo thẻ cùng topic trong một request', async () => {
+    const app = appWithCards();
+
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/cards',
+      payload: {
+        topicId: TOPIC,
+        front: 'Hỏi',
+        back: 'Đáp',
+      },
+    });
+
+    expect(res.statusCode).toBe(201);
+    expect(res.json().topicId).toBe(TOPIC);
+
+    await app.close();
+  });
+
+  it('E5-S1-T3: topic khác chủ trả ERR_TOPIC_NOT_FOUND và không tạo thẻ', async () => {
+    const app = appWithCards({
+      topics: { belongsToUser: async () => false },
+    });
+
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/cards',
+      payload: {
+        topicId: TOPIC,
+        front: 'Hỏi',
+        back: 'Đáp',
+      },
+    });
+
+    expect(res.statusCode).toBe(404);
+    expect(res.json().error.code).toBe('ERR_TOPIC_NOT_FOUND');
+
+    await app.close();
+  });
+
+  it('E5-S1-T3: topicId sai định dạng trả ERR_BAD_REQUEST', async () => {
+    const app = appWithCards();
+
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/cards',
+      payload: {
+        topicId: 'khong-phai-uuid',
+        front: 'Hỏi',
+        back: 'Đáp',
+      },
+    });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.json().error.code).toBe('ERR_BAD_REQUEST');
+
+    await app.close();
+  });
 });
 
 describe('E2-S1-T4 — POST /api/cards kèm sourceId', () => {
@@ -221,7 +287,7 @@ describe('E2-S1-T4 — POST /api/cards kèm sourceId', () => {
   });
 
   it('nguồn không thuộc user trả 404 ERR_SOURCE_NOT_FOUND', async () => {
-    const app = appWithCards({ belongsToUser: async () => false });
+    const app = appWithCards({ sources: { belongsToUser: async () => false } });
     const res = await app.inject({
       method: 'POST',
       url: '/api/cards',
@@ -376,6 +442,7 @@ describe('E4-S1-T3 — route thẻ yêu cầu đăng nhập', () => {
       cards: fakeCards,
       cardList: fakeCardList,
       sources: { belongsToUser: async () => true },
+      topics: { belongsToUser: async () => true },
       now: () => NOW,
     });
 
