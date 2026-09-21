@@ -263,3 +263,47 @@ describe('E7-S1-T2 — TC-056 ghi chú ở mặt đáp án', () => {
     expect(container.querySelector('.review-card img')).toBeNull();
   });
 });
+
+describe('E7-S1-T3 — TC-059 ôn thẻ đục lỗ', () => {
+  function dueCloze(back: string): Handler {
+    return {
+      status: 200,
+      body: {
+        dueCount: 1,
+        dueCards: [
+          {
+            id: 'card-1',
+            front: 'Thủ đô Pháp là [[Paris]]',
+            back,
+            note: null,
+            dueDate: '2026-09-13T09:00:00.000Z',
+          },
+        ],
+      },
+    };
+  }
+
+  it('mặt hỏi hiện chỗ trống, mặt đáp án hiện câu đầy đủ với phần điền nổi bật', async () => {
+    mockApi({ 'GET /api/cards/due': dueCloze('') });
+    const { container } = renderWithProviders(<ReviewPage />);
+
+    const blank = await screen.findByRole('img', { name: 'chỗ trống' });
+    const [front, back] = container.querySelectorAll('.review-card__face');
+    expect(front).toContainElement(blank);
+    expect(front.textContent).not.toContain('Paris');
+
+    await userEvent.click(blank);
+
+    expect(back.querySelector('mark')).toHaveTextContent('Paris');
+    expect(back.querySelector('.review-card__extra')).toBeNull();
+  });
+
+  it('mặt sau của thẻ đục lỗ hiện thành thông tin bổ sung dưới câu đầy đủ', async () => {
+    mockApi({ 'GET /api/cards/due': dueCloze('Thủ đô từ năm 508') });
+    const { container } = renderWithProviders(<ReviewPage />);
+
+    await userEvent.click(await screen.findByRole('img', { name: 'chỗ trống' }));
+
+    expect(container.querySelector('.review-card__extra')).toHaveTextContent('Thủ đô từ năm 508');
+  });
+});

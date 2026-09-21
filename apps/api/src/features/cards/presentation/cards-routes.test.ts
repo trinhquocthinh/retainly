@@ -25,6 +25,10 @@ const fakeCards: CardRepository & CardUpdateRepository & CardDeleteRepository = 
     return { id: 'card-1', createdAt: NOW, ...card };
   },
 
+  async findOwnedContent() {
+    return { front: 'Câu hỏi cũ', back: 'Câu trả lời cũ' };
+  },
+
   async updateOwned(input) {
     updateInputs.push(input);
 
@@ -533,6 +537,54 @@ describe('E7-S1-T2 — TC-055 ghi chú qua API thẻ', () => {
     expect(res.statusCode).toBe(200);
     expect(res.json().note).toBeNull();
     expect(updateInputs[0]?.content).toEqual({ note: null });
+
+    await app.close();
+  });
+});
+
+describe('E7-S1-T3 — TC-057 thẻ đục lỗ qua API', () => {
+  it('POST thẻ đục lỗ không mặt sau trả 201 với back rỗng', async () => {
+    const app = appWithCards();
+
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/cards',
+      payload: { front: 'Thủ đô Pháp là [[Paris]]', back: '' },
+    });
+
+    expect(res.statusCode).toBe(201);
+    expect(res.json()).toMatchObject({ front: 'Thủ đô Pháp là [[Paris]]', back: '' });
+
+    await app.close();
+  });
+
+  it('POST thẻ thường không mặt sau trả 400 ERR_EMPTY_BACK', async () => {
+    const app = appWithCards();
+
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/cards',
+      payload: { front: 'Thủ đô Pháp?', back: '' },
+    });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.json().error.code).toBe('ERR_EMPTY_BACK');
+
+    await app.close();
+  });
+
+  it('PATCH bỏ mặt sau của thẻ thường trả 400 ERR_EMPTY_BACK và không ghi', async () => {
+    const app = appWithCards();
+
+    const res = await app.inject({
+      method: 'PATCH',
+      url: `/api/cards/${CARD_ID}`,
+      payload: { back: '   ' },
+    });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.json().error.code).toBe('ERR_EMPTY_BACK');
+    expect(updateInputs).toHaveLength(0);
 
     await app.close();
   });

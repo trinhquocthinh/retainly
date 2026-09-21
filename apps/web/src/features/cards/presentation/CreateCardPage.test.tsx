@@ -214,3 +214,30 @@ describe('E7-S1-T2 — TC-055 ghi chú khi tạo thẻ', () => {
     await waitFor(() => expect(screen.getByLabelText(/Ghi chú/)).toHaveValue(''));
   });
 });
+
+describe('E7-S1-T3 — TC-057 tạo thẻ đục lỗ', () => {
+  it('mặt hỏi có đoạn đục lỗ thì lưu được khi để trống mặt trả lời', async () => {
+    const fetchGia = mockFetch(201, { id: 'card-1' });
+    renderPage();
+    const luu = screen.getByRole('button', { name: 'Lưu thẻ' });
+
+    await userEvent.click(screen.getByLabelText('Mặt hỏi'));
+    await userEvent.paste('Thủ đô Pháp là [[ ]]');
+    expect(luu).toBeDisabled();
+
+    await userEvent.clear(screen.getByLabelText('Mặt hỏi'));
+    await userEvent.paste('Thủ đô Pháp là [[Paris]]');
+    expect(luu).toBeEnabled();
+
+    await userEvent.click(luu);
+
+    await waitFor(() => {
+      expect(fetchGia.mock.calls.some(([url]) => url === '/api/cards')).toBe(true);
+    });
+    const [, option] = fetchGia.mock.calls.find(([url]) => url === '/api/cards') ?? [];
+    expect(JSON.parse(String(option?.body))).toEqual({
+      front: 'Thủ đô Pháp là [[Paris]]',
+      back: '',
+    });
+  });
+});

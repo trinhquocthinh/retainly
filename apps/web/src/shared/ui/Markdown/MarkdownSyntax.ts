@@ -1,12 +1,13 @@
 /**
- * Markdown tối giản cho nội dung thẻ (US-011): chỉ `**đậm**`, `*nghiêng*`, `` `code` ``.
- * Kết quả là cây segment thuần dữ liệu — lớp hiển thị tự dựng phần tử React từ đó,
- * nên không có đường nào đưa HTML của người dùng vào DOM.
+ * Markdown tối giản cho nội dung thẻ (US-011): chỉ `**đậm**`, `*nghiêng*`, `` `code` ``,
+ * cộng đoạn đục lỗ `[[...]]` (BR-025). Kết quả là cây segment thuần dữ liệu — lớp
+ * hiển thị tự dựng phần tử React từ đó, nên không có đường nào đưa HTML của người
+ * dùng vào DOM.
  */
 export type InlineSegment =
   | { kind: 'text'; text: string }
   | { kind: 'code'; text: string }
-  | { kind: 'strong' | 'em'; children: InlineSegment[] };
+  | { kind: 'strong' | 'em' | 'cloze'; children: InlineSegment[] };
 
 type Emphasis = { kind: 'strong' | 'em'; size: 1 | 2 };
 
@@ -27,9 +28,19 @@ function codeCloser(text: string, from: number): number {
 }
 
 /**
+ * Vị trí `]]` đóng đoạn đục lỗ mở tại `from`, hoặc -1 nếu không có hay nội dung
+ * toàn khoảng trắng. Cùng luật với `hasCloze` của API (`cards/domain/card.ts`).
+ */
+function clozeCloser(text: string, from: number): number {
+  if (!text.startsWith('[[', from)) return -1;
+  const closer = text.indexOf(']]', from + 2);
+  return closer !== -1 && text.slice(from + 2, closer).trim().length > 0 ? closer : -1;
+}
+
+/**
  * Tìm dấu đóng cho `*`/`**` mở tại `contentStart - size`. Dấu đóng phải nằm sau
- * một ký tự không trắng; bỏ qua ký tự escape và code span. Chuỗi `***` đóng được
- * cả hai lớp nên dấu đóng được tính từ cuối chuỗi sao.
+ * một ký tự không trắng; bỏ qua ký tự escape, code span và đoạn đục lỗ. Chuỗi
+ * `***` đóng được cả hai lớp nên dấu đóng được tính từ cuối chuỗi sao.
  */
 function emphasisCloser(text: string, contentStart: number, size: 1 | 2): number {
   let index = contentStart;
@@ -40,6 +51,9 @@ function emphasisCloser(text: string, contentStart: number, size: 1 | 2): number
     } else if (char === '`') {
       const closer = codeCloser(text, index);
       index = closer === -1 ? index + 1 : closer + 1;
+    } else if (char === '[') {
+      const closer = clozeCloser(text, index);
+      index = closer === -1 ? index + 1 : closer + 2;
     } else if (char === '*') {
       const run = starRunLength(text, index);
       const closer = index + run - size;
@@ -90,6 +104,14 @@ export function parseInlineMarkdown(text: string): InlineSegment[] {
       }
     }
 
+    const cloze = clozeCloser(text, index);
+    if (cloze !== -1) {
+      flush();
+      segments.push({ kind: 'cloze', children: parseInlineMarkdown(text.slice(index + 2, cloze)) });
+      index = cloze + 2;
+      continue;
+    }
+
     const emphasis = openingEmphasis(text, index);
     if (emphasis) {
       const contentStart = index + emphasis.size;
@@ -123,7 +145,19 @@ function plainText(segments: InlineSegment[]): string {
     .join('');
 }
 
-/** Gỡ cú pháp định dạng, giữ đúng phần chữ mà `<InlineMarkdown>` hiển thị. */
+/** Gỡ cú pháp định dạng, giữ đúng phần chữ mà `<InlineMarkdown>` hiển thị (đã điền đục lỗ). */
 export function stripMarkdown(text: string): string {
   return plainText(parseInlineMarkdown(text));
+}
+
+function containsCloze(segments: InlineSegment[]): boolean {
+  return segments.some(
+    (segment) =>
+      segment.kind === 'cloze' || ('children' in segment && containsCloze(segment.children)),
+  );
+}
+
+/** Mặt trước có ít nhất một đoạn đục lỗ hiển thị được thì là thẻ đục lỗ (BR-025). */
+export function hasCloze(text: string): boolean {
+  return containsCloze(parseInlineMarkdown(text));
 }

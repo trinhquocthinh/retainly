@@ -92,6 +92,13 @@
   color: var(--color-success-strong);
 }
 
+/* Mặt sau của thẻ đục lỗ là thông tin bổ sung, nhẹ hơn câu đáp án. */
+.review-card__extra {
+  color: var(--color-text-secondary);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
 /* Ghi chú tách khỏi đáp án (US-011): nền nhấn nhẹ để mắt phân biệt ngay
    phần phải nhớ với phần giải thích thêm. */
 .review-card__note {

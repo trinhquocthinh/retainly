@@ -171,9 +171,11 @@ export function CardLibraryPage() {
                   <span className="card-library__front">
                     <InlineMarkdown text={card.front} />
                   </span>
-                  <span className="card-library__back text-caption">
-                    <InlineMarkdown text={card.back} />
-                  </span>
+                  {card.back ? (
+                    <span className="card-library__back text-caption">
+                      <InlineMarkdown text={card.back} />
+                    </span>
+                  ) : null}
                 </button>
 
                 <time className="card-library__date text-caption" dateTime={card.createdAt}>

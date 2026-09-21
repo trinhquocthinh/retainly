@@ -36,6 +36,19 @@ export const prismaCardRepository: PrismaCardRepository = {
     return { ...card, id: row.id, createdAt: row.createdAt };
   },
 
+  async findOwnedContent({ userId, cardId }) {
+    return prisma.card.findFirst({
+      where: {
+        id: cardId,
+        userId,
+      },
+      select: {
+        front: true,
+        back: true,
+      },
+    });
+  },
+
   async updateOwned({ userId, cardId, content }) {
     const rows = await prisma.card.updateManyAndReturn({
       where: {

@@ -1,9 +1,10 @@
 import { InlineMarkdown } from '@src/shared/ui/Markdown/InlineMarkdown';
+import { IconLightbulb } from '@src/shared/ui/Icons/Icons';
+import { hasCloze } from '@src/shared/ui/Markdown/MarkdownSyntax';
 
 import type { DueCard } from '../../domain/review';
 
 import './ReviewCard.css';
-import { IconLightbulb } from '@src/shared/ui/Icons/Icons';
 
 type ReviewCardProps = {
   card: DueCard;
@@ -16,6 +17,10 @@ type ReviewCardProps = {
  * vì nội dung của <button> chỉ được phép là phrasing content.
  */
 export function ReviewCard({ card, flipped, onFlip }: ReviewCardProps) {
+  // Thẻ đục lỗ (BR-025): đáp án là chính câu ở mặt hỏi đã điền; mặt sau nếu có
+  // chỉ là thông tin bổ sung.
+  const cloze = hasCloze(card.front);
+
   return (
     <button
       type="button"
@@ -28,7 +33,7 @@ export function ReviewCard({ card, flipped, onFlip }: ReviewCardProps) {
           <span className="review-card__tag text-caption-caps">Mặt hỏi</span>
           <span className="review-card__body">
             <span className="review-card__prompt">
-              <InlineMarkdown text={card.front} />
+              <InlineMarkdown text={card.front} cloze="blank" />
             </span>
           </span>
           <span className="review-card__foot text-caption">Chạm vào thẻ để xem đáp án</span>
@@ -43,8 +48,13 @@ export function ReviewCard({ card, flipped, onFlip }: ReviewCardProps) {
           </span>
           <span className="review-card__body review-card__body--start">
             <span className="review-card__answer">
-              <InlineMarkdown text={card.back} />
+              <InlineMarkdown text={cloze ? card.front : card.back} />
             </span>
+            {cloze && card.back ? (
+              <span className="review-card__extra text-small">
+                <InlineMarkdown text={card.back} />
+              </span>
+            ) : null}
             {card.note ? (
               <span className="review-card__note">
                 <span className="review-card__note-icon">

@@ -5,7 +5,12 @@ import { Button } from '@src/shared/ui/Button/Button';
 import { Field } from '@src/shared/ui/Field/Field';
 import { IconClose, IconEdit } from '@src/shared/ui/Icons/Icons';
 
-import { fieldForErrorCode, type CardDraft, type CardField } from '../../domain/cardDraft';
+import {
+  fieldForErrorCode,
+  isDraftComplete,
+  type CardDraft,
+  type CardField,
+} from '../../domain/cardDraft';
 import type { CardListItem, UpdateCardInput } from '../../domain/cardLibrary';
 
 type EditCardDialogProps = {
@@ -45,8 +50,7 @@ export function EditCardDialog({ card, saving, error, onCancel, onSave }: EditCa
 
   const failedField = error instanceof ApiError ? fieldForErrorCode(error.code) : undefined;
   const canSave =
-    draft.front.trim().length > 0 &&
-    draft.back.trim().length > 0 &&
+    isDraftComplete(draft) &&
     (draft.front !== card.front || draft.back !== card.back || draft.note !== (card.note ?? '')) &&
     !saving;
 

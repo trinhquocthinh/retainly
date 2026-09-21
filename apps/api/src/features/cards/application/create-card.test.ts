@@ -174,3 +174,31 @@ describe('E7-S1-T2 — TC-055 tạo thẻ kèm ghi chú', () => {
     expect(cards.saved.map((card) => card.note)).toEqual([null, null]);
   });
 });
+
+describe('E7-S1-T3 — TC-057 tạo thẻ đục lỗ', () => {
+  it('thẻ đục lỗ không mặt sau vẫn tạo được cùng lịch ôn duy nhất', async () => {
+    const cards = fakeRepository();
+
+    const created = await createCard(
+      { cards, sources: ownsEverything, topics: ownsEverything, now: () => NOW },
+      { userId: USER, front: 'Thủ đô Pháp là [[Paris]]', back: '' },
+    );
+
+    expect(created).toMatchObject({ front: 'Thủ đô Pháp là [[Paris]]', back: '' });
+    expect(created.schedule.state).toBe('new');
+    expect(cards.saved).toHaveLength(1);
+  });
+
+  it('thẻ thường không mặt sau trả ERR_EMPTY_BACK và không lưu', async () => {
+    const cards = fakeRepository();
+
+    await expect(
+      createCard(
+        { cards, sources: ownsEverything, topics: ownsEverything, now: () => NOW },
+        { userId: USER, front: 'Thủ đô Pháp?', back: '  ' },
+      ),
+    ).rejects.toThrow('ERR_EMPTY_BACK');
+
+    expect(cards.saved).toHaveLength(0);
+  });
+});

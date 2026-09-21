@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { parseInlineMarkdown, stripMarkdown } from './MarkdownSyntax';
+import { hasCloze, parseInlineMarkdown, stripMarkdown } from './MarkdownSyntax';
 
 const text = (value: string) => ({ kind: 'text', text: value });
 
@@ -72,5 +72,44 @@ describe('E7-S1-T1 — gỡ cú pháp định dạng', () => {
     expect(stripMarkdown('**FSRS** dùng *R* và `S`')).toBe('FSRS dùng R và S');
     expect(stripMarkdown('a * b, snake_case, \\*')).toBe('a * b, snake_case, *');
     expect(stripMarkdown('***cả hai***\ndòng hai')).toBe('cả hai\ndòng hai');
+  });
+});
+
+describe('E7-S1-T3 — TC-059 đoạn đục lỗ `[[...]]`', () => {
+  const cloze = (...children: unknown[]) => ({ kind: 'cloze', children });
+
+  it('tách từng đoạn đục lỗ, nội dung bên trong vẫn có định dạng', () => {
+    expect(parseInlineMarkdown('[[Paris]] là thủ đô của [[**Pháp**]]')).toEqual([
+      cloze(text('Paris')),
+      text(' là thủ đô của '),
+      cloze({ kind: 'strong', children: [text('Pháp')] }),
+    ]);
+  });
+
+  it('đoạn đục lỗ nằm trong đậm, và dấu sao bên trong không đóng đậm', () => {
+    expect(parseInlineMarkdown('**[[a*b]] đậm**')).toEqual([
+      { kind: 'strong', children: [cloze(text('a*b')), text(' đậm')] },
+    ]);
+  });
+
+  it('rỗng, toàn khoảng trắng, chưa đóng hoặc nằm trong code thì giữ nguyên văn', () => {
+    expect(parseInlineMarkdown('[[]] [[  ]] [[chưa đóng [một]')).toEqual([
+      text('[[]] [[  ]] [[chưa đóng [một]'),
+    ]);
+    expect(parseInlineMarkdown('`[[x]]`')).toEqual([{ kind: 'code', text: '[[x]]' }]);
+  });
+
+  it('không lồng nhau: đóng ở `]]` đầu tiên', () => {
+    expect(parseInlineMarkdown('[[a [[b]] c]]')).toEqual([cloze(text('a [[b')), text(' c]]')]);
+  });
+
+  it('hasCloze chỉ đúng khi có đoạn đục lỗ hiển thị được', () => {
+    expect(hasCloze('Thủ đô Pháp là [[Paris]]')).toBe(true);
+    expect(hasCloze('*nghiêng [[Paris]]*')).toBe(true);
+    expect(hasCloze('Không có [[ ]] hay `[[x]]`')).toBe(false);
+  });
+
+  it('stripMarkdown trả câu đầy đủ đã điền, bỏ ngoặc', () => {
+    expect(stripMarkdown('Thủ đô Pháp là [[**Paris**]]')).toBe('Thủ đô Pháp là Paris');
   });
 });

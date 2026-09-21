@@ -25,6 +25,9 @@ function fakeRepository(result: UpdatedCard | null): CardUpdateRepository & {
 
   return {
     inputs,
+    async findOwnedContent() {
+      return result === null ? null : { front: result.front, back: result.back };
+    },
     async updateOwned(input) {
       inputs.push(input);
 
@@ -133,5 +136,67 @@ describe('E7-S1-T2 — TC-055 sửa ghi chú thẻ', () => {
 
     expect(updated.note).toBeNull();
     expect(cards.inputs[0]?.content).toEqual({ note: null });
+  });
+});
+
+describe('E7-S1-T3 — TC-058 sửa thẻ đục lỗ (BR-025)', () => {
+  const CLOZE_CARD: UpdatedCard = {
+    ...EXISTING_CARD,
+    front: 'Thủ đô Pháp là [[Paris]]',
+    back: '',
+  };
+
+  it('chỉ gửi front bỏ hết đoạn đục lỗ trên thẻ trống mặt sau trả ERR_EMPTY_BACK', async () => {
+    const cards = fakeRepository(CLOZE_CARD);
+
+    await expect(
+      updateCard({ cards }, { userId: USER_ID, cardId: CARD_ID, front: 'Thủ đô Pháp là Paris' }),
+    ).rejects.toThrow(new AppError('ERR_EMPTY_BACK'));
+
+    expect(cards.inputs).toHaveLength(0);
+  });
+
+  it('chỉ gửi front vẫn còn đục lỗ thì hợp lệ, không ghi đè back', async () => {
+    const cards = fakeRepository(CLOZE_CARD);
+
+    await updateCard(
+      { cards },
+      { userId: USER_ID, cardId: CARD_ID, front: '[[Paris]] là thủ đô Pháp' },
+    );
+
+    expect(cards.inputs[0]?.content).toEqual({ front: '[[Paris]] là thủ đô Pháp' });
+  });
+
+  it('chỉ gửi back rỗng: thẻ đục lỗ nhận, thẻ thường trả ERR_EMPTY_BACK', async () => {
+    const clozeCards = fakeRepository(CLOZE_CARD);
+    await updateCard({ cards: clozeCards }, { userId: USER_ID, cardId: CARD_ID, back: '  ' });
+    expect(clozeCards.inputs[0]?.content).toEqual({ back: '' });
+
+    const plainCards = fakeRepository(EXISTING_CARD);
+    await expect(
+      updateCard({ cards: plainCards }, { userId: USER_ID, cardId: CARD_ID, back: '  ' }),
+    ).rejects.toThrow(new AppError('ERR_EMPTY_BACK'));
+    expect(plainCards.inputs).toHaveLength(0);
+  });
+
+  it('gửi đủ hai mặt thì kiểm trên chính request, không cần thẻ hiện tại', async () => {
+    const cards = fakeRepository(EXISTING_CARD);
+
+    await updateCard(
+      { cards },
+      { userId: USER_ID, cardId: CARD_ID, front: 'Pháp: [[Paris]]', back: '' },
+    );
+
+    expect(cards.inputs[0]?.content).toEqual({ front: 'Pháp: [[Paris]]', back: '' });
+  });
+
+  it('sửa một mặt trên thẻ không thuộc user trả ERR_CARD_NOT_FOUND', async () => {
+    const cards = fakeRepository(null);
+
+    await expect(
+      updateCard({ cards }, { userId: USER_ID, cardId: CARD_ID, back: 'Đáp mới' }),
+    ).rejects.toThrow(new AppError('ERR_CARD_NOT_FOUND'));
+
+    expect(cards.inputs).toHaveLength(0);
   });
 });

@@ -196,3 +196,31 @@ describe('E7-S1-T2 — TC-055 ghi chú thẻ trên Postgres thật', () => {
     expect(await testPrisma.card.count()).toBe(0);
   });
 });
+
+describe('E7-S1-T3 — TC-058 đọc nội dung thẻ để kiểm BR-025', () => {
+  it('trả hai mặt của thẻ thuộc user, null với thẻ của user khác', async () => {
+    const own = await seedReviewedCard(TEST_USER_ID);
+    const other = await seedReviewedCard(OTHER_USER_ID);
+
+    await expect(
+      prismaCardRepository.findOwnedContent({ userId: TEST_USER_ID, cardId: own.id }),
+    ).resolves.toEqual({ front: 'Câu hỏi cũ', back: 'Câu trả lời cũ' });
+
+    await expect(
+      prismaCardRepository.findOwnedContent({ userId: TEST_USER_ID, cardId: other.id }),
+    ).resolves.toBeNull();
+  });
+
+  it('thẻ đục lỗ lưu mặt sau là chuỗi rỗng', async () => {
+    const created = await prismaCardRepository.create({
+      userId: TEST_USER_ID,
+      front: 'Thủ đô Pháp là [[Paris]]',
+      back: '',
+      note: null,
+      schedule: createInitialSchedule(new Date()),
+    });
+
+    const saved = await testPrisma.card.findUniqueOrThrow({ where: { id: created.id } });
+    expect(saved.back).toBe('');
+  });
+});
