@@ -56,8 +56,13 @@ describe('E0-S2-T4 — khung định tuyến', () => {
     ['/', 'Hôm nay'],
     ['/cards', 'Thư viện thẻ'],
     ['/cards/new', 'Thẻ mới'],
+    ['/stats', 'Thống kê & Hiệu quả ghi nhớ'],
   ])('route %s render màn hình "%s"', async (path, title) => {
-    stubApi({ ...SIGNED_IN, 'GET /api/cards': { status: 200, body: EMPTY_LIBRARY } });
+    stubApi({
+      ...SIGNED_IN,
+      'GET /api/cards': { status: 200, body: EMPTY_LIBRARY },
+      'GET /api/topics/forget-rate': { status: 200, body: { topics: [] } },
+    });
     renderAt(path);
     expect(await screen.findByRole('heading', { name: title })).toBeTruthy();
   });
@@ -70,7 +75,14 @@ describe('E0-S2-T4 — khung định tuyến', () => {
 });
 
 describe('E4-S1-T6 — chặn truy cập khi chưa đăng nhập', () => {
-  it.each(['/login', '/', '/cards', '/review'])(
+  it('sidebar có lối vào màn Thống kê', async () => {
+    stubApi(SIGNED_IN);
+    renderAt('/');
+
+    expect(await screen.findByRole('link', { name: 'Thống kê' })).toHaveAttribute('href', '/stats');
+  });
+
+  it.each(['/login', '/', '/cards', '/review', '/stats'])(
     'chưa có phiên thì %s hiện màn đăng nhập',
     async (path) => {
       stubApi({ 'GET /api/session': UNAUTHORIZED });

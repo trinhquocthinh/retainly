@@ -216,6 +216,41 @@ describe('E4-S1-T7 — TC-022 cô lập dữ liệu giữa các tài khoản', (
     expect(res.json()).toEqual({ topics: [] });
   });
 
+  it('báo cáo tỷ lệ quên của B không chứa nhánh kiến thức của A', async () => {
+    const assigned = await app.inject({
+      method: 'PATCH',
+      url: `/api/cards/${owned.cardId}/topic`,
+      cookies: ownerCookies,
+      payload: { topicId: owned.topicId },
+    });
+    expect(assigned.statusCode).toBe(200);
+
+    const reviewed = await app.inject({
+      method: 'POST',
+      url: '/api/review-outcomes',
+      cookies: ownerCookies,
+      payload: { cardId: owned.cardId, outcome: 'forgotten' },
+    });
+    expect(reviewed.statusCode).toBe(200);
+
+    const ownerReport = await app.inject({
+      method: 'GET',
+      url: '/api/topics/forget-rate',
+      cookies: ownerCookies,
+    });
+    const intruderReport = await app.inject({
+      method: 'GET',
+      url: '/api/topics/forget-rate',
+      cookies: intruderCookies,
+    });
+
+    // Đối chứng: A thực sự có số liệu, nếu không thì vế rỗng của B vô nghĩa.
+    expect(ownerReport.json().topics).toEqual([
+      { topicId: owned.topicId, topicName: 'Topic của A', forgetRate: 1, totalReviews: 1 },
+    ]);
+    expect(intruderReport.json()).toEqual({ topics: [] });
+  });
+
   it('B không thể gán topic của A, cũng không thể sửa card của A bằng topic của B', async () => {
     const foreignTopic = await app.inject({
       method: 'PATCH',
@@ -255,6 +290,7 @@ describe('E4-S1-T7 — TC-022 cô lập dữ liệu giữa các tài khoản', (
     ['GET /api/cards/due', () => ({ method: 'GET', url: '/api/cards/due' })],
     ['GET /api/streak', () => ({ method: 'GET', url: '/api/streak' })],
     ['GET /api/topics', () => ({ method: 'GET', url: '/api/topics' })],
+    ['GET /api/topics/forget-rate', () => ({ method: 'GET', url: '/api/topics/forget-rate' })],
     ['DELETE /api/cards/:id', ({ cardId }) => ({ method: 'DELETE', url: `/api/cards/${cardId}` })],
   ])('%s không có phiên trả 401 ERR_UNAUTHORIZED', async (_name, toRequest) => {
     const res = await app.inject(toRequest(owned));
