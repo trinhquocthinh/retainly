@@ -73,7 +73,12 @@ async function seedOwnerData(app: App, ownerCookies: Record<string, string>) {
     method: 'POST',
     url: '/api/cards',
     cookies: ownerCookies,
-    payload: { sourceId: source.id, front: 'Câu hỏi của A', back: 'Đáp án của A' },
+    payload: {
+      sourceId: source.id,
+      front: 'Câu hỏi của A',
+      back: 'Đáp án của A',
+      note: 'Ghi chú của A',
+    },
   });
   expect(created.statusCode).toBe(201);
 
@@ -130,6 +135,15 @@ describe('E4-S1-T7 — TC-022 cô lập dữ liệu giữa các tài khoản', (
         method: 'PATCH',
         url: `/api/cards/${cardId}`,
         payload: { front: 'B sửa' },
+      }),
+      'ERR_CARD_NOT_FOUND',
+    ],
+    [
+      'PATCH /api/cards/:id chỉ sửa ghi chú',
+      ({ cardId }) => ({
+        method: 'PATCH',
+        url: `/api/cards/${cardId}`,
+        payload: { note: null },
       }),
       'ERR_CARD_NOT_FOUND',
     ],

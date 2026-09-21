@@ -11,16 +11,21 @@ import { deleteCard, type CardDeleteRepository } from '../application/delete-car
 import { updateCard, type CardUpdateRepository } from '../application/update-card';
 import { requireAuth } from '../../../shared/request-auth';
 
+// Ghi chú tuỳ chọn; null (hoặc chuỗi trắng) nghĩa là không có / xoá ghi chú.
+const NOTE_SCHEMA = { type: ['string', 'null'], maxLength: 1000 } as const;
+
 type CreateBody = {
   sourceId?: string;
   topicId?: string;
   front: string;
   back: string;
+  note?: string | null;
 };
 
 type UpdateBody = {
   front?: string;
   back?: string;
+  note?: string | null;
 };
 
 type CardParams = {
@@ -98,6 +103,7 @@ export function registerCardsRoutes(app: FastifyInstance, deps: CardsRouteDeps):
             topicId: { type: 'string', format: 'uuid' },
             front: { type: 'string', maxLength: 2000 },
             back: { type: 'string', maxLength: 2000 },
+            note: NOTE_SCHEMA,
           },
         },
       },
@@ -136,6 +142,7 @@ export function registerCardsRoutes(app: FastifyInstance, deps: CardsRouteDeps):
               type: 'string',
               maxLength: 2000,
             },
+            note: NOTE_SCHEMA,
           },
         },
       },
@@ -148,6 +155,7 @@ export function registerCardsRoutes(app: FastifyInstance, deps: CardsRouteDeps):
           cardId: request.params.id,
           front: request.body.front,
           back: request.body.back,
+          note: request.body.note,
         },
       );
 

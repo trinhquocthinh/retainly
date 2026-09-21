@@ -13,6 +13,7 @@ export const prismaDueCardQuery: DueCardQuery = {
       id: row.card.id,
       front: row.card.front,
       back: row.card.back,
+      note: row.card.note,
       dueDate: row.dueDate,
     }));
   },

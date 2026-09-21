@@ -212,3 +212,54 @@ describe('E1-S3-T7 — màn ôn tập', () => {
     expect(dueRequests).toHaveLength(2);
   });
 });
+
+describe('E7-S1-T2 — TC-056 ghi chú ở mặt đáp án', () => {
+  function dueWith(note: string | null): Handler {
+    return {
+      status: 200,
+      body: {
+        dueCount: 1,
+        dueCards: [
+          {
+            id: 'card-1',
+            front: 'Hỏi A',
+            back: 'Đáp A',
+            note,
+            dueDate: '2026-09-13T09:00:00.000Z',
+          },
+        ],
+      },
+    };
+  }
+
+  it('hiện ghi chú đã định dạng dưới đáp án', async () => {
+    mockApi({ 'GET /api/cards/due': dueWith('Mẹo: nhớ **từ khoá**') });
+    renderWithProviders(<ReviewPage />);
+
+    await userEvent.click(await screen.findByText('Hỏi A'));
+
+    expect(screen.getByText('Ghi chú')).toBeInTheDocument();
+    expect(screen.getByText('từ khoá', { selector: 'strong' })).toBeInTheDocument();
+  });
+
+  it('thẻ không có ghi chú thì không hiện khối ghi chú', async () => {
+    mockApi({ 'GET /api/cards/due': dueWith(null) });
+    renderWithProviders(<ReviewPage />);
+
+    await userEvent.click(await screen.findByText('Hỏi A'));
+
+    expect(screen.getByText('Đáp A')).toBeInTheDocument();
+    expect(screen.queryByText('Ghi chú')).not.toBeInTheDocument();
+  });
+
+  it('HTML và ảnh trong ghi chú hiển thị nguyên văn, không thành phần tử', async () => {
+    const note = '<img src=x onerror=alert(1)> ![meo](https://x.test/a.png)';
+    mockApi({ 'GET /api/cards/due': dueWith(note) });
+    const { container } = renderWithProviders(<ReviewPage />);
+
+    await userEvent.click(await screen.findByText('Hỏi A'));
+
+    expect(screen.getByText(note)).toBeInTheDocument();
+    expect(container.querySelector('.review-card img')).toBeNull();
+  });
+});

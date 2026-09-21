@@ -3,6 +3,7 @@ type CardListItem = {
   sourceId: string | null;
   front: string;
   back: string;
+  note: string | null;
   createdAt: Date;
 };
 

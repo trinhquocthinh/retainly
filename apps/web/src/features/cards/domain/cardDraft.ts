@@ -1,4 +1,5 @@
-export type CardDraft = { front: string; back: string };
+/** Ghi chú là tuỳ chọn; để trống thì coi như không có (máy chủ lưu null). */
+export type CardDraft = { front: string; back: string; note: string };
 export type CardField = keyof CardDraft;
 
 const FIELD_BY_ERROR_CODE: Record<string, CardField> = {

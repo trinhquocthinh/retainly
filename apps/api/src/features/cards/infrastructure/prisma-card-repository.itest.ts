@@ -159,3 +159,40 @@ describe('E3-S1-T2 — sửa và xóa card trên Postgres thật', () => {
     });
   });
 });
+
+describe('E7-S1-T2 — TC-055 ghi chú thẻ trên Postgres thật', () => {
+  it('lưu ghi chú khi tạo, xoá bằng null khi sửa', async () => {
+    const created = await prismaCardRepository.create({
+      userId: TEST_USER_ID,
+      front: 'Hỏi',
+      back: 'Đáp',
+      note: 'Mẹo nhớ',
+      schedule: createInitialSchedule(new Date()),
+    });
+
+    const saved = await testPrisma.card.findUniqueOrThrow({ where: { id: created.id } });
+    expect(saved.note).toBe('Mẹo nhớ');
+
+    const cleared = await prismaCardRepository.updateOwned({
+      userId: TEST_USER_ID,
+      cardId: created.id,
+      content: { note: null },
+    });
+
+    expect(cleared).toMatchObject({ front: 'Hỏi', back: 'Đáp', note: null });
+  });
+
+  it('cột note chặn chuỗi dài hơn 1000 ký tự ngay cả khi bỏ qua tầng API', async () => {
+    await expect(
+      prismaCardRepository.create({
+        userId: TEST_USER_ID,
+        front: 'Hỏi',
+        back: 'Đáp',
+        note: 'a'.repeat(1001),
+        schedule: createInitialSchedule(new Date()),
+      }),
+    ).rejects.toThrow();
+
+    expect(await testPrisma.card.count()).toBe(0);
+  });
+});

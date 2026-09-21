@@ -190,3 +190,27 @@ describe('E1-S3-T6 — màn tạo thẻ', () => {
     });
   });
 });
+
+describe('E7-S1-T2 — TC-055 ghi chú khi tạo thẻ', () => {
+  it('có nhập ghi chú thì gửi kèm note', async () => {
+    const fetchMock = mockFetch(201, { id: 'card-1' });
+    renderPage();
+
+    await userEvent.type(screen.getByLabelText('Mặt hỏi'), 'Thủ đô Pháp?');
+    await userEvent.type(screen.getByLabelText('Mặt trả lời'), 'Paris');
+    await userEvent.type(screen.getByLabelText(/Ghi chú/), 'Nhớ tháp **Eiffel**');
+    await userEvent.click(screen.getByRole('button', { name: 'Lưu thẻ' }));
+
+    await waitFor(() => {
+      expect(fetchMock.mock.calls.some(([url]) => url === '/api/cards')).toBe(true);
+    });
+    const [, option] = fetchMock.mock.calls.find(([url]) => url === '/api/cards') ?? [];
+
+    expect(JSON.parse(String(option?.body))).toEqual({
+      front: 'Thủ đô Pháp?',
+      back: 'Paris',
+      note: 'Nhớ tháp **Eiffel**',
+    });
+    await waitFor(() => expect(screen.getByLabelText(/Ghi chú/)).toHaveValue(''));
+  });
+});

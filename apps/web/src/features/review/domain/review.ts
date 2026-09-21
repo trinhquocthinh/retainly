@@ -1,4 +1,10 @@
-export type DueCard = { id: string; front: string; back: string; dueDate: string };
+export type DueCard = {
+  id: string;
+  front: string;
+  back: string;
+  note: string | null;
+  dueDate: string;
+};
 export type ReviewOutcome = 'remembered' | 'forgotten';
 
 /**

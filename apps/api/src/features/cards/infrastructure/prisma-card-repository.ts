@@ -14,6 +14,7 @@ export const prismaCardRepository: PrismaCardRepository = {
         topicId: card.topicId,
         front: card.front,
         back: card.back,
+        note: card.note,
         schedule: {
           create: {
             state: card.schedule.state,
@@ -47,6 +48,7 @@ export const prismaCardRepository: PrismaCardRepository = {
         sourceId: true,
         front: true,
         back: true,
+        note: true,
         createdAt: true,
       },
     });

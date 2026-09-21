@@ -49,3 +49,26 @@ describe('E1-S4-T9 — danh sách đến hạn trên Postgres thật', () => {
     expect(due.map((card) => card.front)).toEqual(['Quá hạn lâu', 'Mới quá hạn']);
   });
 });
+
+describe('E7-S1-T2 — hàng đợi ôn mang theo ghi chú', () => {
+  it('trả note của thẻ, thẻ không có ghi chú trả null', async () => {
+    const now = new Date();
+    await testPrisma.card.create({
+      data: {
+        userId: TEST_USER_ID,
+        front: 'Có ghi chú',
+        back: 'Đáp',
+        note: 'Mẹo nhớ',
+        schedule: { create: { state: 'review', dueDate: new Date(now.getTime() - DAY) } },
+      },
+    });
+    await seedCard(TEST_USER_ID, 'Không ghi chú', now);
+
+    const due = await prismaDueCardQuery.findDueBy(TEST_USER_ID, endOfToday(now));
+
+    expect(due.map(({ front, note }) => ({ front, note }))).toEqual([
+      { front: 'Có ghi chú', note: 'Mẹo nhớ' },
+      { front: 'Không ghi chú', note: null },
+    ]);
+  });
+});

@@ -27,8 +27,8 @@ describe('E1-S2-T4 — danh sách thẻ đến hạn', () => {
 
   it('dueCount khớp số phần tử trả về', async () => {
     const rows: DueCard[] = [
-      { id: 'a', front: 'Hỏi A', back: 'Đáp A', dueDate: NOW },
-      { id: 'b', front: 'Hỏi B', back: 'Đáp B', dueDate: NOW },
+      { id: 'a', front: 'Hỏi A', back: 'Đáp A', note: null, dueDate: NOW },
+      { id: 'b', front: 'Hỏi B', back: 'Đáp B', note: null, dueDate: NOW },
     ];
     const { query } = fakeQuery(rows);
 

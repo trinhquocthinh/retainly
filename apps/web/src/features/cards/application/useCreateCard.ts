@@ -12,10 +12,10 @@ import {
 
 /** Cổng lưu thẻ. Hiện thực thật do page container tiêm vào. */
 type CreateCardPort = (
-  card: CardDraft & { sourceId?: string; topicId?: string },
+  card: Omit<CardDraft, 'note'> & { note?: string; sourceId?: string; topicId?: string },
 ) => Promise<unknown>;
 
-const EMPTY_DRAFT: CardDraft = { front: '', back: '' };
+const EMPTY_DRAFT: CardDraft = { front: '', back: '', note: '' };
 
 /** Lỗi gắn được vào một ô nhập thì gắn xuống đó, phần còn lại thành banner. */
 function bannerFor(error: unknown): string | null {
@@ -37,7 +37,7 @@ export function useCreateCard(deps: {
 
   const mutation = useMutation({
     mutationFn: deps.createCard,
-    // Chỉ xoá hai mặt thẻ. Nguồn do page giữ nên vẫn còn đó: một bài viết đọc
+    // Chỉ xoá nội dung thẻ. Nguồn do page giữ nên vẫn còn đó: một bài viết đọc
     // một lần, rút được nhiều thẻ mà không phải nạp lại.
     onSuccess: async () => {
       setDraft(EMPTY_DRAFT);
@@ -76,8 +76,12 @@ export function useCreateCard(deps: {
       if (!isDraftComplete(draft) || mutation.isPending) return;
 
       setJustSaved(false);
+      // Ghi chú trống thì không gửi, như sourceId/topicId: payload chỉ mang
+      // những gì người dùng thực sự nhập.
+      const { note, ...content } = draft;
       const input = {
-        ...draft,
+        ...content,
+        ...(note.trim() ? { note } : {}),
         ...(deps.sourceId ? { sourceId: deps.sourceId } : {}),
         ...(deps.topicId ? { topicId: deps.topicId } : {}),
       };

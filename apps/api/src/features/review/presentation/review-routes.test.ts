@@ -52,8 +52,8 @@ describe('E1-S2-T4 — GET /api/cards/due', () => {
 
   it('trả đúng số thẻ và giữ nguyên thứ tự của tầng dưới', async () => {
     const app = appWith([
-      { id: 'a', front: 'Hỏi A', back: 'Đáp A', dueDate: NOW },
-      { id: 'b', front: 'Hỏi B', back: 'Đáp B', dueDate: NOW },
+      { id: 'a', front: 'Hỏi A', back: 'Đáp A', note: null, dueDate: NOW },
+      { id: 'b', front: 'Hỏi B', back: 'Đáp B', note: null, dueDate: NOW },
     ]);
     const res = await app.inject({ method: 'GET', url: '/api/cards/due' });
 

@@ -88,6 +88,23 @@ export function CreateCardForm({
         )}
       </Field>
 
+      <Field
+        label="Ghi chú"
+        hint="tuỳ chọn"
+        description="Giải thích, mẹo ghi nhớ hoặc #nhãn — hiện dưới đáp án khi ôn."
+      >
+        {(props) => (
+          <textarea
+            {...props}
+            rows={3}
+            placeholder="Vì sao đáp án đúng, liên tưởng giúp nhớ lâu…"
+            maxLength={1000}
+            value={draft.note}
+            onChange={onChange('note')}
+          />
+        )}
+      </Field>
+
       {topicSelector}
 
       <div className="create-card__actions">

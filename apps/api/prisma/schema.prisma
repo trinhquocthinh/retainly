@@ -55,6 +55,7 @@ model Card {
   topicId   String?  @map("topic_id") @db.Uuid
   front     String
   back      String
+  note      String?  @db.VarChar(1000)
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
 
   user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)

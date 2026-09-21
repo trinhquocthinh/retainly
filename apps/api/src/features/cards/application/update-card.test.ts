@@ -12,6 +12,7 @@ const EXISTING_CARD: UpdatedCard = {
   sourceId: null,
   front: 'Câu hỏi cũ',
   back: 'Câu trả lời cũ',
+  note: 'Ghi chú cũ',
   createdAt: NOW,
 };
 
@@ -95,7 +96,7 @@ describe('E3-S1-T2 — updateCard', () => {
     expect(cards.inputs).toHaveLength(0);
   });
 
-  it('body không có front hoặc back trả ERR_BAD_REQUEST', async () => {
+  it('body không có front, back hoặc note trả ERR_BAD_REQUEST', async () => {
     const cards = fakeRepository(EXISTING_CARD);
 
     await expect(
@@ -109,5 +110,28 @@ describe('E3-S1-T2 — updateCard', () => {
     ).rejects.toThrow(new AppError('ERR_BAD_REQUEST'));
 
     expect(cards.inputs).toHaveLength(0);
+  });
+});
+
+describe('E7-S1-T2 — TC-055 sửa ghi chú thẻ', () => {
+  it('chỉ gửi note thì chỉ ghi đè note, đã trim', async () => {
+    const cards = fakeRepository(EXISTING_CARD);
+
+    const updated = await updateCard(
+      { cards },
+      { userId: USER_ID, cardId: CARD_ID, note: '  Ghi chú mới  ' },
+    );
+
+    expect(updated.note).toBe('Ghi chú mới');
+    expect(cards.inputs[0]?.content).toEqual({ note: 'Ghi chú mới' });
+  });
+
+  it.each([null, '   '])('note %j là xoá ghi chú', async (note) => {
+    const cards = fakeRepository(EXISTING_CARD);
+
+    const updated = await updateCard({ cards }, { userId: USER_ID, cardId: CARD_ID, note });
+
+    expect(updated.note).toBeNull();
+    expect(cards.inputs[0]?.content).toEqual({ note: null });
   });
 });

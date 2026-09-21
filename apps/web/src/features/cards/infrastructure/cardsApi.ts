@@ -8,7 +8,11 @@ import type {
   UpdateCardInput,
 } from '../domain/cardLibrary';
 
-export type NewCard = CardDraft & { sourceId?: string; topicId?: string };
+export type NewCard = Omit<CardDraft, 'note'> & {
+  note?: string;
+  sourceId?: string;
+  topicId?: string;
+};
 export type CreatedCard = { id: string; topicId?: string | null };
 
 /** POST /api/cards — SPEC-002. */

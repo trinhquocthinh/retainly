@@ -1,4 +1,4 @@
-import { makeCardContent } from '../domain/card';
+import { makeCardContent, makeCardNote } from '../domain/card';
 import { createInitialSchedule, type Schedule } from '../../review/domain/review-scheduler';
 import { AppError } from '../../../shared/errors';
 
@@ -8,6 +8,7 @@ type NewCard = {
   topicId?: string;
   front: string;
   back: string;
+  note?: string | null;
   schedule: Schedule;
 };
 
@@ -41,6 +42,7 @@ export async function createCard(
     topicId?: string;
     front: string;
     back: string;
+    note?: string | null;
   },
 ): Promise<CreatedCard> {
   const content = makeCardContent(input);
@@ -68,6 +70,7 @@ export async function createCard(
     sourceId: input.sourceId,
     topicId: input.topicId,
     ...content,
+    note: makeCardNote(input.note),
     schedule: createInitialSchedule(deps.now()),
   });
 }

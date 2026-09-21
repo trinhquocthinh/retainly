@@ -1,6 +1,12 @@
 import { endOfToday } from '../domain/due-window';
 
-export type DueCard = { id: string; front: string; back: string; dueDate: Date };
+export type DueCard = {
+  id: string;
+  front: string;
+  back: string;
+  note: string | null;
+  dueDate: Date;
+};
 
 /** Cổng đọc thẻ đến hạn. Hiện thực thật nằm ở tầng infrastructure. */
 export type DueCardQuery = {

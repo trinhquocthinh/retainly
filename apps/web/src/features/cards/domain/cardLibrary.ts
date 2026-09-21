@@ -5,6 +5,7 @@ export type CardListItem = {
   sourceId: string | null;
   front: string;
   back: string;
+  note: string | null;
   createdAt: string;
 };
 
@@ -18,5 +19,6 @@ export type CardListResponse = {
   };
 };
 
-export type UpdateCardInput = Pick<CardDraft, 'front' | 'back'>;
+/** Gửi đủ ba trường; ghi chú rỗng nghĩa là xoá ghi chú. */
+export type UpdateCardInput = CardDraft;
 export type DeletedCard = { deleted: true };

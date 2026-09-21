@@ -11,6 +11,7 @@ const CARD = {
   sourceId: null,
   front: 'FSRS dùng để làm gì?',
   back: 'Lập lịch ôn tập theo trí nhớ.',
+  note: null as string | null,
   createdAt: '2026-09-16T00:00:00.000Z',
 };
 
@@ -77,6 +78,7 @@ describe('E3-S1-T3 — Thư viện thẻ', () => {
     expect(JSON.parse(String(patchCall?.[1]?.body))).toEqual({
       front: 'FSRS lập lịch dựa trên điều gì?',
       back: CARD.back,
+      note: '' as string | null,
     });
   });
 
@@ -133,5 +135,39 @@ describe('E7-S1-T1 — định dạng trong thư viện thẻ', () => {
 
     await userEvent.click(deleteButton);
     expect(screen.getByRole('alertdialog')).toHaveTextContent('“FSRS dùng R để làm gì?”');
+  });
+});
+
+describe('E7-S1-T2 — TC-055 sửa ghi chú trong thư viện thẻ', () => {
+  it('chỉ đổi ghi chú cũng lưu được, xoá trắng ghi chú thì gửi chuỗi rỗng', async () => {
+    const fetchMock = vi.fn().mockImplementation((_url: string, options?: RequestInit) => {
+      if (options?.method === 'PATCH') {
+        return response(200, { ...CARD, note: null });
+      }
+      return response(200, libraryPayload([{ ...CARD, note: 'Mẹo cũ' }]));
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    renderWithProviders(<CardLibraryPage />, { route: '/cards' });
+    await userEvent.click(await screen.findByRole('button', { name: /Sửa thẻ/ }));
+
+    const note = screen.getByLabelText(/Ghi chú/);
+    const save = screen.getByRole('button', { name: 'Lưu thay đổi' });
+    expect(note).toHaveValue('Mẹo cũ');
+    expect(save).toBeDisabled();
+
+    await userEvent.clear(note);
+    expect(save).toBeEnabled();
+    await userEvent.click(save);
+
+    await waitFor(() => {
+      expect(fetchMock.mock.calls.some(([, options]) => options?.method === 'PATCH')).toBe(true);
+    });
+    const patchCall = fetchMock.mock.calls.find(([, options]) => options?.method === 'PATCH');
+    expect(JSON.parse(String(patchCall?.[1]?.body))).toEqual({
+      front: CARD.front,
+      back: CARD.back,
+      note: '',
+    });
   });
 });

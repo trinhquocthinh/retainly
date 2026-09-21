@@ -17,6 +17,17 @@ export function makeCardBack(back: string): string {
 }
 
 /**
+ * Ghi chú là tuỳ chọn: trim xong mà rỗng thì coi như không có, lưu `null` chứ
+ * không lưu chuỗi rỗng — một cách biểu diễn duy nhất cho "không có ghi chú".
+ * Giới hạn 1000 ký tự do JSON schema chặn, cột VARCHAR(1000) chặn lần cuối.
+ */
+export function makeCardNote(note: string | null | undefined): string | null {
+  const normalized = note?.trim() ?? '';
+
+  return normalized.length === 0 ? null : normalized;
+}
+
+/**
  * Chuẩn hoá và kiểm tra nội dung hai mặt thẻ (SPEC-002, BR-011).
  * Trim trước khi kiểm rỗng: chuỗi toàn khoảng trắng là rỗng theo nghĩa nghiệp vụ.
  * Giới hạn trên 2000 ký tự do JSON schema ở tầng presentation chặn.

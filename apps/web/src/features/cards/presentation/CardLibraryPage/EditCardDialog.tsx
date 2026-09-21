@@ -25,7 +25,11 @@ function bannerFor(error: unknown): string | null {
 }
 
 export function EditCardDialog({ card, saving, error, onCancel, onSave }: EditCardDialogProps) {
-  const [draft, setDraft] = useState<CardDraft>({ front: card.front, back: card.back });
+  const [draft, setDraft] = useState<CardDraft>({
+    front: card.front,
+    back: card.back,
+    note: card.note ?? '',
+  });
   const firstFieldRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -43,7 +47,7 @@ export function EditCardDialog({ card, saving, error, onCancel, onSave }: EditCa
   const canSave =
     draft.front.trim().length > 0 &&
     draft.back.trim().length > 0 &&
-    (draft.front !== card.front || draft.back !== card.back) &&
+    (draft.front !== card.front || draft.back !== card.back || draft.note !== (card.note ?? '')) &&
     !saving;
 
   function errorOf(field: CardField) {
@@ -128,6 +132,18 @@ export function EditCardDialog({ card, saving, error, onCancel, onSave }: EditCa
                 maxLength={2000}
                 value={draft.back}
                 onChange={(event) => setField('back', event.target.value)}
+              />
+            )}
+          </Field>
+
+          <Field label="Ghi chú" hint="tuỳ chọn">
+            {(props) => (
+              <textarea
+                {...props}
+                rows={3}
+                maxLength={1000}
+                value={draft.note}
+                onChange={(event) => setField('note', event.target.value)}
               />
             )}
           </Field>

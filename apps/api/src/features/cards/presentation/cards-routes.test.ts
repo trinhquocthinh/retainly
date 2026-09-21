@@ -33,6 +33,7 @@ const fakeCards: CardRepository & CardUpdateRepository & CardDeleteRepository = 
       sourceId: null,
       front: input.content.front ?? 'Câu hỏi cũ',
       back: input.content.back ?? 'Câu trả lời cũ',
+      note: input.content.note === undefined ? 'Ghi chú cũ' : input.content.note,
       createdAt: NOW,
     };
   },
@@ -451,6 +452,87 @@ describe('E4-S1-T3 — route thẻ yêu cầu đăng nhập', () => {
     expect(res.statusCode).toBe(401);
     expect(res.json().error.code).toBe('ERR_UNAUTHORIZED');
     expect(listInputs).toEqual([]);
+
+    await app.close();
+  });
+});
+
+describe('E7-S1-T2 — TC-055 ghi chú qua API thẻ', () => {
+  it('POST lưu ghi chú đã trim và trả lại trong DTO', async () => {
+    const app = appWithCards();
+
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/cards',
+      payload: { front: 'Hỏi', back: 'Đáp', note: '  Mẹo **nhớ**  ' },
+    });
+
+    expect(res.statusCode).toBe(201);
+    expect(res.json().note).toBe('Mẹo **nhớ**');
+
+    await app.close();
+  });
+
+  it('POST không kèm ghi chú thì note là null', async () => {
+    const app = appWithCards();
+
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/cards',
+      payload: { front: 'Hỏi', back: 'Đáp' },
+    });
+
+    expect(res.json().note).toBeNull();
+
+    await app.close();
+  });
+
+  it('ghi chú đúng 1000 ký tự được nhận, 1001 ký tự trả ERR_BAD_REQUEST', async () => {
+    const app = appWithCards();
+    const post = (note: string) =>
+      app.inject({
+        method: 'POST',
+        url: '/api/cards',
+        payload: { front: 'Hỏi', back: 'Đáp', note },
+      });
+
+    expect((await post('a'.repeat(1000))).statusCode).toBe(201);
+
+    const tooLong = await post('a'.repeat(1001));
+    expect(tooLong.statusCode).toBe(400);
+    expect(tooLong.json().error.code).toBe('ERR_BAD_REQUEST');
+
+    await app.close();
+  });
+
+  it('PATCH chỉ có note là hợp lệ và chỉ ghi đè note', async () => {
+    const app = appWithCards();
+
+    const res = await app.inject({
+      method: 'PATCH',
+      url: `/api/cards/${CARD_ID}`,
+      payload: { note: 'Ghi chú mới' },
+    });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toMatchObject({ front: 'Câu hỏi cũ', note: 'Ghi chú mới' });
+    expect(updateInputs[0]?.content).toEqual({ note: 'Ghi chú mới' });
+
+    await app.close();
+  });
+
+  it('PATCH note null là xoá ghi chú', async () => {
+    const app = appWithCards();
+
+    const res = await app.inject({
+      method: 'PATCH',
+      url: `/api/cards/${CARD_ID}`,
+      payload: { note: null },
+    });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.json().note).toBeNull();
+    expect(updateInputs[0]?.content).toEqual({ note: null });
 
     await app.close();
   });

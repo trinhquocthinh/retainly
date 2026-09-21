@@ -3,6 +3,7 @@ import { InlineMarkdown } from '@src/shared/ui/Markdown/InlineMarkdown';
 import type { DueCard } from '../../domain/review';
 
 import './ReviewCard.css';
+import { IconLightbulb } from '@src/shared/ui/Icons/Icons';
 
 type ReviewCardProps = {
   card: DueCard;
@@ -44,6 +45,19 @@ export function ReviewCard({ card, flipped, onFlip }: ReviewCardProps) {
             <span className="review-card__answer">
               <InlineMarkdown text={card.back} />
             </span>
+            {card.note ? (
+              <span className="review-card__note">
+                <span className="review-card__note-icon">
+                  <IconLightbulb />
+                </span>
+                <span className="review-card__note-content">
+                  <span className="review-card__note-label text-caption-caps">Ghi chú</span>
+                  <span className="review-card__note-text text-small">
+                    <InlineMarkdown text={card.note} />
+                  </span>
+                </span>
+              </span>
+            ) : null}
           </span>
           <span className="review-card__foot text-caption">
             Chọn Quên hoặc Nhớ để sang thẻ kế tiếp

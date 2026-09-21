@@ -142,3 +142,35 @@ describe('E5-S1-T3 — tạo thẻ nguyên tử cùng topic', () => {
     expect(cards.saved).toEqual([]);
   });
 });
+
+describe('E7-S1-T2 — TC-055 tạo thẻ kèm ghi chú', () => {
+  const deps = (cards: CardRepository) => ({
+    cards,
+    sources: ownsEverything,
+    topics: ownsEverything,
+    now: () => NOW,
+  });
+
+  it('ghi chú được trim rồi lưu cùng thẻ', async () => {
+    const cards = fakeRepository();
+
+    const created = await createCard(deps(cards), {
+      userId: USER,
+      front: 'Hỏi',
+      back: 'Đáp',
+      note: '  Mẹo nhớ  ',
+    });
+
+    expect(created.note).toBe('Mẹo nhớ');
+    expect(cards.saved[0]?.note).toBe('Mẹo nhớ');
+  });
+
+  it('không gửi hoặc gửi chuỗi trắng thì lưu null', async () => {
+    const cards = fakeRepository();
+
+    await createCard(deps(cards), { userId: USER, front: 'Hỏi', back: 'Đáp' });
+    await createCard(deps(cards), { userId: USER, front: 'Hỏi', back: 'Đáp', note: '   ' });
+
+    expect(cards.saved.map((card) => card.note)).toEqual([null, null]);
+  });
+});

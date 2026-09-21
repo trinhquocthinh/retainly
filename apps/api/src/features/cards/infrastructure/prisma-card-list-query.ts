@@ -22,6 +22,7 @@ export const prismaCardListQuery: CardListQuery = {
               sourceId: true,
               front: true,
               back: true,
+              note: true,
               createdAt: true,
             },
           }),
