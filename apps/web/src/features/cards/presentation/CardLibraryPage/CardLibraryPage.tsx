@@ -11,6 +11,7 @@ import {
   IconNewCard,
 } from '@src/shared/ui/Icons/Icons';
 import { Toast } from '@src/shared/ui/Toast/Toast';
+import { InlineMarkdown } from '@src/shared/ui/Markdown/InlineMarkdown';
 
 import { useCardLibrary } from '../../application/useCardLibrary';
 import type { CardListItem, UpdateCardInput } from '../../domain/cardLibrary';
@@ -19,6 +20,7 @@ import { DeleteCardDialog } from './DeleteCardDialog';
 import { EditCardDialog } from './EditCardDialog';
 
 import './CardLibraryPage.css';
+import { stripMarkdown } from '@src/shared/ui/Markdown/MarkdownSyntax';
 
 const dateFormatter = new Intl.DateTimeFormat('vi-VN', {
   day: '2-digit',
@@ -166,8 +168,12 @@ export function CardLibraryPage() {
                   className="card-library__content"
                   onClick={() => openEdit(card)}
                 >
-                  <span className="card-library__front">{card.front}</span>
-                  <span className="card-library__back text-caption">{card.back}</span>
+                  <span className="card-library__front">
+                    <InlineMarkdown text={card.front} />
+                  </span>
+                  <span className="card-library__back text-caption">
+                    <InlineMarkdown text={card.back} />
+                  </span>
                 </button>
 
                 <time className="card-library__date text-caption" dateTime={card.createdAt}>
@@ -179,7 +185,7 @@ export function CardLibraryPage() {
                   <button
                     type="button"
                     className="card-library__icon-button"
-                    aria-label={`Sửa thẻ “${card.front}”`}
+                    aria-label={`Sửa thẻ “${stripMarkdown(card.front)}”`}
                     onClick={() => openEdit(card)}
                   >
                     <IconEdit />
@@ -187,7 +193,7 @@ export function CardLibraryPage() {
                   <button
                     type="button"
                     className="card-library__icon-button card-library__icon-button--danger"
-                    aria-label={`Xoá thẻ “${card.front}”`}
+                    aria-label={`Xoá thẻ “${stripMarkdown(card.front)}”`}
                     onClick={() => openDelete(card)}
                   >
                     <IconDelete />

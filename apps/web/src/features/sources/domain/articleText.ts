@@ -3,7 +3,7 @@
  * Panel nguồn là chỗ để đọc và bôi đen: một đường link dài giữa câu vừa che mất
  * nội dung, vừa dính vào đoạn người dùng quét để làm mặt trả lời.
  */
-function stripMarkdown(block: string): string {
+function cleanArticleBlock(block: string): string {
   return (
     block
       .replace(/^#{1,6}\s+/, '')
@@ -21,6 +21,6 @@ function stripMarkdown(block: string): string {
 export function toParagraphs(cleanText: string): string[] {
   return cleanText
     .split(/\n{2,}/)
-    .map(stripMarkdown)
+    .map(cleanArticleBlock)
     .filter((block) => block.length > 0);
 }

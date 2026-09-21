@@ -1,3 +1,5 @@
+import { InlineMarkdown } from '@src/shared/ui/Markdown/InlineMarkdown';
+
 import type { DueCard } from '../../domain/review';
 
 import './ReviewCard.css';
@@ -24,7 +26,9 @@ export function ReviewCard({ card, flipped, onFlip }: ReviewCardProps) {
         <span className="review-card__face surface-raised" aria-hidden={flipped}>
           <span className="review-card__tag text-caption-caps">Mặt hỏi</span>
           <span className="review-card__body">
-            <span className="review-card__prompt">{card.front}</span>
+            <span className="review-card__prompt">
+              <InlineMarkdown text={card.front} />
+            </span>
           </span>
           <span className="review-card__foot text-caption">Chạm vào thẻ để xem đáp án</span>
         </span>
@@ -37,7 +41,9 @@ export function ReviewCard({ card, flipped, onFlip }: ReviewCardProps) {
             Mặt đáp án
           </span>
           <span className="review-card__body review-card__body--start">
-            <span className="review-card__answer">{card.back}</span>
+            <span className="review-card__answer">
+              <InlineMarkdown text={card.back} />
+            </span>
           </span>
           <span className="review-card__foot text-caption">
             Chọn Quên hoặc Nhớ để sang thẻ kế tiếp

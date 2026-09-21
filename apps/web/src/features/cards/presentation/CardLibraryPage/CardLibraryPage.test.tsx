@@ -109,3 +109,29 @@ describe('E3-S1-T3 — Thư viện thẻ', () => {
     );
   });
 });
+
+describe('E7-S1-T1 — định dạng trong thư viện thẻ', () => {
+  it('hiển thị đậm/code ở danh sách, còn nhãn nút và hộp xác nhận xoá dùng chữ đã gỡ dấu', async () => {
+    const card = {
+      ...CARD,
+      front: '**FSRS** dùng `R` để làm gì?',
+      back: 'Lập lịch *theo* trí nhớ.',
+    };
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockImplementation(() => response(200, libraryPayload([card]))),
+    );
+
+    renderWithProviders(<CardLibraryPage />, { route: '/cards' });
+
+    expect(await screen.findByText('FSRS', { selector: 'strong' })).toBeVisible();
+    expect(screen.getByText('R', { selector: 'code' })).toBeVisible();
+    expect(screen.getByText('theo', { selector: 'em' })).toBeVisible();
+
+    const deleteButton = screen.getByRole('button', { name: 'Xoá thẻ “FSRS dùng R để làm gì?”' });
+    expect(screen.getByRole('button', { name: 'Sửa thẻ “FSRS dùng R để làm gì?”' })).toBeVisible();
+
+    await userEvent.click(deleteButton);
+    expect(screen.getByRole('alertdialog')).toHaveTextContent('“FSRS dùng R để làm gì?”');
+  });
+});

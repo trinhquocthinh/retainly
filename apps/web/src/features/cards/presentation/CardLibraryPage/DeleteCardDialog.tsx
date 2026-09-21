@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { ApiError, NetworkError, TimeoutError } from '@src/shared/api/client';
 import { Button } from '@src/shared/ui/Button/Button';
 import { IconDelete } from '@src/shared/ui/Icons/Icons';
+import { stripMarkdown } from '@src/shared/ui/Markdown/MarkdownSyntax';
 
 import type { CardListItem } from '../../domain/cardLibrary';
 
@@ -70,7 +71,9 @@ export function DeleteCardDialog({
           <p id="delete-card-description" className="text-small">
             Thẻ cùng toàn bộ lịch và kết quả ôn tập liên quan sẽ bị xoá khỏi cơ sở dữ liệu.
           </p>
-          <blockquote className="card-dialog__preview text-small">“{card.front}”</blockquote>
+          <blockquote className="card-dialog__preview text-small">
+            “{stripMarkdown(card.front)}”
+          </blockquote>
 
           {messageFor(error) ? (
             <p className="feedback-danger text-small" role="alert">
