@@ -99,7 +99,7 @@ export function LoginPage() {
       </main>
 
       <footer className="login__footer text-caption">
-        Retainly v0.1 · Hệ thống lặp lại ngắt quãng thuật toán FSRS
+        Retainly v0.1 · Hệ thống lặp lại ngắt quãng thuật toán FSRS-6
       </footer>
     </div>
   );

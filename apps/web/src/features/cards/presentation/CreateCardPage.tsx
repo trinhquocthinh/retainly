@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 
 import { Toast } from '@src/shared/ui/Toast/Toast';
-import { IconCheck } from '@src/shared/ui/Icons/Icons';
+import { IconCheck, IconRestart } from '@src/shared/ui/Icons/Icons';
 import { useSelectionToAnswer } from '@src/features/sources/application/useSelectionToAnswer';
 import { useSourceLoader } from '@src/features/sources/application/useSourceLoader';
 import { extractSource } from '@src/features/sources/infrastructure/sourcesApi';
@@ -11,6 +11,7 @@ import { UrlBar } from '@src/features/sources/presentation/UrlBar/UrlBar';
 
 import { useCreateCard } from '../application/useCreateCard';
 import { createCard } from '../infrastructure/cardsApi';
+import { CardPreview } from './CardPreview';
 import { CreateCardForm } from './CreateCardForm';
 import { ModeTabs, type CreateMode } from './ModeTabs';
 import { useTopics } from '@src/features/topics/application/useTopics';
@@ -46,17 +47,35 @@ export function CreateCardPage() {
 
   const hasSource = mode === 'url' && (loader.loading || source !== null);
 
+  function resetDraft() {
+    if (window.confirm('Xoá toàn bộ nội dung đang soạn?')) form.reset();
+  }
+
   return (
-    <div className={`create-card ${hasSource ? 'create-card--wide' : ''}`}>
-      <nav className="create-card__breadcrumb text-caption" aria-label="Đường dẫn">
-        <Link to="/cards">Thư viện</Link>
-        <span aria-hidden="true">›</span>
-        <span className="create-card__breadcrumb-current">Thẻ mới</span>
-      </nav>
+    <div className="create-card create-card--wide">
+      <header className="create-card__header">
+        <div className="create-card__heading">
+          <nav className="create-card__breadcrumb text-caption" aria-label="Đường dẫn">
+            <Link to="/cards">Thư viện</Link>
+            <span aria-hidden="true">›</span>
+            <span className="create-card__breadcrumb-current">Thẻ mới</span>
+          </nav>
+          <h1 className="text-h1 create-card__title">Thẻ mới</h1>
+        </div>
 
-      <h1 className="text-h1 create-card__title">Thẻ mới</h1>
-
-      <ModeTabs mode={mode} onModeChange={setMode} />
+        <div className="create-card__controls">
+          <ModeTabs mode={mode} onModeChange={setMode} />
+          <button
+            type="button"
+            className="create-card__reset text-small"
+            disabled={!form.dirty}
+            onClick={resetDraft}
+          >
+            <IconRestart />
+            Làm mới
+          </button>
+        </div>
+      </header>
 
       {mode === 'url' ? (
         <UrlBar
@@ -69,50 +88,60 @@ export function CreateCardPage() {
         />
       ) : null}
 
-      <div className={`create-card__workspace ${hasSource ? 'create-card__workspace--split' : ''}`}>
+      <div className="create-card__workspace">
+        {/* Cột trái: nguồn khi đang rút ý từ bài viết, còn lại là quy tắc soạn thẻ. */}
         {hasSource ? (
-          <SourcePanel source={source} loading={loader.loading} contentRef={sourceContentRef} />
-        ) : null}
+          <div className="create-card__aside">
+            <SourcePanel source={source} loading={loader.loading} contentRef={sourceContentRef} />
+          </div>
+        ) : (
+          <aside className="create-card__aside create-card__aside--rules">
+            <div className="create-card__rules surface-panel">
+              <h2 className="create-card__rules-title text-h2">
+                <IconCheck size={20} />
+                Quy tắc thẻ ghi nhớ nguyên tử
+              </h2>
+              <ul className="create-card__rules-list">
+                {ATOMIC_RULES.map((rule) => (
+                  <li key={rule} className="create-card__rule text-small">
+                    <IconCheck />
+                    <span>{rule}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </aside>
+        )}
 
-        <CreateCardForm
-          topicSelector={
-            <TopicSelector
-              topics={topics.topics}
-              value={topicId}
-              loading={topics.loading}
-              loadError={topics.loadError}
-              creating={topics.creating}
-              createError={topics.createError}
-              onChange={setTopicId}
-              onReload={topics.reload}
-              onCreate={topics.addTopic}
-              onResetCreate={topics.resetCreate}
-            />
-          }
-          draft={form.draft}
-          canSave={form.canSave}
-          saving={form.saving}
-          banner={form.banner}
-          errorOf={form.errorOf}
-          onChange={form.onChange}
-          onSubmit={form.onSubmit}
-          onCancel={() => navigate(-1)}
-        />
+        <div className="create-card__main">
+          <CardPreview draft={form.draft} />
+
+          <CreateCardForm
+            topicSelector={
+              <TopicSelector
+                topics={topics.topics}
+                value={topicId}
+                loading={topics.loading}
+                loadError={topics.loadError}
+                creating={topics.creating}
+                createError={topics.createError}
+                onChange={setTopicId}
+                onReload={topics.reload}
+                onCreate={topics.addTopic}
+                onResetCreate={topics.resetCreate}
+              />
+            }
+            draft={form.draft}
+            canSave={form.canSave}
+            saving={form.saving}
+            banner={form.banner}
+            errorOf={form.errorOf}
+            onFieldChange={form.setField}
+            onSubmit={form.onSubmit}
+            onCancel={() => navigate(-1)}
+          />
+        </div>
       </div>
-
-      {mode === 'manual' ? (
-        <aside className="create-card__rules">
-          <h2 className="create-card__rules-title text-small">Quy tắc thẻ ghi nhớ nguyên tử</h2>
-          <ul className="create-card__rules-list">
-            {ATOMIC_RULES.map((rule) => (
-              <li key={rule} className="create-card__rule text-caption">
-                <IconCheck />
-                <span>{rule}</span>
-              </li>
-            ))}
-          </ul>
-        </aside>
-      ) : null}
 
       <Toast open={form.justSaved}>
         {source

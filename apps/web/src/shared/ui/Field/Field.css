@@ -4,6 +4,13 @@
   gap: var(--space-1);
 }
 
+.field__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
 .field__label {
   font-weight: 500;
 }

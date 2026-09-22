@@ -169,3 +169,20 @@ export function IconLightbulb({ size = 18 }: IconProps) {
     </svg>
   );
 }
+
+export function IconChevronDown({ size = 16 }: IconProps) {
+  return (
+    <svg {...base(size)}>
+      <path d="M6 9l6 6 6-6" />
+    </svg>
+  );
+}
+
+export function IconRestart({ size = 16 }: IconProps) {
+  return (
+    <svg {...base(size)}>
+      <path d="M4 12a8 8 0 1 0 2.4-5.7L4 8.6" />
+      <path d="M4 4v4.6h4.6" />
+    </svg>
+  );
+}

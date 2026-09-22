@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent, type FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { ApiError, NetworkError } from '@src/shared/api/client';
@@ -65,11 +65,17 @@ export function useCreateCard(deps: {
     justSaved,
     banner: bannerFor(mutation.error),
 
+    dirty: Object.values(draft).some((value) => value.length > 0),
+
     errorOf: (field: CardField) =>
       failedField === field ? (mutation.error as ApiError).message : undefined,
     setField,
-    onChange: (field: CardField) => (event: ChangeEvent<HTMLTextAreaElement>) =>
-      setField(field, event.target.value),
+    // Bỏ cả lỗi của lần lưu trước: nội dung gắn với lỗi đó đã không còn.
+    reset: () => {
+      setDraft(EMPTY_DRAFT);
+      setJustSaved(false);
+      mutation.reset();
+    },
 
     onSubmit: (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();

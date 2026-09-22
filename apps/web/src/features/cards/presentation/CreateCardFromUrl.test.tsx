@@ -116,7 +116,7 @@ describe('E2-S2-T5 — tạo thẻ từ URL', () => {
 
     await userEvent.type(screen.getByLabelText('Mặt hỏi'), 'Đường cong quên do ai mô tả?');
     await userEvent.type(screen.getByLabelText('Mặt trả lời'), 'Hermann Ebbinghaus');
-    await userEvent.click(screen.getByRole('button', { name: 'Lưu thẻ' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Lưu & tạo tiếp' }));
 
     await waitFor(() => {
       expect(fetchGia.mock.calls.some(([url]) => url === '/api/cards')).toBe(true);
@@ -145,7 +145,7 @@ describe('E2-S2-T5 — tạo thẻ từ URL', () => {
 
     await userEvent.type(screen.getByLabelText('Mặt hỏi'), 'Hỏi');
     await userEvent.type(screen.getByLabelText('Mặt trả lời'), 'Đáp');
-    await userEvent.click(screen.getByRole('button', { name: 'Lưu thẻ' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Lưu & tạo tiếp' }));
 
     expect(await screen.findByRole('status')).toHaveTextContent('Tiếp tục rút ý từ bài viết này');
     expect(screen.getByText(ARTICLE.title)).toBeInTheDocument();

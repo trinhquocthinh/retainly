@@ -4,11 +4,24 @@
   gap: var(--space-4);
 }
 
+/* Dải lệnh trên cùng (design 0.1.2): tiêu đề bên trái, chế độ tạo + Làm mới bên phải. */
+.create-card__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.create-card__heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
 .create-card__breadcrumb {
   display: flex;
   align-items: center;
   gap: var(--space-1);
-  color: var(--color-text-secondary);
+  color: var(--color-placeholder);
 }
 
 .create-card__breadcrumb a {
@@ -22,19 +35,75 @@
 }
 
 .create-card__breadcrumb-current {
-  color: var(--color-text);
-  font-weight: 500;
+  color: var(--color-accent-active);
+  font-weight: 600;
 }
 
 .create-card__title {
-  margin: 0 0 var(--space-2);
+  margin: 0;
 }
 
+.create-card__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.create-card__controls .mode-tabs {
+  flex: 1;
+}
+
+.create-card__reset {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0 var(--space-3);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition:
+    background var(--duration-fast),
+    color var(--duration-fast);
+}
+
+.create-card__reset:hover:not(:disabled) {
+  background: var(--color-secondary-hover-bg);
+  color: var(--color-text);
+}
+
+.create-card__reset:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Dưới desktop xếp một cột: quy tắc xuống cuối, còn nguồn bài viết thì giữ
+   trên cùng vì là thứ người dùng đọc trước khi soạn. */
 .create-card__workspace {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-6);
   min-height: 0;
+}
+
+.create-card__aside--rules {
+  order: 1;
+}
+
+/* Trên điện thoại gõ trước, xem trước sau: khung xem trước không đẩy ô nhập khỏi màn hình. */
+.create-card__main .card-preview {
+  order: 1;
+}
+
+.create-card__main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  min-width: 0;
 }
 
 /* Panel — Flat 2.0 level 1: viền 1px, bóng sm, bo 12px */
@@ -42,6 +111,42 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
+}
+
+.create-card__note {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.create-card__note-toggle {
+  align-self: flex-start;
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: color var(--duration-fast);
+}
+
+.create-card__note-toggle:hover {
+  color: var(--color-text);
+}
+
+.create-card__note-chevron {
+  display: flex;
+  color: var(--color-placeholder);
+  transition: transform var(--duration-fast);
+}
+
+.create-card__note-toggle--open .create-card__note-chevron {
+  transform: rotate(180deg);
 }
 
 .create-card__actions {
@@ -74,16 +179,18 @@
 .create-card__rules {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-4);
-  background: var(--color-secondary-hover-bg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  gap: var(--space-4);
 }
 
 .create-card__rules-title {
   margin: 0;
-  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+
+  svg {
+    color: var(--color-accent);
+  }
 }
 
 .create-card__rules-list {
@@ -92,7 +199,7 @@
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-3);
 }
 
 .create-card__rule {
@@ -104,27 +211,34 @@
 
 .create-card__rule svg {
   flex: 0 0 auto;
-  margin-top: 1px;
-  color: var(--color-accent);
+  margin-top: 2px;
+  color: var(--color-success);
+}
+
+@media (min-width: 768px) {
+  .create-card__header {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+
+  .create-card__controls .mode-tabs {
+    flex: 0 0 240px;
+  }
 }
 
 @media (min-width: 1024px) {
-  /* D3 — nguồn bên trái, form 400px bên phải. */
-  .create-card__workspace--split {
+  /* Design 0.1.2 — cột trái 5/12 (nguồn hoặc quy tắc), cột phải 7/12 (xem trước + form). */
+  .create-card__workspace {
     display: grid;
-    grid-template-columns: 1fr 400px;
-    gap: var(--space-8);
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--space-6);
     align-items: start;
   }
 
-  /* Cột 400px không đủ cho một hàng ngang: nhắc phím tụt xuống dưới hai nút. */
-  .create-card__workspace--split .create-card__actions {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .create-card__workspace--split .create-card__shortcut {
-    order: 2;
+  .create-card__aside--rules,
+  .create-card__main .card-preview {
+    order: 0;
   }
 
   .create-card__actions {
@@ -143,6 +257,6 @@
 
   .create-card__buttons .btn--primary {
     flex: 0 0 auto;
-    min-width: 160px;
+    min-width: 180px;
   }
 }

@@ -1,11 +1,16 @@
-import type { ChangeEvent, FormEvent, KeyboardEvent, ReactNode } from 'react';
+import { useId, useState, type FormEvent, type KeyboardEvent, type ReactNode } from 'react';
 
 import { Button } from '@src/shared/ui/Button/Button';
-import { Field } from '@src/shared/ui/Field/Field';
+import { IconCheck, IconChevronDown, IconLightbulb } from '@src/shared/ui/Icons/Icons';
+import { hasCloze } from '@src/shared/ui/Markdown/MarkdownSyntax';
 
 import type { CardDraft, CardField } from '../domain/cardDraft';
+import { CardTextEditor } from './CardTextEditor';
 
 import './CreateCardForm.css';
+
+const FRONT_FORMATS = ['bold', 'italic', 'code', 'cloze'] as const;
+const BACK_FORMATS = ['bold', 'italic', 'code'] as const;
 
 type CreateCardFormProps = {
   topicSelector: ReactNode;
@@ -14,7 +19,7 @@ type CreateCardFormProps = {
   saving: boolean;
   banner: string | null;
   errorOf: (field: CardField) => string | undefined;
-  onChange: (field: CardField) => (event: ChangeEvent<HTMLTextAreaElement>) => void;
+  onFieldChange: (field: CardField, value: string) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   onCancel: () => void;
 };
@@ -26,10 +31,15 @@ export function CreateCardForm({
   saving,
   banner,
   errorOf,
-  onChange,
+  onFieldChange,
   onSubmit,
   onCancel,
 }: CreateCardFormProps) {
+  const noteId = useId();
+  const [noteOpen, setNoteOpen] = useState(false);
+  // Thẻ đục lỗ lấy câu đã điền làm đáp án, mặt sau chỉ còn là phần bổ sung (BR-025).
+  const cloze = hasCloze(draft.front);
+
   // Ctrl/Cmd + Enter gửi form ngay từ trong ô nhập, khỏi rời tay khỏi bàn phím.
   function onKeyDown(event: KeyboardEvent<HTMLFormElement>) {
     if (!(event.ctrlKey || event.metaKey) || event.key !== 'Enter') return;
@@ -54,68 +64,83 @@ export function CreateCardForm({
         </p>
       ) : null}
 
-      <Field
-        label="Mặt hỏi"
-        description="Khái niệm hoặc câu hỏi trọng tâm cần kiểm tra trí nhớ chủ động."
-        error={errorOf('front')}
-      >
-        {(props) => (
-          <textarea
-            {...props}
-            rows={3}
-            placeholder="Câu hỏi bạn muốn nhớ được…"
-            maxLength={2000}
-            value={draft.front}
-            onChange={onChange('front')}
-          />
-        )}
-      </Field>
-
-      <Field
-        label="Mặt trả lời"
-        description="Ngắn gọn, súc tích — tối ưu để nhận ra đáp án trong vòng 3–5 giây."
-        error={errorOf('back')}
-      >
-        {(props) => (
-          <textarea
-            {...props}
-            rows={4}
-            placeholder="Câu trả lời ngắn gọn…"
-            maxLength={2000}
-            value={draft.back}
-            onChange={onChange('back')}
-          />
-        )}
-      </Field>
-
-      <Field
-        label="Ghi chú"
-        hint="tuỳ chọn"
-        description="Giải thích, mẹo ghi nhớ hoặc #nhãn — hiện dưới đáp án khi ôn."
-      >
-        {(props) => (
-          <textarea
-            {...props}
-            rows={3}
-            placeholder="Vì sao đáp án đúng, liên tưởng giúp nhớ lâu…"
-            maxLength={1000}
-            value={draft.note}
-            onChange={onChange('note')}
-          />
-        )}
-      </Field>
-
       {topicSelector}
+
+      <CardTextEditor
+        label="Mặt hỏi"
+        tone="front"
+        error={errorOf('front')}
+        value={draft.front}
+        maxLength={2000}
+        rows={3}
+        placeholder="Câu hỏi bạn muốn nhớ được — bôi đen một cụm rồi bấm Cloze để đục lỗ…"
+        formats={FRONT_FORMATS}
+        onValueChange={(value) => onFieldChange('front', value)}
+      />
+
+      <CardTextEditor
+        label="Mặt trả lời"
+        hint={cloze ? 'tuỳ chọn' : undefined}
+        tone="back"
+        error={errorOf('back')}
+        value={draft.back}
+        maxLength={2000}
+        rows={4}
+        placeholder={cloze ? 'Thông tin bổ sung, hiện dưới câu đã điền…' : 'Câu trả lời ngắn gọn…'}
+        formats={BACK_FORMATS}
+        toolbarHint="Ngắn gọn, dễ đọc lướt"
+        onValueChange={(value) => onFieldChange('back', value)}
+      />
+
+      <div className="create-card__note">
+        <button
+          type="button"
+          className={`create-card__note-toggle text-small ${
+            noteOpen ? 'create-card__note-toggle--open' : ''
+          }`}
+          aria-expanded={noteOpen}
+          aria-controls={noteId}
+          onClick={() => setNoteOpen((open) => !open)}
+        >
+          <IconLightbulb />
+          <span>Thêm mẹo ghi nhớ hoặc ghi chú phụ</span>
+          {!noteOpen && draft.note.trim() ? (
+            <span className="compact-chip compact-chip--subtle text-caption">Đã nhập</span>
+          ) : null}
+          <span className="create-card__note-chevron">
+            <IconChevronDown />
+          </span>
+        </button>
+        <div id={noteId} hidden={!noteOpen}>
+          <CardTextEditor
+            label="Ghi chú"
+            hint="tuỳ chọn"
+            description="Giải thích, mẹo ghi nhớ hoặc #nhãn — hiện dưới đáp án khi ôn."
+            value={draft.note}
+            maxLength={1000}
+            rows={2}
+            placeholder="Vì sao đáp án đúng, liên tưởng giúp nhớ lâu…"
+            onValueChange={(value) => onFieldChange('note', value)}
+          />
+        </div>
+      </div>
 
       <div className="create-card__actions">
         <p className="create-card__shortcut text-caption">
           <kbd className="compact-chip key-hint">Ctrl</kbd> +{' '}
-          <kbd className="compact-chip key-hint">Enter</kbd> để lưu nhanh
+          <kbd className="compact-chip key-hint">Enter</kbd> để lưu và tạo tiếp
         </p>
         <div className="create-card__buttons">
-          <Button onClick={onCancel}>Huỷ</Button>
+          <Button onClick={onCancel}>Huỷ bỏ</Button>
           <Button type="submit" variant="primary" disabled={!canSave}>
-            {saving ? 'Đang lưu…' : 'Lưu thẻ'}
+            {saving ? (
+              'Đang lưu…'
+            ) : (
+              <>
+                <IconCheck />
+                Lưu &amp; tạo tiếp
+              </>
+            )}
           </Button>
         </div>
       </div>
