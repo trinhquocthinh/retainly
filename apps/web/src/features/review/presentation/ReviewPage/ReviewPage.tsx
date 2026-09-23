@@ -16,6 +16,7 @@ import { ReviewScreen } from '../ReviewScreen/ReviewScreen';
 import { ReviewSession } from '../ReviewSession/ReviewSession';
 import { ReviewMessage, ReviewSkeleton } from '../ReviewStates/ReviewStates';
 import { UndoAction } from '../UndoAction/UndoAction';
+import { SessionSummary } from '../SessionSummary/SessionSummary';
 
 const QUEUE_LABEL: Record<ReviewSource, string> = {
   due: 'Thẻ đến hạn hôm nay',
@@ -119,6 +120,11 @@ function ReviewRun({ source }: { source: ReviewSource }) {
           }
           actionLabel="Về trang chủ"
           onAction={onFinish}
+          details={
+            session.tally.reviewed > 0 ? (
+              <SessionSummary tally={session.tally} elapsedMs={session.elapsedMs} />
+            ) : null
+          }
           extraAction={
             <Button variant="primary" onClick={onExtra}>
               {source === 'extra' ? 'Ôn thêm 5 thẻ nữa' : 'Ôn thêm 5 thẻ sắp quên'}
@@ -145,6 +151,7 @@ function ReviewRun({ source }: { source: ReviewSource }) {
         position: session.position,
         reviewed: session.reviewed,
         total: session.total,
+        remainingMinutes: session.remainingMinutes,
       }}
     >
       <ReviewSession {...session} card={session.card} />

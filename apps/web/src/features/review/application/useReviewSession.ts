@@ -7,6 +7,7 @@ import {
   type ReviewOutcome,
   type ReviewSource,
 } from '../domain/review';
+import { estimateRemainingMinutes, tallySession, type SessionResults } from '../domain/session';
 import { isRetryable } from '@src/shared/api/client';
 
 type QueuePorts = {
@@ -98,6 +99,13 @@ export function useReviewSession({
   const [lastOutcome, setLastOutcome] = useState<ReviewOutcome | null>(null);
   // Chỉ giữ một bước (US-014): lượt chấm mới ghi đè, hoàn tác xong thì xoá.
   const [undoable, setUndoable] = useState<Undoable | null>(null);
+  // Kết quả theo vị trí thẻ: quay lui vị trí (hoàn tác) là cắt đuôi mảng này,
+  // nên tổng kết phiên không bao giờ đếm lượt đã gỡ.
+  const [results, setResults] = useState<SessionResults>([]);
+  const [startedAt] = useState(() => Date.now());
+  // Chỉ cập nhật khi chấm hoặc hoàn tác, không chạy đồng hồ từng giây: ước tính
+  // "còn lại" đứng yên trong lúc người dùng đang nghĩ.
+  const [elapsedMs, setElapsedMs] = useState(0);
 
   const { cards } = query;
   const card = cards[index];
@@ -115,6 +123,8 @@ export function useReviewSession({
         { cardId: card.id, outcome },
         {
           onSuccess: ({ outcomeId }) => {
+            setResults((value) => [...value.slice(0, index), outcome]);
+            setElapsedMs(Date.now() - startedAt);
             setUndoable({ outcomeId, index });
             setIndex((value) => value + 1);
             setFlipped(false);
@@ -122,7 +132,7 @@ export function useReviewSession({
         },
       );
     },
-    [card, index, busy, mutate, resetUndo],
+    [card, index, busy, mutate, resetUndo, startedAt],
   );
 
   const onRetry = useCallback(() => {
@@ -138,9 +148,10 @@ export function useReviewSession({
     // Thẻ bị bỏ qua nằm giữa lượt cũ và vị trí hiện tại: quay về lượt cũ sẽ
     // khiến nó hiện lại lần nữa, nên bỏ luôn quyền hoàn tác.
     setUndoable(null);
+    setResults((value) => [...value.slice(0, index), null]);
     setIndex((value) => value + 1);
     setFlipped(false);
-  }, [resetSave]);
+  }, [index, resetSave]);
 
   /**
    * Máy khách không tự đếm 10 phút: server là nguồn sự thật cho BR-024, đồng
@@ -153,6 +164,8 @@ export function useReviewSession({
     mutateUndo(undoable.outcomeId, {
       onSuccess: () => {
         setIndex(undoable.index);
+        setResults((value) => value.slice(0, undoable.index));
+        setElapsedMs(Date.now() - startedAt);
         setFlipped(false);
         setUndoable(null);
       },
@@ -160,7 +173,7 @@ export function useReviewSession({
         if (!isRetryable(error)) setUndoable(null);
       },
     });
-  }, [undoable, busy, resetSave, mutateUndo]);
+  }, [undoable, busy, resetSave, mutateUndo, startedAt]);
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -204,6 +217,13 @@ export function useReviewSession({
     position: index + 1,
     reviewed: index,
     total: cards.length,
+    remainingMinutes: estimateRemainingMinutes({
+      remaining: cards.length - index,
+      reviewed: index,
+      elapsedMs,
+    }),
+    tally: tallySession(results),
+    elapsedMs,
     saving: busy,
     saveFailed,
     onFlip,

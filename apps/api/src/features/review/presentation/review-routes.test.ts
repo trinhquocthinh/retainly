@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest';
 import { buildApp } from '../../../app';
 import { registerReviewRoutes } from './review-routes';
 import type { StreakQuery } from '../application/get-current-streak';
-import type { DueCard, DueCardQuery, ExtraCandidate } from '../application/list-due-cards';
+import type { DueCardQuery, QueueCard, ScheduledCard } from '../application/list-due-cards';
 import type { ReviewRepository } from '../application/review-repository';
 import { createInitialSchedule } from '../domain/review-scheduler';
 import { inMemoryReviews } from '../../../shared/test/in-memory-review';
@@ -22,11 +22,26 @@ const throwingReviews: ReviewRepository = {
 const CARD = '11111111-1111-1111-1111-111111111111';
 const UNKNOWN_OUTCOME = '22222222-2222-2222-2222-222222222222';
 
+function queued(id: string): ScheduledCard {
+  return {
+    card: { id, front: `Hỏi ${id}`, back: `Đáp ${id}`, note: null, dueDate: NOW },
+    schedule: createInitialSchedule(NOW),
+  };
+}
+
+const NEW_CARD_MEMORY = {
+  stability: 0,
+  difficulty: 0,
+  retrievability: 0,
+  lastReviewedAt: null,
+  forecastDays: { remembered: 3, forgotten: 1 },
+};
+
 function appWith(
-  rows: DueCard[],
+  rows: ScheduledCard[],
   reviewDays: string[] = [],
   reviews: ReviewRepository = throwingReviews,
-  extras: ExtraCandidate[] = [],
+  extras: ScheduledCard[] = [],
 ) {
   const schedules: DueCardQuery = {
     async findDueBy() {
@@ -61,27 +76,26 @@ describe('E1-S2-T4 — GET /api/cards/due', () => {
   });
 
   it('trả đúng số thẻ và giữ nguyên thứ tự của tầng dưới', async () => {
-    const app = appWith([
-      { id: 'a', front: 'Hỏi A', back: 'Đáp A', note: null, dueDate: NOW },
-      { id: 'b', front: 'Hỏi B', back: 'Đáp B', note: null, dueDate: NOW },
-    ]);
+    const app = appWith([queued('a'), queued('b')]);
     const res = await app.inject({ method: 'GET', url: '/api/cards/due' });
 
     expect(res.json().dueCount).toBe(2);
-    expect(res.json().dueCards.map((c: DueCard) => c.id)).toEqual(['a', 'b']);
+    expect(res.json().dueCards.map((c: QueueCard) => c.id)).toEqual(['a', 'b']);
     await app.close();
   });
 });
 
 describe('E8-S1-T3 — GET /api/cards/extra', () => {
-  it('trả extraCards chỉ gồm phần thẻ, không lộ lịch FSRS', async () => {
-    const card: DueCard = { id: 'a', front: 'Hỏi A', back: 'Đáp A', note: 'Mẹo', dueDate: NOW };
-    const app = appWith([], [], throwingReviews, [{ card, schedule: createInitialSchedule(NOW) }]);
+  it('trả extraCards gồm phần thẻ và chỉ số trí nhớ, không lộ lịch FSRS thô', async () => {
+    const extra = queued('a');
+    const app = appWith([], [], throwingReviews, [extra]);
 
     const res = await app.inject({ method: 'GET', url: '/api/cards/extra' });
 
     expect(res.statusCode).toBe(200);
-    expect(res.json()).toEqual({ extraCards: [{ ...card, dueDate: NOW.toISOString() }] });
+    expect(res.json()).toEqual({
+      extraCards: [{ ...extra.card, dueDate: NOW.toISOString(), memory: NEW_CARD_MEMORY }],
+    });
     await app.close();
   });
 

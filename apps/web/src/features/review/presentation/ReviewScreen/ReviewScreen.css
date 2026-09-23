@@ -70,6 +70,13 @@
   color: var(--color-text-secondary);
 }
 
+.review-screen__eta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  white-space: nowrap;
+}
+
 .review-screen__counter {
   font-weight: 600;
   color: var(--color-text);
@@ -121,6 +128,7 @@
 /* Màn hẹp: bỏ nhãn phụ để thanh tiến độ còn chỗ thở */
 @media (max-width: 639px) {
   .review-screen__due,
+  .review-screen__progress-label,
   .review-screen__exit-label,
   .review-screen__exit kbd {
     display: none;

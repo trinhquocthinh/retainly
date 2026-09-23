@@ -1,6 +1,6 @@
 import { endOfToday, startOfToday } from '../domain/due-window';
 import { pickExtraReview } from '../domain/extra-review';
-import type { DueCard, DueCardQuery } from './list-due-cards';
+import { toDueCard, type DueCard, type DueCardQuery } from './list-due-cards';
 
 /** Ôn thêm (BR-026): tối đa 5 thẻ chưa đến hạn, chưa ôn hôm nay, R thấp nhất. */
 export async function listExtraCards(
@@ -13,5 +13,5 @@ export async function listExtraCards(
     notReviewedSince: startOfToday(now),
   });
 
-  return { extraCards: pickExtraReview(candidates, now).map(({ card }) => card) };
+  return { extraCards: pickExtraReview(candidates, now).map((row) => toDueCard(row, now)) };
 }

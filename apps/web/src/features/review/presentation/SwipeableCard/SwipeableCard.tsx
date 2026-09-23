@@ -60,7 +60,7 @@ export function SwipeableCard({ card, flipped, enabled, onFlip, onRate }: Swipea
             {hint === 'remembered' ? 'Nhớ' : 'Quên'}
           </span>
         ) : null}
-        <ReviewCard card={card} flipped={flipped} onFlip={onFlip} />
+        <ReviewCard card={card} memory={card.memory} flipped={flipped} onFlip={onFlip} />
       </animated.div>
     </div>
   );

@@ -15,6 +15,12 @@ describe('E1-S3-T7 — luật thuần của phiên ôn tập', () => {
     expect(outcomeForKey('Enter')).toBeUndefined();
   });
 
+  it('E8-S1-T5: phím số theo thứ tự nút — 1 Quên, 2 Nhớ', () => {
+    expect(outcomeForKey('1')).toBe('forgotten');
+    expect(outcomeForKey('2')).toBe('remembered');
+    expect(outcomeForKey('3')).toBeUndefined();
+  });
+
   it('vuốt qua ngưỡng mới tính là đánh giá', () => {
     expect(outcomeForSwipe(SWIPE_COMMIT_DISTANCE)).toBe('remembered');
     expect(outcomeForSwipe(-SWIPE_COMMIT_DISTANCE)).toBe('forgotten');

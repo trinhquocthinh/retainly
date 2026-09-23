@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
 import { Logo } from '@src/shared/ui/Logo/Logo';
-import { IconClose } from '@src/shared/ui/Icons/Icons';
+import { IconClock, IconClose } from '@src/shared/ui/Icons/Icons';
 
 import { progressPercent } from '../../domain/review';
 
@@ -11,7 +11,7 @@ type ReviewScreenProps = {
   onExit: () => void;
   /** Nguồn thẻ của phiên, hiện ở chip góc phải: đến hạn hay Ôn thêm. */
   queueLabel: string;
-  progress?: { position: number; reviewed: number; total: number };
+  progress?: { position: number; reviewed: number; total: number; remainingMinutes: number };
   children: ReactNode;
 };
 
@@ -36,7 +36,10 @@ export function ReviewScreen({ onExit, queueLabel, progress, children }: ReviewS
         {progress ? (
           <div className="review-screen__progress">
             <div className="review-screen__progress-head text-caption">
-              <span>Tiến độ ôn tập</span>
+              <span className="review-screen__progress-label">Tiến độ ôn tập</span>
+              <span className="review-screen__eta">
+                <IconClock size={12} />~{progress.remainingMinutes} phút còn lại
+              </span>
               <span className="review-screen__counter">
                 {progress.position} / {progress.total}
               </span>
@@ -65,8 +68,10 @@ export function ReviewScreen({ onExit, queueLabel, progress, children }: ReviewS
 
       <footer className="review-screen__legend text-caption">
         Phím tắt: <kbd className="compact-chip compact-chip--subtle key-hint">Space</kbd> Lật thẻ ·{' '}
-        <kbd className="compact-chip compact-chip--subtle key-hint">←</kbd> Quên ·{' '}
-        <kbd className="compact-chip compact-chip--subtle key-hint">→</kbd> Nhớ ·{' '}
+        <kbd className="compact-chip compact-chip--subtle key-hint">←</kbd> /{' '}
+        <kbd className="compact-chip compact-chip--subtle key-hint">1</kbd> Quên ·{' '}
+        <kbd className="compact-chip compact-chip--subtle key-hint">→</kbd> /{' '}
+        <kbd className="compact-chip compact-chip--subtle key-hint">2</kbd> Nhớ ·{' '}
         <kbd className="compact-chip compact-chip--subtle key-hint">Z</kbd> Hoàn tác ·{' '}
         <kbd className="compact-chip compact-chip--subtle key-hint">Esc</kbd> Kết thúc
       </footer>

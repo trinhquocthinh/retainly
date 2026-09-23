@@ -1,9 +1,12 @@
+import type { CardMemory } from './memory';
+
 export type DueCard = {
   id: string;
   front: string;
   back: string;
   note: string | null;
   dueDate: string;
+  memory: CardMemory;
 };
 export type ReviewOutcome = 'remembered' | 'forgotten';
 
@@ -11,12 +14,12 @@ export type ReviewOutcome = 'remembered' | 'forgotten';
 export type ReviewSource = 'due' | 'extra';
 
 /**
- * Phím mũi tên nào ứng với kết quả nào (bản desktop D2 của bộ màn hình).
- * Tách ra khỏi component để test được mà không phải dựng DOM.
+ * Phím nào ứng với kết quả nào: mũi tên (bản desktop D2) hoặc số 1/2 theo thứ tự
+ * nút trên màn (design 0.1.2). Tách khỏi component để test không cần dựng DOM.
  */
 export function outcomeForKey(key: string): ReviewOutcome | undefined {
-  if (key === 'ArrowLeft') return 'forgotten';
-  if (key === 'ArrowRight') return 'remembered';
+  if (key === 'ArrowLeft' || key === '1') return 'forgotten';
+  if (key === 'ArrowRight' || key === '2') return 'remembered';
   return undefined;
 }
 

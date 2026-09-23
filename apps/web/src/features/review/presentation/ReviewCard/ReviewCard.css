@@ -46,6 +46,23 @@
   color: var(--color-accent-strong);
 }
 
+.review-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+/* Số liệu, không phải nội dung thẻ: nền trung tính, chữ phụ, số thẳng cột. */
+.review-card__memory {
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--color-secondary-hover-bg);
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
 .review-card__tag--answer {
   background: var(--color-success-surface);
   color: var(--color-success-strong);

@@ -27,13 +27,34 @@ function mockApi(handlers: Record<string, Handler | (() => Handler)>) {
   return fetchMock;
 }
 
+/** Chỉ số trí nhớ của thẻ chưa ôn lần nào, như server trả ở SPEC-003. */
+const NEW_MEMORY = {
+  stability: 0,
+  difficulty: 0,
+  retrievability: 0,
+  lastReviewedAt: null,
+  forecastDays: { remembered: 3, forgotten: 1 },
+};
+
 const TWO_CARDS = {
   status: 200,
   body: {
     dueCount: 2,
     dueCards: [
-      { id: 'card-1', front: 'Hỏi A', back: 'Đáp A', dueDate: '2026-09-13T09:00:00.000Z' },
-      { id: 'card-2', front: 'Hỏi B', back: 'Đáp B', dueDate: '2026-09-13T09:00:00.000Z' },
+      {
+        id: 'card-1',
+        front: 'Hỏi A',
+        back: 'Đáp A',
+        memory: NEW_MEMORY,
+        dueDate: '2026-09-13T09:00:00.000Z',
+      },
+      {
+        id: 'card-2',
+        front: 'Hỏi B',
+        back: 'Đáp B',
+        memory: NEW_MEMORY,
+        dueDate: '2026-09-13T09:00:00.000Z',
+      },
     ],
   },
 };
@@ -151,6 +172,7 @@ describe('E1-S3-T7 — màn ôn tập', () => {
                       id: 'card-1',
                       front: 'Hỏi A',
                       back: 'Đáp A',
+                      memory: NEW_MEMORY,
                       dueDate: '2026-09-20T09:00:00.000Z',
                     },
                   ],
@@ -227,6 +249,7 @@ describe('E7-S1-T2 — TC-056 ghi chú ở mặt đáp án', () => {
             front: 'Hỏi A',
             back: 'Đáp A',
             note,
+            memory: NEW_MEMORY,
             dueDate: '2026-09-13T09:00:00.000Z',
           },
         ],
@@ -278,6 +301,7 @@ describe('E7-S1-T3 — TC-059 ôn thẻ đục lỗ', () => {
             front: 'Thủ đô Pháp là [[Paris]]',
             back,
             note: null,
+            memory: NEW_MEMORY,
             dueDate: '2026-09-13T09:00:00.000Z',
           },
         ],
@@ -433,7 +457,14 @@ describe('E8-S1-T4 — TC-065 ôn thêm thẻ sắp quên', () => {
   const RATED = { status: 200, body: { outcomeId: 'outcome-1', updatedSchedule: {} } };
 
   function extraCard(id: string, front: string) {
-    return { id, front, back: `Đáp ${front}`, note: null, dueDate: '2026-09-30T09:00:00.000Z' };
+    return {
+      id,
+      front,
+      back: `Đáp ${front}`,
+      note: null,
+      memory: NEW_MEMORY,
+      dueDate: '2026-09-30T09:00:00.000Z',
+    };
   }
 
   /** Hai route thật để kiểm việc chuyển phiên đến hạn → Ôn thêm → Ôn thêm lần nữa. */
@@ -506,5 +537,184 @@ describe('E8-S1-T4 — TC-065 ôn thêm thẻ sắp quên', () => {
     expect(await screen.findByText('Chưa có thẻ nào để ôn thêm')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Ôn thêm/ })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Về trang chủ' })).toBeInTheDocument();
+  });
+});
+
+describe('E8-S1-T5 — TC-066 màn ôn theo design 0.1.2', () => {
+  const RATED = { status: 200, body: { outcomeId: 'outcome-1', updatedSchedule: {} } };
+
+  const REVIEWED_CARD = {
+    id: 'card-r',
+    front: 'Hỏi R',
+    back: 'Đáp R',
+    note: null,
+    dueDate: '2026-09-23T09:00:00.000Z',
+    memory: {
+      stability: 13.83,
+      difficulty: 2.11,
+      retrievability: 0.8991,
+      lastReviewedAt: '2026-09-10T02:00:00.000Z',
+      forecastDays: { remembered: 57, forgotten: 2 },
+    },
+  };
+
+  function frontFace(container: HTMLElement) {
+    return container.querySelector('.review-card__face') as HTMLElement;
+  }
+
+  it('thẻ đã ôn hiện S/D/R ở góc thẻ và dự báo khoảng cách trên hai nút', async () => {
+    mockApi({
+      'GET /api/cards/due': { status: 200, body: { dueCount: 1, dueCards: [REVIEWED_CARD] } },
+    });
+    const { container } = renderWithProviders(<ReviewPage />);
+
+    await screen.findByText('Hỏi R');
+
+    expect(frontFace(container)).toHaveTextContent('S 13,8 ngày · D 2,1 · R 90%');
+    expect(screen.getByRole('button', { name: /Quên/ })).toHaveTextContent('+2 ngày');
+    expect(screen.getByRole('button', { name: /Nhớ/ })).toHaveTextContent('+57 ngày');
+
+    await userEvent.click(screen.getByText('Hỏi R'));
+    expect(screen.getByText(/^Ôn gần nhất: /)).toBeInTheDocument();
+  });
+
+  it('thẻ chưa ôn lần nào hiện "Thẻ mới" thay cho S/D/R', async () => {
+    mockApi({ 'GET /api/cards/due': TWO_CARDS });
+    const { container } = renderWithProviders(<ReviewPage />);
+
+    await screen.findByText('Hỏi A');
+
+    expect(frontFace(container)).toHaveTextContent('Thẻ mới');
+    expect(frontFace(container)).not.toHaveTextContent('R 0%');
+    expect(screen.getByRole('button', { name: /Nhớ/ })).toHaveTextContent('+3 ngày');
+  });
+
+  it('hiện ước tính thời gian còn lại theo số thẻ chưa ôn', async () => {
+    mockApi({ 'GET /api/cards/due': TWO_CARDS });
+    renderWithProviders(<ReviewPage />);
+
+    expect(await screen.findByText(/~1 phút còn lại/)).toBeInTheDocument();
+  });
+
+  it('phím 1 là Quên, phím 2 là Nhớ, chỉ có tác dụng sau khi lật thẻ', async () => {
+    const fetchMock = mockApi({
+      'GET /api/cards/due': TWO_CARDS,
+      'POST /api/review-outcomes': RATED,
+    });
+    renderWithProviders(<ReviewPage />);
+
+    await screen.findByText('Hỏi A');
+    await userEvent.keyboard('2');
+    expect(fetchMock.mock.calls.some(([, init]) => init?.method === 'POST')).toBe(false);
+
+    await userEvent.keyboard(' ');
+    await userEvent.keyboard('1');
+    await screen.findByText('Hỏi B');
+
+    const post = fetchMock.mock.calls.find(([, init]) => init?.method === 'POST');
+    expect(JSON.parse(post?.[1]?.body as string)).toEqual({
+      cardId: 'card-1',
+      outcome: 'forgotten',
+    });
+  });
+
+  it('xong phiên thì tổng kết đúng số Nhớ/Quên, hàng đợi chỉ nạp một lần', async () => {
+    const fetchMock = mockApi({
+      'GET /api/cards/due': TWO_CARDS,
+      'POST /api/review-outcomes': RATED,
+    });
+    renderWithProviders(<ReviewPage />);
+
+    await screen.findByText('Hỏi A');
+    await userEvent.keyboard(' ');
+    await userEvent.keyboard('2');
+    await screen.findByText('Hỏi B');
+    await userEvent.keyboard(' ');
+    await userEvent.keyboard('1');
+
+    const tally = await screen.findByLabelText('Tổng kết phiên');
+    expect(tally).toHaveTextContent('Đã ôn2 thẻ');
+    expect(tally).toHaveTextContent('Nhớ / Quên1 / 1');
+    expect(tally).toHaveTextContent('Thời gian');
+
+    const dueRequests = fetchMock.mock.calls.filter(([url]) => url === '/api/cards/due');
+    expect(dueRequests).toHaveLength(1);
+  });
+
+  it('hoàn tác thẻ cuối từ màn hoàn thành thì tổng kết bớt đi lượt đã gỡ', async () => {
+    mockApi({
+      'GET /api/cards/due': TWO_CARDS,
+      'POST /api/review-outcomes': RATED,
+      'DELETE /api/review-outcomes/outcome-1': { status: 200, body: { restoredSchedule: {} } },
+    });
+    renderWithProviders(<ReviewPage />);
+
+    await screen.findByText('Hỏi A');
+    await userEvent.keyboard(' ');
+    await userEvent.keyboard('2');
+    await screen.findByText('Hỏi B');
+    await userEvent.keyboard(' ');
+    await userEvent.keyboard('2');
+    expect(await screen.findByLabelText('Tổng kết phiên')).toHaveTextContent('Đã ôn2 thẻ');
+
+    await userEvent.keyboard('z');
+    await screen.findByText('Hỏi B');
+    await userEvent.keyboard(' ');
+    await userEvent.keyboard('1');
+
+    const tally = await screen.findByLabelText('Tổng kết phiên');
+    expect(tally).toHaveTextContent('Đã ôn2 thẻ');
+    expect(tally).toHaveTextContent('Nhớ / Quên1 / 1');
+  });
+
+  it('không có thẻ nào để ôn thì không hiện tổng kết', async () => {
+    mockApi({ 'GET /api/cards/due': { status: 200, body: { dueCount: 0, dueCards: [] } } });
+    renderWithProviders(<ReviewPage />);
+
+    await screen.findByText('Xong rồi!');
+    expect(screen.queryByLabelText('Tổng kết phiên')).not.toBeInTheDocument();
+  });
+});
+
+describe('E8-S1-T5 — tổng kết khi có thẻ bị bỏ qua', () => {
+  it('bỏ qua thẻ lưu hỏng không xoá các lượt đã chấm trước đó', async () => {
+    const THREE_CARDS = {
+      status: 200,
+      body: {
+        dueCount: 3,
+        dueCards: [
+          ...TWO_CARDS.body.dueCards,
+          { ...TWO_CARDS.body.dueCards[0], id: 'card-3', front: 'Hỏi C', back: 'Đáp C' },
+        ],
+      },
+    };
+    const responses = [
+      { status: 200, body: { outcomeId: 'outcome-1', updatedSchedule: {} } },
+      {
+        status: 404,
+        body: { error: { code: 'ERR_CARD_NOT_FOUND', message: 'Không tìm thấy thẻ này' } },
+      },
+      { status: 200, body: { outcomeId: 'outcome-3', updatedSchedule: {} } },
+    ];
+    mockApi({
+      'GET /api/cards/due': THREE_CARDS,
+      'POST /api/review-outcomes': () => responses.shift() ?? responses[0],
+    });
+    renderWithProviders(<ReviewPage />);
+
+    await screen.findByText('Hỏi A');
+    await userEvent.keyboard(' ');
+    await userEvent.keyboard('2');
+    await screen.findByText('Hỏi B');
+    await userEvent.keyboard(' ');
+    await userEvent.keyboard('2');
+    await userEvent.click(await screen.findByRole('button', { name: 'Bỏ qua thẻ này' }));
+    await screen.findByText('Hỏi C');
+    await userEvent.keyboard(' ');
+    await userEvent.keyboard('1');
+
+    const tally = await screen.findByLabelText('Tổng kết phiên');
+    expect(tally).toHaveTextContent('Đã ôn2 thẻ');
+    expect(tally).toHaveTextContent('Nhớ / Quên1 / 1');
   });
 });

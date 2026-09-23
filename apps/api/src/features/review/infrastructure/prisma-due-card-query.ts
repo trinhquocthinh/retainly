@@ -1,42 +1,36 @@
+import type { ReviewScheduleWhereInput } from '../../../generated/prisma/models';
 import { prisma } from '../../../shared/prisma';
-import type { DueCardQuery } from '../application/list-due-cards';
+import type { DueCardQuery, ScheduledCard } from '../application/list-due-cards';
 import { SCHEDULE_COLUMNS } from './prisma-review-repository';
 
-export const prismaDueCardQuery: DueCardQuery = {
-  async findDueBy(userId, cutoff) {
-    const rows = await prisma.reviewSchedule.findMany({
-      where: { dueDate: { lte: cutoff }, card: { userId } },
-      include: { card: true },
-      orderBy: { dueDate: 'asc' },
-    });
+/** Hai hàng đợi chỉ khác điều kiện lọc: cùng cột, cùng thứ tự hạn rồi id. */
+async function findQueue(where: ReviewScheduleWhereInput): Promise<ScheduledCard[]> {
+  const rows = await prisma.reviewSchedule.findMany({
+    where,
+    select: {
+      ...SCHEDULE_COLUMNS,
+      card: { select: { id: true, front: true, back: true, note: true } },
+    },
+    orderBy: [{ dueDate: 'asc' }, { cardId: 'asc' }],
+  });
 
-    return rows.map((row) => ({
-      id: row.card.id,
-      front: row.card.front,
-      back: row.card.back,
-      note: row.card.note,
-      dueDate: row.dueDate,
-    }));
+  return rows.map(({ card, ...schedule }) => ({
+    card: { ...card, dueDate: schedule.dueDate },
+    schedule,
+  }));
+}
+
+export const prismaDueCardQuery: DueCardQuery = {
+  findDueBy(userId, cutoff) {
+    return findQueue({ dueDate: { lte: cutoff }, card: { userId } });
   },
 
-  async findExtraCandidates(userId, { dueAfter, notReviewedSince }) {
-    const rows = await prisma.reviewSchedule.findMany({
-      where: {
-        dueDate: { gt: dueAfter },
-        // Thẻ mới luôn đến hạn ngay khi tạo; chặn thêm để R = 0 không lọt vào.
-        state: { not: 'new' },
-        card: { userId, outcomes: { none: { reviewedAt: { gte: notReviewedSince } } } },
-      },
-      select: {
-        ...SCHEDULE_COLUMNS,
-        card: { select: { id: true, front: true, back: true, note: true } },
-      },
-      orderBy: [{ dueDate: 'asc' }, { cardId: 'asc' }],
+  findExtraCandidates(userId, { dueAfter, notReviewedSince }) {
+    return findQueue({
+      dueDate: { gt: dueAfter },
+      // Thẻ mới luôn đến hạn ngay khi tạo; chặn thêm để R = 0 không lọt vào.
+      state: { not: 'new' },
+      card: { userId, outcomes: { none: { reviewedAt: { gte: notReviewedSince } } } },
     });
-
-    return rows.map(({ card, ...schedule }) => ({
-      card: { ...card, dueDate: schedule.dueDate },
-      schedule,
-    }));
   },
 };

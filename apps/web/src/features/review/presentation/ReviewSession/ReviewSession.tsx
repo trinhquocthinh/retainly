@@ -2,6 +2,7 @@ import { Button } from '@src/shared/ui/Button/Button';
 import { IconArrowLeft, IconArrowRight, IconFlip } from '@src/shared/ui/Icons/Icons';
 
 import type { UndoProblem } from '../../application/useReviewSession';
+import { formatForecast } from '../../domain/memory';
 import type { DueCard, ReviewOutcome } from '../../domain/review';
 import { SwipeableCard } from '../SwipeableCard/SwipeableCard';
 import { UndoAction } from '../UndoAction/UndoAction';
@@ -65,16 +66,27 @@ export function ReviewSession({
       </button>
 
       <div className="review__actions">
+        {/* Dự báo ngay trên nút (US-016): biết trước chấm xong thẻ quay lại khi nào */}
         <Button variant="danger" disabled={!flipped || saving} onClick={() => onRate('forgotten')}>
           <IconArrowLeft />
-          Quên
+          <span className="review__rate">
+            Quên
+            <span className="review__forecast">
+              {formatForecast(card.memory.forecastDays.forgotten)}
+            </span>
+          </span>
         </Button>
         <Button
           variant="success"
           disabled={!flipped || saving}
           onClick={() => onRate('remembered')}
         >
-          Nhớ
+          <span className="review__rate">
+            Nhớ
+            <span className="review__forecast">
+              {formatForecast(card.memory.forecastDays.remembered)}
+            </span>
+          </span>
           <IconArrowRight />
         </Button>
       </div>

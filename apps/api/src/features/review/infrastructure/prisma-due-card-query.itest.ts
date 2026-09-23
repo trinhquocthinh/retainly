@@ -26,7 +26,7 @@ describe('E1-S4-T9 — danh sách đến hạn trên Postgres thật', () => {
     const due = await prismaDueCardQuery.findDueBy(TEST_USER_ID, endOfToday(now));
 
     expect(due).toHaveLength(5);
-    expect(due.map((card) => card.front)).not.toContain('Thẻ ngày mai');
+    expect(due.map(({ card }) => card.front)).not.toContain('Thẻ ngày mai');
   });
 
   it('BR-008: không bao giờ trả thẻ của người khác', async () => {
@@ -36,7 +36,7 @@ describe('E1-S4-T9 — danh sách đến hạn trên Postgres thật', () => {
 
     const due = await prismaDueCardQuery.findDueBy(TEST_USER_ID, endOfToday(now));
 
-    expect(due.map((card) => card.front)).toEqual(['Thẻ của tôi']);
+    expect(due.map(({ card }) => card.front)).toEqual(['Thẻ của tôi']);
   });
 
   it('sắp theo dueDate tăng dần — thẻ quá hạn lâu nhất lên trước', async () => {
@@ -46,7 +46,7 @@ describe('E1-S4-T9 — danh sách đến hạn trên Postgres thật', () => {
 
     const due = await prismaDueCardQuery.findDueBy(TEST_USER_ID, endOfToday(now));
 
-    expect(due.map((card) => card.front)).toEqual(['Quá hạn lâu', 'Mới quá hạn']);
+    expect(due.map(({ card }) => card.front)).toEqual(['Quá hạn lâu', 'Mới quá hạn']);
   });
 });
 
@@ -66,7 +66,7 @@ describe('E7-S1-T2 — hàng đợi ôn mang theo ghi chú', () => {
 
     const due = await prismaDueCardQuery.findDueBy(TEST_USER_ID, endOfToday(now));
 
-    expect(due.map(({ front, note }) => ({ front, note }))).toEqual([
+    expect(due.map(({ card: { front, note } }) => ({ front, note }))).toEqual([
       { front: 'Có ghi chú', note: 'Mẹo nhớ' },
       { front: 'Không ghi chú', note: null },
     ]);
