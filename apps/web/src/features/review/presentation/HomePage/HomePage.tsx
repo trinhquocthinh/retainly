@@ -73,13 +73,20 @@ export function HomePage() {
           <div>
             <h2 className="text-h2">Bạn đã hoàn thành hôm nay</h2>
             <p className="text-small">
-              Không còn thẻ đến hạn. Bạn có thể tạo thêm thẻ cho lần ôn tiếp theo.
+              Không còn thẻ đến hạn. Ôn thêm vài thẻ sắp quên để giữ chuỗi ngày, hoặc tạo thẻ mới
+              cho lần ôn sau.
             </p>
           </div>
-          <Link className="link-button link-button--accent home__primary-link" to="/cards/new">
-            <IconNewCard />
-            Tạo thẻ mới
-          </Link>
+          <div className="home__empty-actions">
+            <Link className="link-button link-button--accent" to="/review/extra">
+              Ôn thêm 5 thẻ sắp quên
+              <IconArrowRight />
+            </Link>
+            <Link className="link-button link-button--outline" to="/cards/new">
+              <IconNewCard />
+              Tạo thẻ mới
+            </Link>
+          </div>
         </section>
       ) : (
         <section className="home__due surface-raised">

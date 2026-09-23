@@ -55,7 +55,7 @@ describe('E5-S1-T3 — Trang chủ', () => {
     expect(screen.getByRole('link', { name: /Bắt đầu ôn tập/ })).toHaveAttribute('href', '/review');
   });
 
-  it('không có thẻ đến hạn thì dẫn sang tạo thẻ', async () => {
+  it('không có thẻ đến hạn thì mời ôn thêm hoặc tạo thẻ (TC-065)', async () => {
     stubHomeApi({
       '/api/cards/due': {
         status: 200,
@@ -75,6 +75,10 @@ describe('E5-S1-T3 — Trang chủ', () => {
     renderWithProviders(<HomePage />);
 
     expect(await screen.findByText('Bạn đã hoàn thành hôm nay')).toBeVisible();
+    expect(screen.getByRole('link', { name: /Ôn thêm 5 thẻ sắp quên/ })).toHaveAttribute(
+      'href',
+      '/review/extra',
+    );
     expect(screen.getByRole('link', { name: /Tạo thẻ mới/ })).toHaveAttribute('href', '/cards/new');
   });
 

@@ -66,6 +66,7 @@ export function App() {
 
         <Route element={<RequireAuth />}>
           <Route path="/review" element={<ReviewPage />} />
+          <Route path="/review/extra" element={<ReviewPage source="extra" />} />
 
           <Route element={<ShellLayout />}>
             <Route path="/" element={<HomePage />} />

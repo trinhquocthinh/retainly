@@ -11,9 +11,11 @@ import { HomePage } from '../HomePage/HomePage';
 
 type Handler = { status: number; body: unknown };
 
-function mockApi(handlers: Record<string, Handler>) {
+/** Handler dạng hàm thì mỗi lần gọi trả một phản hồi khác nhau. */
+function mockApi(handlers: Record<string, Handler | (() => Handler)>) {
   const fetchMock = vi.fn((url: string, init?: RequestInit) => {
-    const handler = handlers[`${init?.method ?? 'GET'} ${url}`] ?? { status: 404, body: null };
+    const route = handlers[`${init?.method ?? 'GET'} ${url}`];
+    const handler = (typeof route === 'function' ? route() : route) ?? { status: 404, body: null };
     return Promise.resolve({
       ok: handler.status < 400,
       status: handler.status,
@@ -424,5 +426,85 @@ describe('E8-S1-T2 — TC-063 hoàn tác lượt vừa ôn', () => {
 
     expect(screen.queryByRole('button', { name: /Hoàn tác/ })).not.toBeInTheDocument();
     expect(fetchMock.mock.calls.some(([, init]) => init?.method === 'DELETE')).toBe(false);
+  });
+});
+
+describe('E8-S1-T4 — TC-065 ôn thêm thẻ sắp quên', () => {
+  const RATED = { status: 200, body: { outcomeId: 'outcome-1', updatedSchedule: {} } };
+
+  function extraCard(id: string, front: string) {
+    return { id, front, back: `Đáp ${front}`, note: null, dueDate: '2026-09-30T09:00:00.000Z' };
+  }
+
+  /** Hai route thật để kiểm việc chuyển phiên đến hạn → Ôn thêm → Ôn thêm lần nữa. */
+  function renderReviewRoutes(route: string) {
+    return renderWithProviders(
+      <Routes>
+        <Route path="/review" element={<ReviewPage />} />
+        <Route path="/review/extra" element={<ReviewPage source="extra" />} />
+      </Routes>,
+      { route },
+    );
+  }
+
+  it('hết thẻ đến hạn thì mời ôn thêm, bấm vào là phiên mới lấy thẻ từ /api/cards/extra', async () => {
+    const fetchMock = mockApi({
+      'GET /api/cards/due': { status: 200, body: { dueCount: 0, dueCards: [] } },
+      'GET /api/cards/extra': {
+        status: 200,
+        body: { extraCards: [extraCard('card-x', 'Hỏi X'), extraCard('card-y', 'Hỏi Y')] },
+      },
+      'POST /api/review-outcomes': RATED,
+    });
+    renderReviewRoutes('/review');
+
+    await screen.findByText('Xong rồi!');
+    expect(screen.getByText('Thẻ đến hạn hôm nay')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Ôn thêm 5 thẻ sắp quên' }));
+
+    expect(await screen.findByText('Hỏi X')).toBeInTheDocument();
+    expect(screen.getByText('Ôn thêm · thẻ sắp quên')).toBeInTheDocument();
+    expect(screen.getByText('1 / 2')).toBeInTheDocument();
+
+    // Chấm như lượt thường: cùng endpoint nên được tính vào Streak (BR-001)
+    await userEvent.click(screen.getByText('Hỏi X'));
+    await userEvent.click(screen.getByRole('button', { name: /Nhớ/ }));
+    await screen.findByText('Hỏi Y');
+
+    const post = fetchMock.mock.calls.find(([, init]) => init?.method === 'POST');
+    expect(JSON.parse(post?.[1]?.body as string)).toEqual({
+      cardId: 'card-x',
+      outcome: 'remembered',
+    });
+  });
+
+  it('xong lượt ôn thêm thì mời 5 thẻ nữa, lượt sau nạp lại danh sách mới từ đầu', async () => {
+    const batches = [[extraCard('card-x', 'Hỏi X')], [extraCard('card-z', 'Hỏi Z')]];
+    const fetchMock = mockApi({
+      'GET /api/cards/extra': () => ({ status: 200, body: { extraCards: batches.shift() ?? [] } }),
+      'POST /api/review-outcomes': RATED,
+    });
+    renderReviewRoutes('/review/extra');
+
+    await userEvent.click(await screen.findByText('Hỏi X'));
+    await userEvent.click(screen.getByRole('button', { name: /Nhớ/ }));
+
+    expect(await screen.findByText('Xong lượt ôn thêm!')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Ôn thêm 5 thẻ nữa' }));
+
+    // Phiên mới: về thẻ đầu tiên của danh sách mới, không kế thừa vị trí cũ
+    expect(await screen.findByText('Hỏi Z')).toBeInTheDocument();
+    expect(screen.getByText('1 / 1')).toBeInTheDocument();
+    const extraRequests = fetchMock.mock.calls.filter(([url]) => url === '/api/cards/extra');
+    expect(extraRequests).toHaveLength(2);
+  });
+
+  it('không có thẻ nào để ôn thêm thì giải thích và không mời bấm lại', async () => {
+    mockApi({ 'GET /api/cards/extra': { status: 200, body: { extraCards: [] } } });
+    renderReviewRoutes('/review/extra');
+
+    expect(await screen.findByText('Chưa có thẻ nào để ôn thêm')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Ôn thêm/ })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Về trang chủ' })).toBeInTheDocument();
   });
 });

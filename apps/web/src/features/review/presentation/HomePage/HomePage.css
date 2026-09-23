@@ -103,6 +103,12 @@
   padding: var(--space-6);
 }
 
+.home__empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
 .home__empty-icon {
   width: 44px;
   height: 44px;
@@ -206,8 +212,13 @@
 
   .home__empty {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns: auto minmax(0, 1fr);
     align-items: center;
+  }
+
+  /* Hai nút đứng cùng hàng với chữ thì ép cột chữ còn vài từ mỗi dòng */
+  .home__empty-actions {
+    grid-column: 2;
   }
 
   .home-error {

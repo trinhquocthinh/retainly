@@ -3,11 +3,17 @@ import { api } from '@src/shared/api/client';
 import type { DueCard, ReviewOutcome } from '../domain/review';
 
 export type DueCardsResponse = { dueCards: DueCard[]; dueCount: number };
+export type ExtraCardsResponse = { extraCards: DueCard[] };
 export type StreakResponse = { currentStreak: number };
 
 /** GET /api/cards/due — SPEC-003. */
 export function fetchDueCards(): Promise<DueCardsResponse> {
   return api.get<DueCardsResponse>('/cards/due');
+}
+
+/** GET /api/cards/extra — SPEC-014, BR-026. */
+export function fetchExtraCards(): Promise<ExtraCardsResponse> {
+  return api.get<ExtraCardsResponse>('/cards/extra');
 }
 
 /** POST /api/review-outcomes — SPEC-004. */

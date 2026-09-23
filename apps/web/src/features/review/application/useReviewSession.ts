@@ -1,11 +1,21 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-
-import { isUndoKey, outcomeForKey, type DueCard, type ReviewOutcome } from '../domain/review';
+import {
+  isUndoKey,
+  outcomeForKey,
+  type DueCard,
+  type ReviewOutcome,
+  type ReviewSource,
+} from '../domain/review';
 import { isRetryable } from '@src/shared/api/client';
 
-type ReviewPorts = {
+type QueuePorts = {
   fetchDueCards: () => Promise<{ dueCards: DueCard[] }>;
+  fetchExtraCards: () => Promise<{ extraCards: DueCard[] }>;
+};
+
+type ReviewPorts = QueuePorts & {
+  source: ReviewSource;
   recordOutcome: (input: { cardId: string; outcome: ReviewOutcome }) => Promise<{
     outcomeId: string;
   }>;
@@ -19,20 +29,49 @@ type Undoable = { outcomeId: string; index: number };
 /** `retry`: lỗi mạng/máy chủ, bấm lại được. `expired`: server từ chối (BR-024), thôi hẳn. */
 export type UndoProblem = 'retry' | 'expired';
 
+/**
+ * Mỗi nguồn một query, chỉ query của nguồn đang ôn được bật. Hàng đợi đến hạn
+ * giữ key `['cards', 'due']` và nguyên phản hồi để dùng chung cache với Trang
+ * chủ và badge điều hướng.
+ */
+function useReviewQueue(source: ReviewSource, { fetchDueCards, fetchExtraCards }: QueuePorts) {
+  // Nạp một lần đầu phiên và giữ nguyên. Làm mới giữa chừng sẽ khiến thẻ biến
+  // mất hoặc đổi thứ tự ngay dưới tay người đang ôn — tech-spec §3.
+  const keepForSession = { staleTime: Infinity, refetchOnWindowFocus: false } as const;
+
+  const due = useQuery({
+    queryKey: ['cards', 'due'],
+    queryFn: fetchDueCards,
+    enabled: source === 'due',
+    ...keepForSession,
+  });
+  const extra = useQuery({
+    queryKey: ['cards', 'extra'],
+    queryFn: fetchExtraCards,
+    enabled: source === 'extra',
+    ...keepForSession,
+  });
+
+  const query = source === 'extra' ? extra : due;
+  const cards = source === 'extra' ? extra.data?.extraCards : due.data?.dueCards;
+
+  return {
+    cards: cards ?? [],
+    isPending: query.isPending,
+    isError: query.isError,
+    refetch: query.refetch,
+  };
+}
+
 export function useReviewSession({
+  source,
   fetchDueCards,
+  fetchExtraCards,
   recordOutcome,
   undoOutcome,
   onFinish,
 }: ReviewPorts) {
-  const query = useQuery({
-    queryKey: ['cards', 'due'],
-    queryFn: fetchDueCards,
-    // Nạp một lần đầu phiên và giữ nguyên. Làm mới giữa chừng sẽ khiến thẻ biến
-    // mất hoặc đổi thứ tự ngay dưới tay người đang ôn — tech-spec §3.
-    staleTime: Infinity,
-    refetchOnWindowFocus: false,
-  });
+  const query = useReviewQueue(source, { fetchDueCards, fetchExtraCards });
 
   const {
     mutate,
@@ -60,7 +99,7 @@ export function useReviewSession({
   // Chỉ giữ một bước (US-014): lượt chấm mới ghi đè, hoàn tác xong thì xoá.
   const [undoable, setUndoable] = useState<Undoable | null>(null);
 
-  const cards = query.data?.dueCards ?? [];
+  const { cards } = query;
   const card = cards[index];
   const busy = saving || undoing;
 

@@ -13,6 +13,8 @@ type ReviewMessageProps = {
   note: string;
   actionLabel: string;
   onAction: () => void;
+  /** Nút đứng cạnh hành động chính, ví dụ mời Ôn thêm ở màn hoàn thành phiên. */
+  extraAction?: ReactNode;
   children?: ReactNode;
 };
 
@@ -21,13 +23,17 @@ export function ReviewMessage({
   note,
   actionLabel,
   onAction,
+  extraAction,
   children,
 }: ReviewMessageProps) {
   return (
     <div className="review-message">
       <p className="text-h2">{title}</p>
       <p className="review-message__note text-small">{note}</p>
-      <Button onClick={onAction}>{actionLabel}</Button>
+      <div className="review-message__actions">
+        <Button onClick={onAction}>{actionLabel}</Button>
+        {extraAction}
+      </div>
       {children}
     </div>
   );

@@ -7,6 +7,9 @@ export type DueCard = {
 };
 export type ReviewOutcome = 'remembered' | 'forgotten';
 
+/** Phiên ôn lấy thẻ từ đâu: hàng đợi đến hạn (SPEC-003) hay Ôn thêm (SPEC-014, BR-026). */
+export type ReviewSource = 'due' | 'extra';
+
 /**
  * Phím mũi tên nào ứng với kết quả nào (bản desktop D2 của bộ màn hình).
  * Tách ra khỏi component để test được mà không phải dựng DOM.

@@ -9,6 +9,8 @@ import './ReviewScreen.css';
 
 type ReviewScreenProps = {
   onExit: () => void;
+  /** Nguồn thẻ của phiên, hiện ở chip góc phải: đến hạn hay Ôn thêm. */
+  queueLabel: string;
   progress?: { position: number; reviewed: number; total: number };
   children: ReactNode;
 };
@@ -17,7 +19,7 @@ type ReviewScreenProps = {
  * Khung toàn màn hình của phiên ôn tập — không sidebar, không điều hướng phụ.
  * design-criteria §1: màn này là công cụ tập trung, mọi lối rẽ đều là xao nhãng.
  */
-export function ReviewScreen({ onExit, progress, children }: ReviewScreenProps) {
+export function ReviewScreen({ onExit, queueLabel, progress, children }: ReviewScreenProps) {
   return (
     <div className="review-screen">
       <header className="review-screen__bar">
@@ -55,7 +57,7 @@ export function ReviewScreen({ onExit, progress, children }: ReviewScreenProps) 
         ) : null}
 
         <p className="review-screen__due compact-chip compact-chip--subtle text-caption">
-          Thẻ đến hạn hôm nay
+          {queueLabel}
         </p>
       </header>
 
