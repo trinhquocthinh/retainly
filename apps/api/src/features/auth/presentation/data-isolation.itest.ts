@@ -109,6 +109,17 @@ async function ownerReviews(outcome: 'remembered' | 'forgotten') {
   return res;
 }
 
+/** A gán Topic của mình cho thẻ của mình qua chính API. */
+async function ownerAssignsTopic() {
+  const res = await app.inject({
+    method: 'PATCH',
+    url: `/api/cards/${owned.cardId}/topic`,
+    cookies: ownerCookies,
+    payload: { topicId: owned.topicId },
+  });
+  expect(res.statusCode).toBe(200);
+}
+
 function snapshotOwnerRows() {
   return testPrisma.card.findMany({
     where: { userId: TEST_USER_ID },
@@ -211,6 +222,22 @@ describe('E4-S1-T7 — TC-022 cô lập dữ liệu giữa các tài khoản', (
     expect(due.json()).toEqual({ dueCards: [], dueCount: 0 });
   });
 
+  it('E9-S1-T1: tìm kiếm, lọc Topic của A và số đếm theo Topic của B không chứa gì của A', async () => {
+    await ownerAssignsTopic();
+    // Từ khoá không dấu khớp "Câu hỏi của A" — đối chứng A tìm thấy thẻ của mình.
+    const url = `/api/cards?q=cau%20hoi&topic=${owned.topicId}`;
+
+    const ownerView = await app.inject({ method: 'GET', url, cookies: ownerCookies });
+    const intruderView = await app.inject({ method: 'GET', url, cookies: intruderCookies });
+
+    expect(ownerView.json().items.map((card: { id: string }) => card.id)).toEqual([owned.cardId]);
+    expect(intruderView.json()).toMatchObject({
+      items: [],
+      pagination: { totalItems: 0 },
+      topicCounts: { all: 0, unassigned: 0, topics: [] },
+    });
+  });
+
   it('streak chỉ tính kết quả ôn tập của tài khoản đang đăng nhập', async () => {
     await ownerReviews('remembered');
 
@@ -277,13 +304,7 @@ describe('E4-S1-T7 — TC-022 cô lập dữ liệu giữa các tài khoản', (
   });
 
   it('báo cáo tỷ lệ quên của B không chứa nhánh kiến thức của A', async () => {
-    const assigned = await app.inject({
-      method: 'PATCH',
-      url: `/api/cards/${owned.cardId}/topic`,
-      cookies: ownerCookies,
-      payload: { topicId: owned.topicId },
-    });
-    expect(assigned.statusCode).toBe(200);
+    await ownerAssignsTopic();
 
     await ownerReviews('forgotten');
 

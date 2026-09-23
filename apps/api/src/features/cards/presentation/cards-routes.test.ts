@@ -56,6 +56,7 @@ const fakeCardList: CardListQuery = {
     return {
       items: [],
       totalItems: 21,
+      topicCounts: { all: 21, unassigned: 21, topics: [] },
     };
   },
 };
@@ -100,6 +101,8 @@ describe('E3-S1-T1 — GET /api/cards', () => {
         page: 1,
         pageSize: 20,
         sourceId: undefined,
+        topicId: undefined,
+        sort: 'recent',
       },
     ]);
     expect(res.json().pagination).toEqual({
@@ -127,8 +130,44 @@ describe('E3-S1-T1 — GET /api/cards', () => {
         page: 2,
         pageSize: 10,
         sourceId: SOURCE,
+        sort: 'recent',
       },
     ]);
+
+    await app.close();
+  });
+
+  it('E9-S1-T1: truyền từ khoá, cách sắp xếp và Topic', async () => {
+    const app = appWithCards();
+
+    const res = await app.inject({
+      method: 'GET',
+      url: `/api/cards?q=${encodeURIComponent('Đà Nẵng')}&sort=stability&topic=${TOPIC}`,
+    });
+
+    expect(res.statusCode).toBe(200);
+    expect(listInputs).toEqual([
+      {
+        userId: SIGNED_IN_USER_ID,
+        page: 1,
+        pageSize: 20,
+        topicId: TOPIC,
+        keyword: 'Đà Nẵng',
+        sort: 'stability',
+      },
+    ]);
+    expect(res.json().topicCounts).toEqual({ all: 21, unassigned: 21, topics: [] });
+
+    await app.close();
+  });
+
+  it('E9-S1-T1: topic=none lọc thẻ chưa gán Topic', async () => {
+    const app = appWithCards();
+
+    const res = await app.inject({ method: 'GET', url: '/api/cards?topic=none' });
+
+    expect(res.statusCode).toBe(200);
+    expect(listInputs[0]?.topicId).toBeNull();
 
     await app.close();
   });
@@ -140,6 +179,10 @@ describe('E3-S1-T1 — GET /api/cards', () => {
     '?pageSize=101',
     '?pageSize=abc',
     '?sourceId=khong-phai-uuid',
+    '?topic=khong-phai-uuid',
+    '?topic=None',
+    '?sort=created',
+    `?q=${'a'.repeat(101)}`,
   ])('query không hợp lệ %s trả ERR_BAD_REQUEST', async (query) => {
     const app = appWithCards();
 

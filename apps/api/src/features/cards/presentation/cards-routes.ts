@@ -6,7 +6,12 @@ import {
   type SourceOwnership,
   type TopicOwnership,
 } from '../application/create-card';
-import { listCards, type CardListQuery } from '../application/list-cards';
+import {
+  CARD_SORTS,
+  listCards,
+  type CardListQuery,
+  type CardSort,
+} from '../application/list-cards';
 import { deleteCard, type CardDeleteRepository } from '../application/delete-card';
 import { updateCard, type CardUpdateRepository } from '../application/update-card';
 import { requireAuth } from '../../../shared/request-auth';
@@ -36,7 +41,14 @@ type Query = {
   page?: number;
   pageSize?: number;
   sourceId?: string;
+  /** uuid của Topic, hoặc `none` = chỉ thẻ chưa gán Topic. */
+  topic?: string;
+  q?: string;
+  sort?: CardSort;
 };
+
+/** Giá trị `topic` chọn các thẻ chưa gán Topic ("Chưa gán"). */
+const UNASSIGNED_TOPIC = 'none';
 
 type CardsRouteDeps = {
   cards: CardRepository & CardUpdateRepository & CardDeleteRepository;
@@ -70,6 +82,21 @@ export function registerCardsRoutes(app: FastifyInstance, deps: CardsRouteDeps):
               type: 'string',
               format: 'uuid',
             },
+            topic: {
+              anyOf: [
+                { type: 'string', format: 'uuid' },
+                { type: 'string', const: UNASSIGNED_TOPIC },
+              ],
+            },
+            q: {
+              type: 'string',
+              maxLength: 100,
+            },
+            sort: {
+              type: 'string',
+              enum: CARD_SORTS,
+              default: 'recent',
+            },
           },
         },
       },
@@ -82,6 +109,9 @@ export function registerCardsRoutes(app: FastifyInstance, deps: CardsRouteDeps):
           page: request.query.page ?? 1,
           pageSize: request.query.pageSize ?? 20,
           sourceId: request.query.sourceId,
+          topicId: request.query.topic === UNASSIGNED_TOPIC ? null : request.query.topic,
+          q: request.query.q,
+          sort: request.query.sort ?? 'recent',
         },
       );
 
