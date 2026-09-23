@@ -11,8 +11,16 @@ export function fetchDueCards(): Promise<DueCardsResponse> {
 }
 
 /** POST /api/review-outcomes — SPEC-004. */
-export function recordOutcome(input: { cardId: string; outcome: ReviewOutcome }): Promise<unknown> {
+export function recordOutcome(input: {
+  cardId: string;
+  outcome: ReviewOutcome;
+}): Promise<{ outcomeId: string }> {
   return api.post('/review-outcomes', input);
+}
+
+/** DELETE /api/review-outcomes/:id — SPEC-013, BR-024. */
+export function undoOutcome(outcomeId: string): Promise<unknown> {
+  return api.delete(`/review-outcomes/${outcomeId}`);
 }
 
 export function fetchCurrentStreak(): Promise<StreakResponse> {

@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { useReviewSession } from '../../application/useReviewSession';
-import { fetchDueCards, recordOutcome } from '../../infrastructure/reviewApi';
+import { fetchDueCards, recordOutcome, undoOutcome } from '../../infrastructure/reviewApi';
 import { ReviewScreen } from '../ReviewScreen/ReviewScreen';
 import { ReviewSession } from '../ReviewSession/ReviewSession';
 import { ReviewMessage, ReviewSkeleton } from '../ReviewStates/ReviewStates';
+import { UndoAction } from '../UndoAction/UndoAction';
 
 export function ReviewPage() {
   const navigate = useNavigate();
@@ -27,7 +28,12 @@ export function ReviewPage() {
     navigate('/');
   }, [navigate, queryClient]);
 
-  const session = useReviewSession({ fetchDueCards, recordOutcome, onFinish });
+  const session = useReviewSession({
+    fetchDueCards,
+    recordOutcome,
+    undoOutcome,
+    onFinish,
+  });
 
   if (session.loading) {
     return (
@@ -58,7 +64,15 @@ export function ReviewPage() {
           note="Không còn thẻ cần ôn hôm nay."
           actionLabel="Về trang chủ"
           onAction={onFinish}
-        />
+        >
+          {/* Vừa chấm nhầm thẻ cuối vẫn gỡ được, không phải quay lại từ đầu */}
+          <UndoAction
+            canUndo={session.canUndo}
+            disabled={session.undoing}
+            undoProblem={session.undoProblem}
+            onUndo={session.onUndo}
+          />
+        </ReviewMessage>
       </ReviewScreen>
     );
   }

@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import { outcomeForKey, outcomeForSwipe, progressPercent, SWIPE_COMMIT_DISTANCE } from './review';
+import {
+  isUndoKey,
+  outcomeForKey,
+  outcomeForSwipe,
+  progressPercent,
+  SWIPE_COMMIT_DISTANCE,
+} from './review';
 
 describe('E1-S3-T7 — luật thuần của phiên ôn tập', () => {
   it('phím mũi tên ánh xạ đúng kết quả, phím khác thì không', () => {
@@ -30,5 +36,21 @@ describe('E1-S3-T7 — luật thuần của phiên ôn tập', () => {
     expect(progressPercent(1, 4)).toBe(25);
     expect(progressPercent(4, 4)).toBe(100);
     expect(progressPercent(0, 0)).toBe(0);
+  });
+});
+
+describe('E8-S1-T2 — phím hoàn tác', () => {
+  const plain = { ctrlKey: false, metaKey: false, altKey: false };
+
+  it('Z thường hay hoa đều là hoàn tác', () => {
+    expect(isUndoKey({ ...plain, key: 'z' })).toBe(true);
+    expect(isUndoKey({ ...plain, key: 'Z' })).toBe(true);
+    expect(isUndoKey({ ...plain, key: 'x' })).toBe(false);
+  });
+
+  it('Ctrl/Cmd/Alt+Z để lại cho trình duyệt', () => {
+    expect(isUndoKey({ ...plain, key: 'z', ctrlKey: true })).toBe(false);
+    expect(isUndoKey({ ...plain, key: 'z', metaKey: true })).toBe(false);
+    expect(isUndoKey({ ...plain, key: 'z', altKey: true })).toBe(false);
   });
 });

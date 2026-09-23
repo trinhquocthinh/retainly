@@ -65,6 +65,7 @@ export function ReviewScreen({ onExit, progress, children }: ReviewScreenProps) 
         Phím tắt: <kbd className="compact-chip compact-chip--subtle key-hint">Space</kbd> Lật thẻ ·{' '}
         <kbd className="compact-chip compact-chip--subtle key-hint">←</kbd> Quên ·{' '}
         <kbd className="compact-chip compact-chip--subtle key-hint">→</kbd> Nhớ ·{' '}
+        <kbd className="compact-chip compact-chip--subtle key-hint">Z</kbd> Hoàn tác ·{' '}
         <kbd className="compact-chip compact-chip--subtle key-hint">Esc</kbd> Kết thúc
       </footer>
     </div>

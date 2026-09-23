@@ -1,8 +1,10 @@
 import { Button } from '@src/shared/ui/Button/Button';
 import { IconArrowLeft, IconArrowRight, IconFlip } from '@src/shared/ui/Icons/Icons';
 
+import type { UndoProblem } from '../../application/useReviewSession';
 import type { DueCard, ReviewOutcome } from '../../domain/review';
 import { SwipeableCard } from '../SwipeableCard/SwipeableCard';
+import { UndoAction } from '../UndoAction/UndoAction';
 
 import './ReviewSession.css';
 
@@ -12,10 +14,13 @@ type ReviewSessionProps = {
   saving: boolean;
   saveFailed: boolean;
   canRetry: boolean;
+  canUndo: boolean;
+  undoProblem: UndoProblem | null;
   onSkip: () => void;
   onFlip: () => void;
   onRate: (outcome: ReviewOutcome) => void;
   onRetry: () => void;
+  onUndo: () => void;
 };
 
 export function ReviewSession({
@@ -24,10 +29,13 @@ export function ReviewSession({
   saving,
   saveFailed,
   canRetry,
+  canUndo,
+  undoProblem,
   onSkip,
   onFlip,
   onRate,
   onRetry,
+  onUndo,
 }: ReviewSessionProps) {
   return (
     <section className="review">
@@ -70,6 +78,8 @@ export function ReviewSession({
           <IconArrowRight />
         </Button>
       </div>
+
+      <UndoAction canUndo={canUndo} disabled={saving} undoProblem={undoProblem} onUndo={onUndo} />
     </section>
   );
 }

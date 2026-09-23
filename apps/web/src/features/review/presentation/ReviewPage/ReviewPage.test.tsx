@@ -307,3 +307,122 @@ describe('E7-S1-T3 — TC-059 ôn thẻ đục lỗ', () => {
     expect(container.querySelector('.review-card__extra')).toHaveTextContent('Thủ đô từ năm 508');
   });
 });
+
+describe('E8-S1-T2 — TC-063 hoàn tác lượt vừa ôn', () => {
+  const RATED = { status: 200, body: { outcomeId: 'outcome-1', updatedSchedule: {} } };
+  const UNDONE = { status: 200, body: { restoredSchedule: {} } };
+
+  async function rateFirstCard() {
+    await userEvent.click(await screen.findByText('Hỏi A'));
+    await userEvent.click(screen.getByRole('button', { name: /Nhớ/ }));
+    await screen.findByText('Hỏi B');
+  }
+
+  it('bấm Hoàn tác thì gỡ đúng outcome và thẻ cũ hiện lại ở mặt hỏi', async () => {
+    const fetchMock = mockApi({
+      'GET /api/cards/due': TWO_CARDS,
+      'POST /api/review-outcomes': RATED,
+      'DELETE /api/review-outcomes/outcome-1': UNDONE,
+    });
+    const { container } = renderWithProviders(<ReviewPage />);
+
+    await rateFirstCard();
+    expect(screen.getByText('2 / 2')).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: /Hoàn tác lượt vừa ôn/ }));
+
+    expect(await screen.findByText('1 / 2')).toBeInTheDocument();
+    expect(screen.getByText('Hỏi A')).toBeInTheDocument();
+    expect(container.querySelector('.review-card--flipped')).toBeNull();
+    expect(screen.getByRole('button', { name: /Nhớ/ })).toBeDisabled();
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/review-outcomes/outcome-1',
+      expect.objectContaining({ method: 'DELETE' }),
+    );
+  });
+
+  it('phím Z cũng hoàn tác, và chỉ được một bước', async () => {
+    const fetchMock = mockApi({
+      'GET /api/cards/due': TWO_CARDS,
+      'POST /api/review-outcomes': RATED,
+      'DELETE /api/review-outcomes/outcome-1': UNDONE,
+    });
+    renderWithProviders(<ReviewPage />);
+
+    await rateFirstCard();
+    await userEvent.keyboard('z');
+
+    expect(await screen.findByText('1 / 2')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Hoàn tác/ })).not.toBeInTheDocument();
+
+    await userEvent.keyboard('z');
+    const deletes = fetchMock.mock.calls.filter(([, init]) => init?.method === 'DELETE');
+    expect(deletes).toHaveLength(1);
+  });
+
+  it('màn hoàn thành phiên vẫn hoàn tác được thẻ cuối', async () => {
+    mockApi({
+      'GET /api/cards/due': {
+        status: 200,
+        body: { dueCount: 1, dueCards: [TWO_CARDS.body.dueCards[0]] },
+      },
+      'POST /api/review-outcomes': RATED,
+      'DELETE /api/review-outcomes/outcome-1': UNDONE,
+    });
+    renderWithProviders(<ReviewPage />);
+
+    await userEvent.click(await screen.findByText('Hỏi A'));
+    await userEvent.click(screen.getByRole('button', { name: /Nhớ/ }));
+    expect(await screen.findByText('Xong rồi!')).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: /Hoàn tác lượt vừa ôn/ }));
+
+    expect(await screen.findByText('Hỏi A')).toBeInTheDocument();
+    expect(screen.queryByText('Xong rồi!')).not.toBeInTheDocument();
+  });
+
+  it('server từ chối (quá 10 phút) thì báo rõ và bỏ nút', async () => {
+    mockApi({
+      'GET /api/cards/due': TWO_CARDS,
+      'POST /api/review-outcomes': RATED,
+      'DELETE /api/review-outcomes/outcome-1': {
+        status: 409,
+        body: { error: { code: 'ERR_UNDO_NOT_ALLOWED', message: 'Không thể hoàn tác' } },
+      },
+    });
+    renderWithProviders(<ReviewPage />);
+
+    await rateFirstCard();
+    await userEvent.click(screen.getByRole('button', { name: /Hoàn tác lượt vừa ôn/ }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('không còn hoàn tác được');
+    expect(screen.queryByRole('button', { name: /Hoàn tác/ })).not.toBeInTheDocument();
+    expect(screen.getByText('Hỏi B')).toBeInTheDocument();
+  });
+
+  it('lỗi mạng khi hoàn tác thì giữ nút để bấm lại', async () => {
+    mockApi({
+      'GET /api/cards/due': TWO_CARDS,
+      'POST /api/review-outcomes': RATED,
+      'DELETE /api/review-outcomes/outcome-1': { status: 503, body: null },
+    });
+    renderWithProviders(<ReviewPage />);
+
+    await rateFirstCard();
+    await userEvent.click(screen.getByRole('button', { name: /Hoàn tác lượt vừa ôn/ }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('có thể do mạng');
+    expect(screen.getByRole('button', { name: /Hoàn tác lượt vừa ôn/ })).toBeEnabled();
+  });
+
+  it('chưa chấm thẻ nào thì không có nút và phím Z không gọi gì', async () => {
+    const fetchMock = mockApi({ 'GET /api/cards/due': TWO_CARDS });
+    renderWithProviders(<ReviewPage />);
+
+    await screen.findByText('Hỏi A');
+    await userEvent.keyboard('z');
+
+    expect(screen.queryByRole('button', { name: /Hoàn tác/ })).not.toBeInTheDocument();
+    expect(fetchMock.mock.calls.some(([, init]) => init?.method === 'DELETE')).toBe(false);
+  });
+});

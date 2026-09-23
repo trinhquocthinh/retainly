@@ -1,0 +1,41 @@
+.undo-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-secondary);
+
+  & p {
+    margin: 0;
+  }
+}
+
+.undo-action__button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  transition: color var(--duration-fast);
+}
+
+.undo-action__button:hover:not(:disabled) {
+  color: var(--color-text);
+}
+
+.undo-action__button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Không có bàn phím thì không quảng cáo phím tắt */
+@media (max-width: 1023px) {
+  .undo-action__button kbd {
+    display: none;
+  }
+}

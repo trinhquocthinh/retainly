@@ -17,6 +17,20 @@ export function outcomeForKey(key: string): ReviewOutcome | undefined {
   return undefined;
 }
 
+/**
+ * Phím Z hoàn tác lượt vừa ôn (US-014). Có phím bổ trợ thì bỏ qua: Ctrl/Cmd+Z
+ * là hoàn tác của trình duyệt, cướp nó sẽ xoá nhầm một lượt ôn.
+ */
+export function isUndoKey(event: {
+  key: string;
+  ctrlKey: boolean;
+  metaKey: boolean;
+  altKey: boolean;
+}): boolean {
+  if (event.ctrlKey || event.metaKey || event.altKey) return false;
+  return event.key === 'z' || event.key === 'Z';
+}
+
 /** Phần trăm đã ôn xong trong phiên, dùng cho thanh tiến trình. */
 export function progressPercent(reviewed: number, total: number): number {
   return total === 0 ? 0 : Math.round((reviewed / total) * 100);

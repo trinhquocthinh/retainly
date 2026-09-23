@@ -186,3 +186,12 @@ export function IconRestart({ size = 16 }: IconProps) {
     </svg>
   );
 }
+
+export function IconUndo({ size = 14 }: IconProps) {
+  return (
+    <svg {...base(size)}>
+      <path d="M9 14 4 9l5-5" />
+      <path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" />
+    </svg>
+  );
+}

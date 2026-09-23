@@ -1,16 +1,30 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 
-import { outcomeForKey, type DueCard, type ReviewOutcome } from '../domain/review';
+import { isUndoKey, outcomeForKey, type DueCard, type ReviewOutcome } from '../domain/review';
 import { isRetryable } from '@src/shared/api/client';
 
 type ReviewPorts = {
   fetchDueCards: () => Promise<{ dueCards: DueCard[] }>;
-  recordOutcome: (input: { cardId: string; outcome: ReviewOutcome }) => Promise<unknown>;
+  recordOutcome: (input: { cardId: string; outcome: ReviewOutcome }) => Promise<{
+    outcomeId: string;
+  }>;
+  undoOutcome: (outcomeId: string) => Promise<unknown>;
   onFinish: () => void;
 };
 
-export function useReviewSession({ fetchDueCards, recordOutcome, onFinish }: ReviewPorts) {
+/** Lượt vừa ôn còn hoàn tác được: outcome để gọi DELETE, vị trí để quay về thẻ đó. */
+type Undoable = { outcomeId: string; index: number };
+
+/** `retry`: lỗi mạng/máy chủ, bấm lại được. `expired`: server từ chối (BR-024), thôi hẳn. */
+export type UndoProblem = 'retry' | 'expired';
+
+export function useReviewSession({
+  fetchDueCards,
+  recordOutcome,
+  undoOutcome,
+  onFinish,
+}: ReviewPorts) {
   const query = useQuery({
     queryKey: ['cards', 'due'],
     queryFn: fetchDueCards,
@@ -30,31 +44,46 @@ export function useReviewSession({ fetchDueCards, recordOutcome, onFinish }: Rev
     mutationFn: recordOutcome,
   });
 
+  const {
+    mutate: mutateUndo,
+    reset: resetUndo,
+    error: undoError,
+    isPending: undoing,
+    isError: undoFailed,
+  } = useMutation({
+    mutationFn: undoOutcome,
+  });
+
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [lastOutcome, setLastOutcome] = useState<ReviewOutcome | null>(null);
+  // Chỉ giữ một bước (US-014): lượt chấm mới ghi đè, hoàn tác xong thì xoá.
+  const [undoable, setUndoable] = useState<Undoable | null>(null);
 
   const cards = query.data?.dueCards ?? [];
   const card = cards[index];
+  const busy = saving || undoing;
 
   const onFlip = useCallback(() => setFlipped((value) => !value), []);
 
   const onRate = useCallback(
     (outcome: ReviewOutcome) => {
-      if (!card || saving) return;
+      if (!card || busy) return;
 
       setLastOutcome(outcome);
+      resetUndo();
       mutate(
         { cardId: card.id, outcome },
         {
-          onSuccess: () => {
+          onSuccess: ({ outcomeId }) => {
+            setUndoable({ outcomeId, index });
             setIndex((value) => value + 1);
             setFlipped(false);
           },
         },
       );
     },
-    [card, saving, mutate],
+    [card, index, busy, mutate, resetUndo],
   );
 
   const onRetry = useCallback(() => {
@@ -67,14 +96,42 @@ export function useReviewSession({ fetchDueCards, recordOutcome, onFinish }: Rev
    */
   const onSkip = useCallback(() => {
     resetSave();
+    // Thẻ bị bỏ qua nằm giữa lượt cũ và vị trí hiện tại: quay về lượt cũ sẽ
+    // khiến nó hiện lại lần nữa, nên bỏ luôn quyền hoàn tác.
+    setUndoable(null);
     setIndex((value) => value + 1);
     setFlipped(false);
   }, [resetSave]);
+
+  /**
+   * Máy khách không tự đếm 10 phút: server là nguồn sự thật cho BR-024, đồng
+   * hồ máy người dùng có thể lệch.
+   */
+  const onUndo = useCallback(() => {
+    if (!undoable || busy) return;
+
+    resetSave();
+    mutateUndo(undoable.outcomeId, {
+      onSuccess: () => {
+        setIndex(undoable.index);
+        setFlipped(false);
+        setUndoable(null);
+      },
+      onError: (error) => {
+        if (!isRetryable(error)) setUndoable(null);
+      },
+    });
+  }, [undoable, busy, resetSave, mutateUndo]);
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape') {
         onFinish();
+        return;
+      }
+      // Trước cả kiểm tra `card`: màn hoàn thành phiên cũng hoàn tác được.
+      if (isUndoKey(event)) {
+        onUndo();
         return;
       }
       if (!card) return;
@@ -94,7 +151,10 @@ export function useReviewSession({ fetchDueCards, recordOutcome, onFinish }: Rev
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [card, flipped, onFlip, onRate, onFinish]);
+  }, [card, flipped, onFlip, onRate, onUndo, onFinish]);
+
+  let undoProblem: UndoProblem | null = null;
+  if (undoFailed) undoProblem = isRetryable(undoError) ? 'retry' : 'expired';
 
   return {
     loading: query.isPending,
@@ -105,12 +165,16 @@ export function useReviewSession({ fetchDueCards, recordOutcome, onFinish }: Rev
     position: index + 1,
     reviewed: index,
     total: cards.length,
-    saving,
+    saving: busy,
     saveFailed,
     onFlip,
     onRate,
     onRetry,
     canRetry: isRetryable(saveError),
     onSkip,
+    canUndo: undoable !== null,
+    undoing,
+    undoProblem,
+    onUndo,
   };
 }
