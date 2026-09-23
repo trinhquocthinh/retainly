@@ -7,6 +7,7 @@
 const APP_UTC_OFFSET_MINUTES = 7 * 60;
 
 const OFFSET_MS = APP_UTC_OFFSET_MINUTES * 60_000;
+const DAY_MS = 86_400_000;
 
 /**
  * Mốc cuối ngày hiện tại theo giờ Việt Nam (SPEC-003).
@@ -25,4 +26,12 @@ export function endOfToday(now: Date): Date {
   );
 
   return new Date(endOfLocalDay - OFFSET_MS);
+}
+
+/**
+ * Mốc đầu ngày hiện tại theo giờ Việt Nam: ngay sau cuối ngày hôm qua.
+ * Outcome có reviewed_at >= mốc này là "đã ôn hôm nay" (BR-026).
+ */
+export function startOfToday(now: Date): Date {
+  return new Date(endOfToday(now).getTime() - DAY_MS + 1);
 }

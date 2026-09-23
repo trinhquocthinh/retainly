@@ -122,6 +122,18 @@ export function applyOutcome(current: Schedule, outcome: ReviewOutcome, now: Dat
 }
 
 /**
+ * Khả năng nhớ lại (R) tại thời điểm `now`, miền [0, 1]. Dùng đúng bộ lập lịch
+ * đã ghim trọng số ở trên để không có bản sao thứ hai của đường cong quên.
+ * Chưa từng ôn thì chưa có trí nhớ: R = 0. Kiểm lastReviewedAt thay vì state vì
+ * ts-fsrs ném lỗi khi thẻ khác 'new' mà thiếu mốc ôn (dòng seed tay, dữ liệu cũ).
+ */
+export function retrievability(schedule: Schedule, now: Date): number {
+  if (schedule.lastReviewedAt === null) return 0;
+
+  return scheduler.get_retrievability(toCard(schedule), now, false);
+}
+
+/**
  * Kiểm giá trị outcome đến từ HTTP (SPEC-004).
  * Không giao cho JSON schema của Fastify: schema sai chỉ trả ERR_BAD_REQUEST,
  * còn SDD yêu cầu đúng mã ERR_INVALID_OUTCOME.

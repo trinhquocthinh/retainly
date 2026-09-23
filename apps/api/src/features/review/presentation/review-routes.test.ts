@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest';
 import { buildApp } from '../../../app';
 import { registerReviewRoutes } from './review-routes';
 import type { StreakQuery } from '../application/get-current-streak';
-import type { DueCard, DueCardQuery } from '../application/list-due-cards';
+import type { DueCard, DueCardQuery, ExtraCandidate } from '../application/list-due-cards';
 import type { ReviewRepository } from '../application/review-repository';
 import { createInitialSchedule } from '../domain/review-scheduler';
 import { inMemoryReviews } from '../../../shared/test/in-memory-review';
@@ -26,10 +26,14 @@ function appWith(
   rows: DueCard[],
   reviewDays: string[] = [],
   reviews: ReviewRepository = throwingReviews,
+  extras: ExtraCandidate[] = [],
 ) {
   const schedules: DueCardQuery = {
     async findDueBy() {
       return rows;
+    },
+    async findExtraCandidates() {
+      return extras;
     },
   };
 
@@ -69,6 +73,28 @@ describe('E1-S2-T4 — GET /api/cards/due', () => {
   });
 });
 
+describe('E8-S1-T3 — GET /api/cards/extra', () => {
+  it('trả extraCards chỉ gồm phần thẻ, không lộ lịch FSRS', async () => {
+    const card: DueCard = { id: 'a', front: 'Hỏi A', back: 'Đáp A', note: 'Mẹo', dueDate: NOW };
+    const app = appWith([], [], throwingReviews, [{ card, schedule: createInitialSchedule(NOW) }]);
+
+    const res = await app.inject({ method: 'GET', url: '/api/cards/extra' });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toEqual({ extraCards: [{ ...card, dueDate: NOW.toISOString() }] });
+    await app.close();
+  });
+
+  it('không có thẻ thoả điều kiện thì trả mảng rỗng', async () => {
+    const app = appWith([]);
+
+    const res = await app.inject({ method: 'GET', url: '/api/cards/extra' });
+
+    expect(res.json()).toEqual({ extraCards: [] });
+    await app.close();
+  });
+});
+
 describe('E5-S1-T1 — GET /api/streak', () => {
   it('GET /api/streak trả currentStreak của người dùng hiện tại', async () => {
     const app = appWith([], ['2026-09-12', '2026-09-10']);
@@ -87,6 +113,9 @@ describe('E5-S1-T1 — GET /api/streak', () => {
     registerReviewRoutes(app, {
       schedules: {
         async findDueBy() {
+          return [];
+        },
+        async findExtraCandidates() {
           return [];
         },
       },

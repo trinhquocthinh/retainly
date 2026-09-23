@@ -12,6 +12,9 @@ function fakeQuery(rows: DueCard[]) {
       calls.push({ userId, cutoff });
       return rows;
     },
+    async findExtraCandidates() {
+      throw new Error('hàng đợi đến hạn không được đọc ứng viên Ôn thêm');
+    },
   };
   return { query, calls };
 }

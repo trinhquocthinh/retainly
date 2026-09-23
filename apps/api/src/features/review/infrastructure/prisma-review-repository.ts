@@ -3,7 +3,7 @@ import { prisma } from '../../../shared/prisma';
 import type { ReviewRepository, ReviewStore } from '../application/review-repository';
 import type { Schedule } from '../domain/review-scheduler';
 
-const SCHEDULE_COLUMNS = {
+export const SCHEDULE_COLUMNS = {
   state: true,
   dueDate: true,
   intervalDays: true,

@@ -4,6 +4,7 @@ import {
   applyOutcome,
   createInitialSchedule,
   parseOutcome,
+  retrievability,
   type Schedule,
 } from './review-scheduler';
 
@@ -67,5 +68,24 @@ describe('E1-S1-T2 — lịch ôn tập FSRS', () => {
   it('chấp nhận đúng hai giá trị hợp lệ', () => {
     expect(parseOutcome('remembered')).toBe('remembered');
     expect(parseOutcome('forgotten')).toBe('forgotten');
+  });
+});
+
+describe('E8-S1-T3 — khả năng nhớ lại R', () => {
+  it('đúng định nghĩa stability: sau S ngày thì R = 0,9', () => {
+    expect(retrievability(reviewed(10, 10), NOW)).toBeCloseTo(0.9, 5);
+  });
+
+  it('vừa ôn xong thì R = 1, càng để lâu R càng giảm', () => {
+    const justReviewed = reviewed(0, 10);
+    const later = new Date(NOW.getTime() + 20 * DAY);
+
+    expect(retrievability(justReviewed, NOW)).toBe(1);
+    expect(retrievability(justReviewed, later)).toBeLessThan(0.9);
+  });
+
+  it('chưa từng ôn thì R = 0, kể cả lịch khác "new" mà thiếu mốc ôn', () => {
+    expect(retrievability(createInitialSchedule(NOW), NOW)).toBe(0);
+    expect(retrievability({ ...reviewed(3, 3), lastReviewedAt: null }, NOW)).toBe(0);
   });
 });

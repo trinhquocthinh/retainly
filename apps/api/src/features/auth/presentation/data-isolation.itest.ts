@@ -97,6 +97,18 @@ async function seedOwnerData(app: App, ownerCookies: Record<string, string>) {
   };
 }
 
+/** A ghi một lượt ôn cho thẻ của mình qua chính API. */
+async function ownerReviews(outcome: 'remembered' | 'forgotten') {
+  const res = await app.inject({
+    method: 'POST',
+    url: '/api/review-outcomes',
+    cookies: ownerCookies,
+    payload: { cardId: owned.cardId, outcome },
+  });
+  expect(res.statusCode).toBe(200);
+  return res;
+}
+
 function snapshotOwnerRows() {
   return testPrisma.card.findMany({
     where: { userId: TEST_USER_ID },
@@ -200,13 +212,7 @@ describe('E4-S1-T7 — TC-022 cô lập dữ liệu giữa các tài khoản', (
   });
 
   it('streak chỉ tính kết quả ôn tập của tài khoản đang đăng nhập', async () => {
-    const reviewed = await app.inject({
-      method: 'POST',
-      url: '/api/review-outcomes',
-      cookies: ownerCookies,
-      payload: { cardId: owned.cardId, outcome: 'remembered' },
-    });
-    expect(reviewed.statusCode).toBe(200);
+    await ownerReviews('remembered');
 
     const ownerStreak = await app.inject({
       method: 'GET',
@@ -224,12 +230,7 @@ describe('E4-S1-T7 — TC-022 cô lập dữ liệu giữa các tài khoản', (
   });
 
   it('E8-S1-T1: B hoàn tác lượt ôn của A trả 404 ERR_OUTCOME_NOT_FOUND, dữ liệu A giữ nguyên', async () => {
-    const reviewed = await app.inject({
-      method: 'POST',
-      url: '/api/review-outcomes',
-      cookies: ownerCookies,
-      payload: { cardId: owned.cardId, outcome: 'remembered' },
-    });
+    const reviewed = await ownerReviews('remembered');
     const url = `/api/review-outcomes/${reviewed.json().outcomeId}`;
     const before = await snapshotOwnerRows();
 
@@ -242,6 +243,30 @@ describe('E4-S1-T7 — TC-022 cô lập dữ liệu giữa các tài khoản', (
     // Đối chứng: chính A thì hoàn tác được, nên 404 ở trên là do cô lập dữ liệu.
     const owner = await app.inject({ method: 'DELETE', url, cookies: ownerCookies });
     expect(owner.statusCode).toBe(200);
+  });
+
+  it('E8-S1-T3: Ôn thêm của B không chứa thẻ của A', async () => {
+    await ownerReviews('remembered');
+    // Lùi lượt ôn về hôm kia: thẻ vừa ôn hôm nay không thuộc diện Ôn thêm.
+    await testPrisma.reviewOutcome.updateMany({
+      where: { cardId: owned.cardId },
+      data: { reviewedAt: new Date(Date.now() - 2 * 86_400_000) },
+    });
+
+    const owner = await app.inject({
+      method: 'GET',
+      url: '/api/cards/extra',
+      cookies: ownerCookies,
+    });
+    const intruder = await app.inject({
+      method: 'GET',
+      url: '/api/cards/extra',
+      cookies: intruderCookies,
+    });
+
+    // Đối chứng: A thực sự có thẻ Ôn thêm, nếu không thì vế rỗng của B vô nghĩa.
+    expect(owner.json().extraCards.map((card: { id: string }) => card.id)).toEqual([owned.cardId]);
+    expect(intruder.json()).toEqual({ extraCards: [] });
   });
 
   it('danh sách topic của B không chứa topic của A', async () => {
@@ -260,13 +285,7 @@ describe('E4-S1-T7 — TC-022 cô lập dữ liệu giữa các tài khoản', (
     });
     expect(assigned.statusCode).toBe(200);
 
-    const reviewed = await app.inject({
-      method: 'POST',
-      url: '/api/review-outcomes',
-      cookies: ownerCookies,
-      payload: { cardId: owned.cardId, outcome: 'forgotten' },
-    });
-    expect(reviewed.statusCode).toBe(200);
+    await ownerReviews('forgotten');
 
     const ownerReport = await app.inject({
       method: 'GET',
@@ -323,6 +342,7 @@ describe('E4-S1-T7 — TC-022 cô lập dữ liệu giữa các tài khoản', (
   it.each<[string, (ids: typeof owned) => InjectOptions]>([
     ['GET /api/cards', () => ({ method: 'GET', url: '/api/cards' })],
     ['GET /api/cards/due', () => ({ method: 'GET', url: '/api/cards/due' })],
+    ['GET /api/cards/extra', () => ({ method: 'GET', url: '/api/cards/extra' })],
     ['GET /api/streak', () => ({ method: 'GET', url: '/api/streak' })],
     ['GET /api/topics', () => ({ method: 'GET', url: '/api/topics' })],
     ['GET /api/topics/forget-rate', () => ({ method: 'GET', url: '/api/topics/forget-rate' })],

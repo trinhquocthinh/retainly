@@ -2,6 +2,7 @@ import type { FastifyInstance } from 'fastify';
 
 import { getCurrentStreak, type StreakQuery } from '../application/get-current-streak';
 import { listDueCards, type DueCardQuery } from '../application/list-due-cards';
+import { listExtraCards } from '../application/list-extra-cards';
 import { recordOutcome } from '../application/record-outcome';
 import type { ReviewRepository } from '../application/review-repository';
 import { undoOutcome } from '../application/undo-outcome';
@@ -22,6 +23,10 @@ export function registerReviewRoutes(
 ): void {
   app.get('/api/cards/due', async (request) =>
     listDueCards(deps, { userId: requireAuth(request).userId }),
+  );
+
+  app.get('/api/cards/extra', async (request) =>
+    listExtraCards(deps, { userId: requireAuth(request).userId }),
   );
 
   app.post<{ Body: OutcomeBody }>(

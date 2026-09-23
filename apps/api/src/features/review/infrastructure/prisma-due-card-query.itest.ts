@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { OTHER_USER_ID, resetDatabase, testPrisma, TEST_USER_ID } from '../../../shared/test/db';
-import { endOfToday } from '../domain/due-window';
+import { endOfToday, startOfToday } from '../domain/due-window';
 import { prismaDueCardQuery } from './prisma-due-card-query';
 
 const DAY = 86_400_000;
@@ -70,5 +70,82 @@ describe('E7-S1-T2 — hàng đợi ôn mang theo ghi chú', () => {
       { front: 'Có ghi chú', note: 'Mẹo nhớ' },
       { front: 'Không ghi chú', note: null },
     ]);
+  });
+});
+
+describe('E8-S1-T3 — ứng viên Ôn thêm trên Postgres thật', () => {
+  // 12:00 giờ Việt Nam: đầu ngày 2026-09-22T17:00Z, cuối ngày 2026-09-23T16:59:59.999Z.
+  const NOW = new Date('2026-09-23T05:00:00Z');
+  const window = { dueAfter: endOfToday(NOW), notReviewedSince: startOfToday(NOW) };
+
+  async function seedReviewed(
+    userId: string,
+    front: string,
+    dueDate: Date,
+    reviewedAt: Date,
+  ): Promise<string> {
+    const card = await testPrisma.card.create({
+      data: {
+        userId,
+        front,
+        back: 'Đáp',
+        schedule: {
+          create: { state: 'review', dueDate, stability: 4, lastReviewedAt: reviewedAt },
+        },
+        outcomes: { create: { outcome: 'remembered', reviewedAt } },
+      },
+    });
+    return card.id;
+  }
+
+  it('chỉ lấy thẻ chưa đến hạn, chưa ôn hôm nay, của đúng người dùng', async () => {
+    const yesterday = new Date(window.notReviewedSince.getTime() - 1);
+    await seedReviewed(TEST_USER_ID, 'Hạn tuần sau', new Date(NOW.getTime() + 7 * DAY), yesterday);
+    await seedReviewed(TEST_USER_ID, 'Hạn ngày mai', new Date(NOW.getTime() + DAY), yesterday);
+    await seedReviewed(TEST_USER_ID, 'Đến hạn cuối ngày nay', window.dueAfter, yesterday);
+    await seedReviewed(
+      TEST_USER_ID,
+      'Đã ôn lúc 00:00 hôm nay',
+      new Date(NOW.getTime() + 3 * DAY),
+      window.notReviewedSince,
+    );
+    await seedReviewed(OTHER_USER_ID, 'Của người khác', new Date(NOW.getTime() + DAY), yesterday);
+    await testPrisma.card.create({
+      data: {
+        userId: TEST_USER_ID,
+        front: 'Thẻ mới',
+        back: 'Đáp',
+        schedule: { create: { state: 'new', dueDate: new Date(NOW.getTime() + DAY) } },
+      },
+    });
+
+    const candidates = await prismaDueCardQuery.findExtraCandidates(TEST_USER_ID, window);
+
+    // Sắp hạn tăng dần — thứ tự đầu vào cho phép hoà R của tầng domain.
+    expect(candidates.map(({ card }) => card.front)).toEqual(['Hạn ngày mai', 'Hạn tuần sau']);
+  });
+
+  it('trả kèm lịch FSRS đủ cột để tính R, dueDate của thẻ khớp lịch', async () => {
+    const reviewedAt = new Date(NOW.getTime() - 2 * DAY);
+    const dueDate = new Date(NOW.getTime() + 2 * DAY);
+    const id = await seedReviewed(TEST_USER_ID, 'Có lịch', dueDate, reviewedAt);
+
+    const [candidate] = await prismaDueCardQuery.findExtraCandidates(TEST_USER_ID, window);
+
+    expect(candidate).toEqual({
+      card: { id, front: 'Có lịch', back: 'Đáp', note: null, dueDate },
+      schedule: {
+        state: 'review',
+        dueDate,
+        intervalDays: 0,
+        stability: 4,
+        difficulty: 0,
+        elapsedDays: 0,
+        scheduledDays: 0,
+        reps: 0,
+        lapses: 0,
+        lastReviewedAt: reviewedAt,
+      },
+    });
   });
 });
