@@ -223,6 +223,27 @@ describe('E4-S1-T7 — TC-022 cô lập dữ liệu giữa các tài khoản', (
     expect(intruderStreak.json()).toEqual({ currentStreak: 0 });
   });
 
+  it('E8-S1-T1: B hoàn tác lượt ôn của A trả 404 ERR_OUTCOME_NOT_FOUND, dữ liệu A giữ nguyên', async () => {
+    const reviewed = await app.inject({
+      method: 'POST',
+      url: '/api/review-outcomes',
+      cookies: ownerCookies,
+      payload: { cardId: owned.cardId, outcome: 'remembered' },
+    });
+    const url = `/api/review-outcomes/${reviewed.json().outcomeId}`;
+    const before = await snapshotOwnerRows();
+
+    const intruder = await app.inject({ method: 'DELETE', url, cookies: intruderCookies });
+
+    expect(intruder.statusCode).toBe(404);
+    expect(intruder.json().error.code).toBe('ERR_OUTCOME_NOT_FOUND');
+    expect(await snapshotOwnerRows()).toEqual(before);
+
+    // Đối chứng: chính A thì hoàn tác được, nên 404 ở trên là do cô lập dữ liệu.
+    const owner = await app.inject({ method: 'DELETE', url, cookies: ownerCookies });
+    expect(owner.statusCode).toBe(200);
+  });
+
   it('danh sách topic của B không chứa topic của A', async () => {
     const res = await app.inject({ method: 'GET', url: '/api/topics', cookies: intruderCookies });
 
@@ -306,6 +327,10 @@ describe('E4-S1-T7 — TC-022 cô lập dữ liệu giữa các tài khoản', (
     ['GET /api/topics', () => ({ method: 'GET', url: '/api/topics' })],
     ['GET /api/topics/forget-rate', () => ({ method: 'GET', url: '/api/topics/forget-rate' })],
     ['DELETE /api/cards/:id', ({ cardId }) => ({ method: 'DELETE', url: `/api/cards/${cardId}` })],
+    [
+      'DELETE /api/review-outcomes/:id',
+      ({ cardId }) => ({ method: 'DELETE', url: `/api/review-outcomes/${cardId}` }),
+    ],
   ])('%s không có phiên trả 401 ERR_UNAUTHORIZED', async (_name, toRequest) => {
     const res = await app.inject(toRequest(owned));
 

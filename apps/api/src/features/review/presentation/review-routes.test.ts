@@ -4,26 +4,32 @@ import { buildApp } from '../../../app';
 import { registerReviewRoutes } from './review-routes';
 import type { StreakQuery } from '../application/get-current-streak';
 import type { DueCard, DueCardQuery } from '../application/list-due-cards';
-import type { ReviewRepository } from '../application/record-outcome';
-import { signInAs } from '../../../shared/test/sign-in-as';
+import type { ReviewRepository } from '../application/review-repository';
+import { createInitialSchedule } from '../domain/review-scheduler';
+import { inMemoryReviews } from '../../../shared/test/in-memory-review';
+import { SIGNED_IN_USER_ID, signInAs } from '../../../shared/test/sign-in-as';
 
 const NOW = new Date('2026-09-12T13:49:00Z');
 
-function appWith(rows: DueCard[], reviewDays: string[] = []) {
+// Các route đọc không được chạm tới cổng này. Ném lỗi thay vì trả giá trị rỗng:
+// nếu route lỡ gọi tới, test phải đỏ chứ không im lặng đi tiếp.
+const throwingReviews: ReviewRepository = {
+  inTransaction() {
+    throw new Error('route đọc không được mở transaction ghi lịch ôn');
+  },
+};
+
+const CARD = '11111111-1111-1111-1111-111111111111';
+const UNKNOWN_OUTCOME = '22222222-2222-2222-2222-222222222222';
+
+function appWith(
+  rows: DueCard[],
+  reviewDays: string[] = [],
+  reviews: ReviewRepository = throwingReviews,
+) {
   const schedules: DueCardQuery = {
     async findDueBy() {
       return rows;
-    },
-  };
-
-  // GET /api/cards/due không được chạm tới cổng này. Ném lỗi thay vì trả giá trị
-  // rỗng: nếu route lỡ gọi tới, test phải đỏ chứ không im lặng đi tiếp.
-  const reviews: ReviewRepository = {
-    findScheduleFor() {
-      throw new Error('GET /api/cards/due không được đọc lịch ôn');
-    },
-    save() {
-      throw new Error('GET /api/cards/due không được ghi gì');
     },
   };
 
@@ -84,12 +90,7 @@ describe('E5-S1-T1 — GET /api/streak', () => {
           return [];
         },
       },
-      reviews: {
-        async findScheduleFor() {
-          return null;
-        },
-        async save() {},
-      },
+      reviews: inMemoryReviews(),
       streaks: {
         async findReviewDaysBy() {
           return [];
@@ -102,6 +103,66 @@ describe('E5-S1-T1 — GET /api/streak', () => {
 
     expect(res.statusCode).toBe(401);
     expect(res.json().error.code).toBe('ERR_UNAUTHORIZED');
+    await app.close();
+  });
+});
+
+describe('E8-S1-T1 — ghi và hoàn tác lượt ôn qua HTTP', () => {
+  async function reviewedApp() {
+    const reviews = inMemoryReviews([
+      { ownerId: SIGNED_IN_USER_ID, cardId: CARD, schedule: createInitialSchedule(NOW) },
+    ]);
+    const app = appWith([], [], reviews);
+    const recorded = await app.inject({
+      method: 'POST',
+      url: '/api/review-outcomes',
+      payload: { cardId: CARD, outcome: 'remembered' },
+    });
+    return { app, reviews, outcomeId: recorded.json().outcomeId as string };
+  }
+
+  it('POST trả outcomeId cùng lịch mới', async () => {
+    const { app, reviews, outcomeId } = await reviewedApp();
+
+    expect(outcomeId).toBe(reviews.outcomes[0]?.id);
+    await app.close();
+  });
+
+  it('DELETE outcome vừa ghi trả 200 kèm lịch đã khôi phục', async () => {
+    const { app, outcomeId } = await reviewedApp();
+
+    const res = await app.inject({ method: 'DELETE', url: `/api/review-outcomes/${outcomeId}` });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.json().restoredSchedule).toMatchObject({ state: 'new', reps: 0 });
+    await app.close();
+  });
+
+  it('DELETE outcome không phải mới nhất trả 409 ERR_UNDO_NOT_ALLOWED', async () => {
+    const { app, outcomeId } = await reviewedApp();
+    await app.inject({
+      method: 'POST',
+      url: '/api/review-outcomes',
+      payload: { cardId: CARD, outcome: 'forgotten' },
+    });
+
+    const res = await app.inject({ method: 'DELETE', url: `/api/review-outcomes/${outcomeId}` });
+
+    expect(res.statusCode).toBe(409);
+    expect(res.json().error.code).toBe('ERR_UNDO_NOT_ALLOWED');
+    await app.close();
+  });
+
+  it.each([
+    ['không tồn tại', UNKNOWN_OUTCOME, 404, 'ERR_OUTCOME_NOT_FOUND'],
+    ['sai định dạng UUID', 'khong-phai-uuid', 400, 'ERR_BAD_REQUEST'],
+  ])('DELETE id %s trả %i %s', async (_name, id, status, code) => {
+    const { app } = await reviewedApp();
+
+    const res = await app.inject({ method: 'DELETE', url: `/api/review-outcomes/${id}` });
+
+    expect(res.statusCode).toBe(status);
+    expect(res.json().error.code).toBe(code);
     await app.close();
   });
 });

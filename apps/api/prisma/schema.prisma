@@ -122,10 +122,12 @@ model ReviewSchedule {
 }
 
 model ReviewOutcome {
-  id         String             @id @default(uuid()) @db.Uuid
-  cardId     String             @map("card_id") @db.Uuid
-  outcome    ReviewOutcomeValue
-  reviewedAt DateTime           @default(now()) @map("reviewed_at") @db.Timestamptz(3)
+  id               String             @id @default(uuid()) @db.Uuid
+  cardId           String             @map("card_id") @db.Uuid
+  outcome          ReviewOutcomeValue
+  reviewedAt       DateTime           @default(now()) @map("reviewed_at") @db.Timestamptz(3)
+  /// Ảnh chụp lịch ôn ngay trước lượt này, để hoàn tác (BR-024). Null ở outcome ghi trước E8.
+  previousSchedule Json?              @map("previous_schedule")
 
   card Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
 

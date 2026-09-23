@@ -2,11 +2,14 @@ import type { FastifyInstance } from 'fastify';
 
 import { getCurrentStreak, type StreakQuery } from '../application/get-current-streak';
 import { listDueCards, type DueCardQuery } from '../application/list-due-cards';
-import { recordOutcome, type ReviewRepository } from '../application/record-outcome';
+import { recordOutcome } from '../application/record-outcome';
+import type { ReviewRepository } from '../application/review-repository';
+import { undoOutcome } from '../application/undo-outcome';
 import { parseOutcome } from '../domain/review-scheduler';
 import { requireAuth } from '../../../shared/request-auth';
 
 type OutcomeBody = { cardId: string; outcome: string };
+type OutcomeParams = { id: string };
 
 export function registerReviewRoutes(
   app: FastifyInstance,
@@ -46,5 +49,27 @@ export function registerReviewRoutes(
 
   app.get('/api/streak', async (request) =>
     getCurrentStreak(deps, { userId: requireAuth(request).userId }),
+  );
+
+  app.delete<{ Params: OutcomeParams }>(
+    '/api/review-outcomes/:id',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          required: ['id'],
+          additionalProperties: false,
+          properties: {
+            // Cột id là UUID: chuỗi sai dạng xuống tới Postgres thành 500.
+            id: { type: 'string', format: 'uuid' },
+          },
+        },
+      },
+    },
+    async (request) =>
+      undoOutcome(deps, {
+        userId: requireAuth(request).userId,
+        outcomeId: request.params.id,
+      }),
   );
 }

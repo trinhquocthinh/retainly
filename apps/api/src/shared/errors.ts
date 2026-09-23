@@ -11,6 +11,11 @@ export const errorCatalog = {
   ERR_CARD_NOT_FOUND: { status: 404, message: 'Không tìm thấy thẻ này' },
   ERR_UNAUTHORIZED: { status: 401, message: 'Vui lòng đăng nhập lại' },
   ERR_INVALID_OUTCOME: { status: 400, message: 'Kết quả ôn tập không hợp lệ' },
+  ERR_OUTCOME_NOT_FOUND: { status: 404, message: 'Không tìm thấy lượt ôn này' },
+  ERR_UNDO_NOT_ALLOWED: {
+    status: 409,
+    message: 'Chỉ hoàn tác được lượt ôn mới nhất của thẻ, trong vòng 10 phút',
+  },
   ERR_FORBIDDEN: { status: 403, message: 'Bạn không có quyền truy cập nội dung này' },
   ERR_USER_LIMIT_REACHED: { status: 403, message: 'Đã đạt giới hạn số tài khoản cho phép' },
   ERR_EMAIL_TAKEN: { status: 409, message: 'Email này đã được đăng ký' },
