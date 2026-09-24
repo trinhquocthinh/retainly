@@ -271,7 +271,8 @@
      cột nên tự xin nới ra, thay vì phải luồn prop qua AppShell. */
   .shell__content:has(.create-card--wide),
   .shell__content:has(.card-library),
-  .shell__content:has(.home) {
+  .shell__content:has(.home),
+  .shell__content:has(.stats) {
     max-width: 1120px;
   }
 }

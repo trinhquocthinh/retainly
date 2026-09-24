@@ -1,0 +1,125 @@
+.stat-tiles {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+}
+
+.stat-tile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+
+  & p,
+  & h2 {
+    margin: 0;
+  }
+}
+
+.stat-tile__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.stat-tile__label,
+.stat-tile__hint,
+.stat-tile__value .text-caption {
+  color: var(--color-text-secondary);
+}
+
+.stat-tile__title {
+  font-weight: 600;
+}
+
+.stat-tile__icon {
+  background: var(--color-accent-soft);
+  color: var(--color-accent-strong);
+}
+
+.stat-tile__emoji {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.stat-tile__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.stat-tile__value {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  font-variant-numeric: tabular-nums;
+
+  & [data-direction='above'],
+  & [data-direction='equal'] {
+    color: var(--color-success-strong);
+  }
+
+  & [data-direction='below'] {
+    color: var(--color-danger);
+  }
+}
+
+.stat-tile__meter {
+  position: relative;
+  display: block;
+  height: 8px;
+  margin-top: var(--space-1);
+  border-radius: 999px;
+  background: var(--color-secondary-active-bg);
+}
+
+.stat-tile__meter-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-accent);
+}
+
+/* Vạch mục tiêu nhô lên khỏi thanh để vẫn thấy khi phần tô đã vượt qua nó. */
+.stat-tile__meter-marker {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: var(--color-text);
+}
+
+.stat-tile__footer {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-secondary-hover-bg);
+  color: var(--color-text-secondary);
+}
+
+.stat-tile__gap[data-direction='above'],
+.stat-tile__gap[data-direction='equal'] {
+  color: var(--color-success-strong);
+  font-weight: 600;
+}
+
+.stat-tile__gap[data-direction='below'] {
+  color: var(--color-danger);
+  font-weight: 600;
+}
+
+@media (min-width: 640px) {
+  .stat-tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .stat-tiles {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}

@@ -28,7 +28,7 @@ const CreateCardPage = lazy(() =>
   })),
 );
 const StatsPage = lazy(() =>
-  import('@src/features/topics/presentation/StatsPage/StatsPage').then((m) => ({
+  import('@src/features/stats/presentation/StatsPage/StatsPage').then((m) => ({
     default: m.StatsPage,
   })),
 );
@@ -67,6 +67,7 @@ export function App() {
         <Route element={<RequireAuth />}>
           <Route path="/review" element={<ReviewPage />} />
           <Route path="/review/extra" element={<ReviewPage source="extra" />} />
+          <Route path="/review/topic/:topicId" element={<ReviewPage source="topic" />} />
 
           <Route element={<ShellLayout />}>
             <Route path="/" element={<HomePage />} />

@@ -1,0 +1,189 @@
+.stats {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+
+  & h1,
+  & h2,
+  & p {
+    margin: 0;
+  }
+}
+
+.stats-error h1,
+.stats-error p {
+  margin: 0;
+}
+
+.stats__heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.stats__title {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.stats__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-accent-active);
+}
+
+.stats__intro,
+.stats__empty p,
+.stats__note p {
+  color: var(--color-text-secondary);
+}
+
+.stats__range {
+  width: 100%;
+}
+
+/* Đổi khoảng: giữ số cũ trên màn nhưng làm mờ để báo đang nạp. */
+.stats[aria-busy='true'] :is(.stat-tiles, .stats__grid) {
+  opacity: 0.6;
+  transition: opacity var(--duration-fast);
+}
+
+.stats__grid,
+.stats__side {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.stats__note {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* Đề xuất rút gọn — viền trái đổi màu theo mức độ, không dùng nền rực. */
+.stats-advice {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  border-left: 4px solid var(--color-danger);
+}
+
+.stats-advice[data-level='steady'] {
+  border-left-color: var(--color-success);
+}
+
+.stats-advice__icon {
+  background: var(--color-danger-surface);
+  color: var(--color-danger);
+}
+
+.stats-advice[data-level='steady'] .stats-advice__icon {
+  background: var(--color-success-surface);
+  color: var(--color-success-strong);
+}
+
+.stats-advice__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.stats-advice__eyebrow {
+  color: var(--color-danger-active);
+}
+
+.stats-advice[data-level='steady'] .stats-advice__eyebrow {
+  color: var(--color-success-strong);
+}
+
+.stats-advice__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-text-secondary);
+}
+
+/* Trạng thái rỗng, lỗi, đang tải */
+.stats__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.stats__empty-icon {
+  background: var(--color-accent-soft);
+  color: var(--color-accent-strong);
+}
+
+.stats__empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.stats-error {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.stats-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.stats-skeleton div {
+  min-height: 120px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-secondary-active-bg);
+  animation: stats-pulse 1.2s ease-in-out infinite alternate;
+}
+
+.stats-skeleton div:nth-child(2) {
+  min-height: 220px;
+}
+
+@keyframes stats-pulse {
+  from {
+    opacity: 0.45;
+  }
+
+  to {
+    opacity: 0.85;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stats-skeleton div {
+    animation: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .stats__heading {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+
+  .stats__range {
+    width: auto;
+    flex: 0 0 auto;
+    min-width: 320px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .stats__grid {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  }
+}

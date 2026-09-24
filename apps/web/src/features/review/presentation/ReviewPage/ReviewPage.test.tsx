@@ -719,3 +719,50 @@ describe('E8-S1-T5 — tổng kết khi có thẻ bị bỏ qua', () => {
     expect(tally).toHaveTextContent('Nhớ / Quên1 / 1');
   });
 });
+
+describe('E10-S1-T4 — TC-073 ôn ngay theo Topic', () => {
+  const RATED = { status: 200, body: { outcomeId: 'outcome-1', updatedSchedule: {} } };
+
+  function renderTopicRoutes(route: string) {
+    return renderWithProviders(
+      <Routes>
+        <Route path="/review/topic/:topicId" element={<ReviewPage source="topic" />} />
+        <Route path="/stats" element={<h1>Màn Thống kê</h1>} />
+      </Routes>,
+      { route },
+    );
+  }
+
+  it('chỉ nạp hàng đợi của Topic, xong thì mời về Thống kê', async () => {
+    const fetchMock = mockApi({
+      'GET /api/cards/due?topicId=topic-1': {
+        status: 200,
+        body: { dueCount: 1, dueCards: [TWO_CARDS.body.dueCards[0]] },
+      },
+      'POST /api/review-outcomes': RATED,
+    });
+    renderTopicRoutes('/review/topic/topic-1');
+
+    await userEvent.click(await screen.findByText('Hỏi A'));
+    // Mở thẳng bằng đường dẫn thì không có tên Topic trong state điều hướng
+    expect(screen.getByText('Thẻ đến hạn của nhánh')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: /Nhớ/ }));
+
+    expect(await screen.findByText('Xong nhánh này!')).toBeInTheDocument();
+    expect(screen.getByText('Không còn thẻ đến hạn trong nhánh này.')).toBeInTheDocument();
+    expect(fetchMock.mock.calls.some(([url]) => url === '/api/cards/due')).toBe(false);
+
+    await userEvent.click(screen.getByRole('button', { name: 'Về Thống kê' }));
+    expect(await screen.findByRole('heading', { name: 'Màn Thống kê' })).toBeInTheDocument();
+  });
+
+  it('Esc giữa phiên cũng quay về Thống kê', async () => {
+    mockApi({ 'GET /api/cards/due?topicId=topic-1': TWO_CARDS });
+    renderTopicRoutes('/review/topic/topic-1');
+
+    await screen.findByText('Hỏi A');
+    await userEvent.keyboard('{Escape}');
+
+    expect(await screen.findByRole('heading', { name: 'Màn Thống kê' })).toBeInTheDocument();
+  });
+});

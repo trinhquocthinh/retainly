@@ -13,10 +13,13 @@ import { isRetryable } from '@src/shared/api/client';
 type QueuePorts = {
   fetchDueCards: () => Promise<{ dueCards: DueCard[] }>;
   fetchExtraCards: () => Promise<{ extraCards: DueCard[] }>;
+  fetchTopicDueCards: (topicId: string) => Promise<{ dueCards: DueCard[] }>;
 };
 
 type ReviewPorts = QueuePorts & {
   source: ReviewSource;
+  /** Chỉ dùng khi `source = 'topic'`. */
+  topicId?: string;
   recordOutcome: (input: { cardId: string; outcome: ReviewOutcome }) => Promise<{
     outcomeId: string;
   }>;
@@ -35,7 +38,11 @@ export type UndoProblem = 'retry' | 'expired';
  * giữ key `['cards', 'due']` và nguyên phản hồi để dùng chung cache với Trang
  * chủ và badge điều hướng.
  */
-function useReviewQueue(source: ReviewSource, { fetchDueCards, fetchExtraCards }: QueuePorts) {
+function useReviewQueue(
+  source: ReviewSource,
+  topicId: string | undefined,
+  { fetchDueCards, fetchExtraCards, fetchTopicDueCards }: QueuePorts,
+) {
   // Nạp một lần đầu phiên và giữ nguyên. Làm mới giữa chừng sẽ khiến thẻ biến
   // mất hoặc đổi thứ tự ngay dưới tay người đang ôn — tech-spec §3.
   const keepForSession = { staleTime: Infinity, refetchOnWindowFocus: false } as const;
@@ -53,8 +60,21 @@ function useReviewQueue(source: ReviewSource, { fetchDueCards, fetchExtraCards }
     ...keepForSession,
   });
 
-  const query = source === 'extra' ? extra : due;
-  const cards = source === 'extra' ? extra.data?.extraCards : due.data?.dueCards;
+  const topic = useQuery({
+    // Nằm dưới `['cards', 'due']` nên rời phiên nào cũng đánh dấu cũ luôn hàng
+    // đợi theo Topic, lần "Ôn ngay" sau không ôn lại thẻ vừa chấm.
+    queryKey: ['cards', 'due', 'topic', topicId],
+    queryFn: () => fetchTopicDueCards(topicId ?? ''),
+    enabled: source === 'topic' && topicId !== undefined,
+    ...keepForSession,
+  });
+
+  const query = { due, extra, topic }[source];
+  const cards = {
+    due: due.data?.dueCards,
+    extra: extra.data?.extraCards,
+    topic: topic.data?.dueCards,
+  }[source];
 
   return {
     cards: cards ?? [],
@@ -66,13 +86,19 @@ function useReviewQueue(source: ReviewSource, { fetchDueCards, fetchExtraCards }
 
 export function useReviewSession({
   source,
+  topicId,
   fetchDueCards,
   fetchExtraCards,
+  fetchTopicDueCards,
   recordOutcome,
   undoOutcome,
   onFinish,
 }: ReviewPorts) {
-  const query = useReviewQueue(source, { fetchDueCards, fetchExtraCards });
+  const query = useReviewQueue(source, topicId, {
+    fetchDueCards,
+    fetchExtraCards,
+    fetchTopicDueCards,
+  });
 
   const {
     mutate,

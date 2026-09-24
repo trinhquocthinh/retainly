@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { homeOverview } from '@src/shared/test/homeOverview';
 import { renderWithProviders } from '@src/shared/test/renderWithProviders';
+import { statsFixture } from '@src/shared/test/stats';
 
 import { App } from './App';
 
@@ -72,7 +73,7 @@ describe('E0-S2-T4 — khung định tuyến', () => {
     stubApi({
       ...SIGNED_IN,
       'GET /api/cards': { status: 200, body: EMPTY_LIBRARY },
-      'GET /api/topics/forget-rate': { status: 200, body: { topics: [] } },
+      'GET /api/stats': { status: 200, body: statsFixture() },
     });
     renderAt(path);
     expect(await screen.findByRole('heading', { name: title })).toBeTruthy();

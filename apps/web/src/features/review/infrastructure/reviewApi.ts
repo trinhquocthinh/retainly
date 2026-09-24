@@ -11,6 +11,11 @@ export function fetchDueCards(): Promise<DueCardsResponse> {
   return api.get<DueCardsResponse>('/cards/due');
 }
 
+/** GET /api/cards/due?topicId= — SPEC-003 lọc theo Topic, cho "Ôn ngay" ở màn Thống kê. */
+export function fetchTopicDueCards(topicId: string): Promise<DueCardsResponse> {
+  return api.get<DueCardsResponse>(`/cards/due?topicId=${encodeURIComponent(topicId)}`);
+}
+
 /** GET /api/cards/extra — SPEC-014, BR-026. */
 export function fetchExtraCards(): Promise<ExtraCardsResponse> {
   return api.get<ExtraCardsResponse>('/cards/extra');
