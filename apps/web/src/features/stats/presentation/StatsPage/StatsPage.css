@@ -40,8 +40,25 @@
   color: var(--color-text-secondary);
 }
 
+.stats__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
 .stats__range {
-  width: 100%;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.stats__actions .btn {
+  flex: 0 0 auto;
+  padding: 0 var(--space-3);
+}
+
+/* Mobile chỉ còn icon; tên nút vẫn đọc được qua aria-label. */
+.stats__export-label {
+  display: none;
 }
 
 /* Đổi khoảng: giữ số cũ trên màn nhưng làm mờ để báo đang nạp. */
@@ -169,16 +186,28 @@
 }
 
 @media (min-width: 768px) {
+  /* Thiếu chỗ (sidebar mở ở tablet) thì bộ lọc + nút xuất xuống dòng dưới tiêu đề. */
   .stats__heading {
-    flex-direction: row;
+    flex-flow: row wrap;
     align-items: flex-end;
     justify-content: space-between;
   }
 
+  .stats__title {
+    flex: 1 1 20rem;
+  }
+
   .stats__range {
-    width: auto;
     flex: 0 0 auto;
     min-width: 320px;
+  }
+
+  .stats__actions .btn {
+    padding: 0 var(--space-4);
+  }
+
+  .stats__export-label {
+    display: inline;
   }
 }
 

@@ -7,7 +7,10 @@ import { ReviewPage } from '@src/features/review/presentation/ReviewPage/ReviewP
 import { renderWithProviders } from '@src/shared/test/renderWithProviders';
 import { statsFixture, topicStats } from '@src/shared/test/stats';
 
+import { downloadCsv } from '../../infrastructure/downloadCsv';
 import { StatsPage } from './StatsPage';
+
+vi.mock('../../infrastructure/downloadCsv', () => ({ downloadCsv: vi.fn() }));
 
 type Reply = { status: number; body: unknown };
 
@@ -62,7 +65,10 @@ function statsRequests(fetchMock: ReturnType<typeof mockApi>) {
   return fetchMock.mock.calls.map(([url]) => url).filter((url) => url.startsWith('/api/stats'));
 }
 
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => {
+  vi.unstubAllGlobals();
+  vi.mocked(downloadCsv).mockClear();
+});
 
 describe('E10-S1-T4 — TC-073 màn Thống kê đầy đủ', () => {
   it('bốn ô số liệu hiện đúng số thật của khoảng 30 ngày', async () => {
@@ -257,6 +263,7 @@ describe('E10-S1-T4 — TC-073 trạng thái của màn Thống kê', () => {
     expect(screen.getByRole('link', { name: /Bắt đầu ôn tập/ })).toHaveAttribute('href', '/review');
     expect(screen.getByRole('link', { name: /Tạo thẻ mới/ })).toHaveAttribute('href', '/cards/new');
     expect(screen.queryByRole('tablist')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Xuất báo cáo CSV' })).not.toBeInTheDocument();
     expect(screen.queryByRole('region', { name: 'Chỉ số ghi nhớ' })).not.toBeInTheDocument();
   });
 
@@ -299,6 +306,7 @@ describe('E10-S1-T4 — TC-073 trạng thái của màn Thống kê', () => {
     renderStats();
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Không tải được thống kê');
+    expect(screen.queryByRole('button', { name: 'Xuất báo cáo CSV' })).not.toBeInTheDocument();
 
     await userEvent.click(screen.getByRole('button', { name: 'Thử lại' }));
 
@@ -313,5 +321,39 @@ describe('E10-S1-T4 — TC-073 trạng thái của màn Thống kê', () => {
     renderStats();
 
     expect(screen.getByRole('status', { name: 'Đang tải thống kê' })).toBeInTheDocument();
+  });
+});
+
+describe('E10-S1-T5 — TC-074 xuất báo cáo', () => {
+  it('xuất CSV đúng khoảng đang xem, gồm cả bảng nhánh', async () => {
+    const fetchMock = mockApi({ '/api/stats?range=30d': POPULATED });
+    renderStats();
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Xuất báo cáo CSV' }));
+
+    expect(downloadCsv).toHaveBeenCalledTimes(1);
+    const [fileName, csv] = vi.mocked(downloadCsv).mock.calls[0]!;
+    expect(fileName).toBe('retainly-thong-ke-30-ngay-2026-09-24.csv');
+    expect(csv).toContain('Khoảng thời gian,30 ngày gần nhất');
+    expect(csv).toContain('Kiến trúc phần mềm,48,20,42,48,6.84,0');
+    expect(csv).toContain('Trí nhớ & học tập,52,8,14.8,52,,15');
+    // Dựng từ số liệu đã nạp, không gọi thêm API
+    expect(statsRequests(fetchMock)).toEqual(['/api/stats?range=30d']);
+  });
+
+  it('đang nạp khoảng mới thì chưa cho xuất, tránh xuất nhầm số của khoảng cũ', async () => {
+    mockApi({ '/api/stats?range=30d': POPULATED });
+    renderStats();
+
+    const exportButton = await screen.findByRole('button', { name: 'Xuất báo cáo CSV' });
+    expect(exportButton).toBeEnabled();
+
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => new Promise(() => {})),
+    );
+    await userEvent.click(screen.getByRole('tab', { name: 'Toàn bộ thời gian' }));
+
+    expect(exportButton).toBeDisabled();
   });
 });

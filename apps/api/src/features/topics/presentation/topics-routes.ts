@@ -4,7 +4,6 @@ import { requireAuth } from '../../../shared/request-auth';
 import { assignTopicToCard, type CardTopicRepository } from '../application/assign-topic-to-card';
 import { createTopic, type TopicRepository } from '../application/create-topic';
 import { listTopics } from '../application/list-topics';
-import { getTopicForgetRates, TopicForgetRateQuery } from '../application/get-topic-forget-rates';
 
 type TopicBody = {
   name: string;
@@ -21,7 +20,6 @@ type AssignmentBody = {
 type TopicsRouteDeps = {
   topics: TopicRepository;
   cards: CardTopicRepository;
-  forgetRates: TopicForgetRateQuery;
 };
 
 export function registerTopicsRoutes(app: FastifyInstance, deps: TopicsRouteDeps): void {
@@ -50,14 +48,6 @@ export function registerTopicsRoutes(app: FastifyInstance, deps: TopicsRouteDeps
 
   app.get('/api/topics', async (request, reply) => {
     const result = await listTopics({ topics: deps.topics }, requireAuth(request).userId);
-    return reply.status(200).send(result);
-  });
-
-  app.get('/api/topics/forget-rate', async (request, reply) => {
-    const result = await getTopicForgetRates(
-      { forgetRates: deps.forgetRates },
-      { userId: requireAuth(request).userId },
-    );
     return reply.status(200).send(result);
   });
 

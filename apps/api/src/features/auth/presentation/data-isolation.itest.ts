@@ -24,7 +24,6 @@ import {
   prismaTopicRepository,
 } from '../../topics/infrastructure/prisma-topic-repository';
 import { registerTopicsRoutes } from '../../topics/presentation/topics-routes';
-import { prismaTopicForgetRateQuery } from '../../topics/infrastructure/prisma-topic-forget-rate-query';
 
 /**
  * TC-022 (BR-002, BR-008): user B cầm id dữ liệu của user A. Đi trọn đường thật
@@ -55,7 +54,6 @@ function buildFullApp() {
   registerTopicsRoutes(app, {
     topics: prismaTopicRepository,
     cards: prismaCardTopicRepository,
-    forgetRates: prismaTopicForgetRateQuery,
   });
   return app;
 }
@@ -416,29 +414,6 @@ describe('E4-S1-T7 — TC-022 cô lập dữ liệu giữa các tài khoản', (
     expect(res.json()).toEqual({ topics: [] });
   });
 
-  it('báo cáo tỷ lệ quên của B không chứa nhánh kiến thức của A', async () => {
-    await ownerAssignsTopic();
-
-    await ownerReviews('forgotten');
-
-    const ownerReport = await app.inject({
-      method: 'GET',
-      url: '/api/topics/forget-rate',
-      cookies: ownerCookies,
-    });
-    const intruderReport = await app.inject({
-      method: 'GET',
-      url: '/api/topics/forget-rate',
-      cookies: intruderCookies,
-    });
-
-    // Đối chứng: A thực sự có số liệu, nếu không thì vế rỗng của B vô nghĩa.
-    expect(ownerReport.json().topics).toEqual([
-      { topicId: owned.topicId, topicName: 'Topic của A', forgetRate: 1, totalReviews: 1 },
-    ]);
-    expect(intruderReport.json()).toEqual({ topics: [] });
-  });
-
   it('B không thể gán topic của A, cũng không thể sửa card của A bằng topic của B', async () => {
     const foreignTopic = await app.inject({
       method: 'PATCH',
@@ -482,7 +457,6 @@ describe('E4-S1-T7 — TC-022 cô lập dữ liệu giữa các tài khoản', (
     ['GET /api/home/overview', () => ({ method: 'GET', url: '/api/home/overview' })],
     ['GET /api/stats', () => ({ method: 'GET', url: '/api/stats' })],
     ['GET /api/topics', () => ({ method: 'GET', url: '/api/topics' })],
-    ['GET /api/topics/forget-rate', () => ({ method: 'GET', url: '/api/topics/forget-rate' })],
     ['DELETE /api/cards/:id', ({ cardId }) => ({ method: 'DELETE', url: `/api/cards/${cardId}` })],
     [
       'DELETE /api/review-outcomes/:id',

@@ -233,3 +233,13 @@ export function IconTable({ size = 18 }: IconProps) {
     </svg>
   );
 }
+
+/** Mũi tên đi lên khỏi khay — nút "Xuất báo cáo" ở màn Thống kê. */
+export function IconExport({ size = 18 }: IconProps) {
+  return (
+    <svg {...base(size)}>
+      <path d="M12 15V4M8 8l4-4 4 4" />
+      <path d="M5 13v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5" />
+    </svg>
+  );
+}

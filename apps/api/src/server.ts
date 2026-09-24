@@ -32,7 +32,6 @@ import {
   prismaTopicRepository,
 } from './features/topics/infrastructure/prisma-topic-repository';
 import { registerTopicsRoutes } from './features/topics/presentation/topics-routes';
-import { prismaTopicForgetRateQuery } from './features/topics/infrastructure/prisma-topic-forget-rate-query';
 
 const port = Number(process.env['PORT'] ?? 3000);
 const host = process.env['HOST'] ?? '0.0.0.0';
@@ -80,7 +79,6 @@ registerStatsRoutes(app, {
 registerTopicsRoutes(app, {
   topics: prismaTopicRepository,
   cards: prismaCardTopicRepository,
-  forgetRates: prismaTopicForgetRateQuery,
 });
 registerSourcesRoutes(app, {
   extractor: createArticleExtractor(),

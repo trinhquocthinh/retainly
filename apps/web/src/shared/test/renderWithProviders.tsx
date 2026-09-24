@@ -13,9 +13,12 @@ export function renderWithProviders(ui: ReactNode, { route = '/' } = {}) {
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
 
-  return render(
+  const view = render(
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={[route]}>{ui}</MemoryRouter>
     </QueryClientProvider>,
   );
+
+  // Trả kèm client để test soi được cache của màn khác (vd: số liệu bị đánh dấu cũ).
+  return { ...view, queryClient };
 }

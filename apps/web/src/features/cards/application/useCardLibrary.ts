@@ -37,6 +37,8 @@ export function useCardLibrary(deps: CardLibraryPorts, { filters, goToPage }: Li
       queryClient.invalidateQueries({ queryKey: ['cards', 'library'] }),
       queryClient.invalidateQueries({ queryKey: ['cards', 'due'] }),
       queryClient.invalidateQueries({ queryKey: ['home', 'overview'] }),
+      // Thống kê theo Topic và vùng bền vững đổi khi thẻ đổi nhánh hoặc bị xoá.
+      queryClient.invalidateQueries({ queryKey: ['stats'] }),
     ]);
   }
 
@@ -47,15 +49,7 @@ export function useCardLibrary(deps: CardLibraryPorts, { filters, goToPage }: Li
       if (edit.content) await deps.updateCard(cardId, edit.content);
       if (edit.topicId !== undefined) await deps.assignCardTopic(cardId, edit.topicId);
     },
-    onSuccess: async (_result, { edit }) => {
-      await Promise.all([
-        refreshCardQueries(),
-        // Báo cáo tỷ lệ quên theo Topic đổi khi thẻ đổi nhánh.
-        edit.topicId === undefined
-          ? undefined
-          : queryClient.invalidateQueries({ queryKey: ['topics', 'forget-rate'] }),
-      ]);
-    },
+    onSuccess: refreshCardQueries,
   });
 
   const deleteMutation = useMutation({

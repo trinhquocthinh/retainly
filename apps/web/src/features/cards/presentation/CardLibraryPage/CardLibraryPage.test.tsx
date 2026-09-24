@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { renderWithProviders } from '@src/shared/test/renderWithProviders';
+import { statsFixture } from '@src/shared/test/stats';
 
 import type { CardListItem } from '../../domain/cardLibrary';
 import type { LibraryStats } from '../../domain/libraryStats';
@@ -404,7 +405,9 @@ describe('E9-S1-T2 — TC-068 tìm kiếm, sắp xếp, lọc Topic trong Thư v
       write: () => ({ ...CARD, topicId: OTHER_TOPIC.id }),
     });
 
-    renderWithProviders(<CardLibraryPage />, { route: '/cards' });
+    const { queryClient } = renderWithProviders(<CardLibraryPage />, { route: '/cards' });
+    // Màn Thống kê đã nạp trước đó; đổi nhánh phải đánh dấu số liệu theo Topic là cũ.
+    queryClient.setQueryData(['stats', '30d'], statsFixture());
     await userEvent.click(await screen.findByRole('button', { name: /Sửa thẻ/ }));
 
     const topicSelect = screen.getByRole('combobox', { name: 'Nhánh kiến thức' });
@@ -418,6 +421,7 @@ describe('E9-S1-T2 — TC-068 tìm kiếm, sắp xếp, lọc Topic trong Thư v
     expect(writeCalls(fetchMock).map(([url, options]) => [url, options?.body])).toEqual([
       [`/api/cards/${CARD.id}/topic`, JSON.stringify({ topicId: OTHER_TOPIC.id })],
     ]);
+    expect(queryClient.getQueryState(['stats', '30d'])?.isInvalidated).toBe(true);
 
     await userEvent.click(screen.getByRole('button', { name: /Sửa thẻ/ }));
     await userEvent.selectOptions(
@@ -486,7 +490,7 @@ describe('E9-S1-T3 — TC-069 ô số liệu Thư viện', () => {
     );
   });
 
-  it('xoá thẻ thì nạp lại số liệu', async () => {
+  it('xoá thẻ thì nạp lại số liệu Thư viện và đánh dấu Thống kê là cũ', async () => {
     const fetchMock = stubApi({
       stats: { ...NO_STATS, totalCards: 1, dueToday: 1 },
       write: () => ({ deleted: true }),
@@ -494,7 +498,8 @@ describe('E9-S1-T3 — TC-069 ô số liệu Thư viện', () => {
     const statsCalls = () =>
       fetchMock.mock.calls.filter(([url]) => url === '/api/cards/stats').length;
 
-    renderWithProviders(<CardLibraryPage />, { route: '/cards' });
+    const { queryClient } = renderWithProviders(<CardLibraryPage />, { route: '/cards' });
+    queryClient.setQueryData(['stats', 'all'], statsFixture({ range: 'all' }));
     await screen.findByLabelText('Số liệu thư viện');
     expect(statsCalls()).toBe(1);
 
@@ -502,6 +507,8 @@ describe('E9-S1-T3 — TC-069 ô số liệu Thư viện', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Xác nhận xoá' }));
 
     await waitFor(() => expect(statsCalls()).toBe(2));
+
+    expect(queryClient.getQueryState(['stats', 'all'])?.isInvalidated).toBe(true);
   });
 });
 

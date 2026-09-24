@@ -2,11 +2,13 @@ import type { ReactNode } from 'react';
 import { Link } from 'react-router';
 
 import { Button } from '@src/shared/ui/Button/Button';
-import { IconArrowRight, IconChart, IconNewCard } from '@src/shared/ui/Icons/Icons';
+import { IconArrowRight, IconChart, IconExport, IconNewCard } from '@src/shared/ui/Icons/Icons';
 import { SegmentedTabs } from '@src/shared/ui/SegmentedTabs/SegmentedTabs';
 
 import { useStats } from '../../application/useStats';
 import type { StatsRange } from '../../domain/stats';
+import { buildStatsCsv, statsReportFileName } from '../../domain/statsReport';
+import { downloadCsv } from '../../infrastructure/downloadCsv';
 import { fetchStats } from '../../infrastructure/statsApi';
 import { StatTiles } from './StatTiles';
 import { StatsAdvice } from './StatsAdvice';
@@ -101,13 +103,25 @@ export function StatsPage() {
   return (
     <div className="stats" aria-busy={view.switching}>
       <StatsHeading>
-        <SegmentedTabs
-          label="Khoảng thời gian"
-          tabs={RANGE_TABS}
-          value={view.range}
-          onChange={view.setRange}
-          className="stats__range"
-        />
+        <div className="stats__actions">
+          <SegmentedTabs
+            label="Khoảng thời gian"
+            tabs={RANGE_TABS}
+            value={view.range}
+            onChange={view.setRange}
+            className="stats__range"
+          />
+          {/* Đang đổi khoảng thì số trên màn còn là khoảng cũ, chưa cho xuất. */}
+          <Button
+            aria-label="Xuất báo cáo CSV"
+            title="Xuất báo cáo CSV"
+            disabled={view.switching}
+            onClick={() => downloadCsv(statsReportFileName(stats), buildStatsCsv(stats))}
+          >
+            <IconExport />
+            <span className="stats__export-label">Xuất báo cáo</span>
+          </Button>
+        </div>
       </StatsHeading>
 
       <StatTiles stats={stats} />
