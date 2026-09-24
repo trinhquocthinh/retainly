@@ -4,6 +4,8 @@ import { registerCardsRoutes } from './features/cards/presentation/cards-routes'
 import { prismaDueCardQuery } from './features/review/infrastructure/prisma-due-card-query';
 import { prismaReviewRepository } from './features/review/infrastructure/prisma-review-repository';
 import { registerReviewRoutes } from './features/review/presentation/review-routes';
+import { prismaHomeOverviewQuery } from './features/review/infrastructure/prisma-home-overview-query';
+import { registerHomeRoutes } from './features/review/presentation/home-routes';
 import { createArticleExtractor } from './features/sources/infrastructure/article-extractor';
 import { prismaSourceOwnership } from './features/cards/infrastructure/prisma-source-ownership';
 import { prismaSourceRepository } from './features/sources/infrastructure/prisma-source-repository';
@@ -60,6 +62,11 @@ registerCardsRoutes(app, {
 registerReviewRoutes(app, {
   schedules: prismaDueCardQuery,
   reviews: prismaReviewRepository,
+  streaks: prismaStreakQuery,
+  now: () => new Date(),
+});
+registerHomeRoutes(app, {
+  overview: prismaHomeOverviewQuery,
   streaks: prismaStreakQuery,
   now: () => new Date(),
 });

@@ -9,8 +9,10 @@ import { prismaCardRepository } from '../../cards/infrastructure/prisma-card-rep
 import { prismaSourceOwnership } from '../../cards/infrastructure/prisma-source-ownership';
 import { registerCardsRoutes } from '../../cards/presentation/cards-routes';
 import { prismaDueCardQuery } from '../../review/infrastructure/prisma-due-card-query';
+import { prismaHomeOverviewQuery } from '../../review/infrastructure/prisma-home-overview-query';
 import { prismaReviewRepository } from '../../review/infrastructure/prisma-review-repository';
 import { registerReviewRoutes } from '../../review/presentation/review-routes';
+import { registerHomeRoutes } from '../../review/presentation/home-routes';
 import { startSession } from '../application/sessions';
 import { prismaSessionRepository } from '../infrastructure/prisma-auth-repositories';
 import { registerPrismaAuthRoutes } from '../../../shared/test/prisma-auth-routes';
@@ -46,6 +48,7 @@ function buildFullApp() {
     streaks: prismaStreakQuery,
     now,
   });
+  registerHomeRoutes(app, { overview: prismaHomeOverviewQuery, streaks: prismaStreakQuery, now });
   registerTopicsRoutes(app, {
     topics: prismaTopicRepository,
     cards: prismaCardTopicRepository,
@@ -285,6 +288,40 @@ describe('E4-S1-T7 — TC-022 cô lập dữ liệu giữa các tài khoản', (
     expect(intruderStreak.json()).toEqual({ currentStreak: 0 });
   });
 
+  it('E10-S1-T1: tổng quan Trang chủ của B không tính thẻ, Topic hay lượt ôn của A', async () => {
+    await ownerAssignsTopic();
+    await ownerReviews('remembered');
+
+    const owner = await app.inject({
+      method: 'GET',
+      url: '/api/home/overview',
+      cookies: ownerCookies,
+    });
+    const intruder = await app.inject({
+      method: 'GET',
+      url: '/api/home/overview',
+      cookies: intruderCookies,
+    });
+
+    // Đối chứng: A thấy thẻ đã ôn, Topic và lịch sắp tới của mình.
+    expect(owner.json()).toMatchObject({
+      todayProgress: { reviewed: 1, total: 1 },
+      streak: { current: 1, longest: 1 },
+      library: { totalCards: 1, topicCount: 1 },
+      upcoming: [{ id: owned.cardId }],
+    });
+    expect(intruder.json()).toMatchObject({
+      todayProgress: { reviewed: 0, total: 0 },
+      streak: { current: 0, longest: 0 },
+      library: { totalCards: 0, topicCount: 0, difficultCards: 0 },
+      dueByTopic: [],
+      upcoming: [],
+    });
+    expect(intruder.json().streak.week.some((day: { reviewed: boolean }) => day.reviewed)).toBe(
+      false,
+    );
+  });
+
   it('E8-S1-T1: B hoàn tác lượt ôn của A trả 404 ERR_OUTCOME_NOT_FOUND, dữ liệu A giữ nguyên', async () => {
     const reviewed = await ownerReviews('remembered');
     const url = `/api/review-outcomes/${reviewed.json().outcomeId}`;
@@ -395,6 +432,7 @@ describe('E4-S1-T7 — TC-022 cô lập dữ liệu giữa các tài khoản', (
     ['GET /api/cards/stats', () => ({ method: 'GET', url: '/api/cards/stats' })],
     ['GET /api/cards/extra', () => ({ method: 'GET', url: '/api/cards/extra' })],
     ['GET /api/streak', () => ({ method: 'GET', url: '/api/streak' })],
+    ['GET /api/home/overview', () => ({ method: 'GET', url: '/api/home/overview' })],
     ['GET /api/topics', () => ({ method: 'GET', url: '/api/topics' })],
     ['GET /api/topics/forget-rate', () => ({ method: 'GET', url: '/api/topics/forget-rate' })],
     ['DELETE /api/cards/:id', ({ cardId }) => ({ method: 'DELETE', url: `/api/cards/${cardId}` })],

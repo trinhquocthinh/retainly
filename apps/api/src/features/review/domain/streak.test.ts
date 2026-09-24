@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { calculateCurrentStreak } from './streak';
+import { calculateCurrentStreak, calculateLongestStreak, reviewWeek } from './streak';
 
 const NOW = new Date('2026-09-19T03:00:00Z'); // 10:00 ngày 19/09 tại Việt Nam
 
@@ -44,5 +44,57 @@ describe('E5-S1-T1 — tính chuỗi ngày ôn tập', () => {
     expect(
       calculateCurrentStreak(['2026-09-18', '2026-09-19', '2026-09-18', '2026-09-17'], NOW),
     ).toBe(3);
+  });
+});
+
+describe('E10-S1-T1 — kỷ lục chuỗi ngày ôn tập', () => {
+  it('không có ngày ôn tập thì kỷ lục bằng 0', () => {
+    expect(calculateLongestStreak([], NOW)).toBe(0);
+  });
+
+  it('lấy chuỗi dài nhất trong lịch sử dù chuỗi hiện tại đã đứt', () => {
+    const days = ['2026-09-10', '2026-09-09', '2026-09-08', '2026-09-05', '2026-09-04'];
+
+    expect(calculateCurrentStreak(days, NOW)).toBe(0);
+    expect(calculateLongestStreak(days, NOW)).toBe(3);
+  });
+
+  it('dùng cùng luật ân hạn: nghỉ 1 ngày vẫn nối chuỗi, nghỉ 2 ngày thì đứt', () => {
+    expect(
+      calculateLongestStreak(['2026-09-19', '2026-09-17', '2026-09-16', '2026-09-13'], NOW),
+    ).toBe(3);
+  });
+
+  it('kỷ lục không nhỏ hơn chuỗi hiện tại', () => {
+    const days = ['2026-09-19', '2026-09-18', '2026-09-17', '2026-09-12'];
+
+    expect(calculateLongestStreak(days, NOW)).toBe(calculateCurrentStreak(days, NOW));
+  });
+
+  it('bỏ qua ngày sau hôm nay theo Asia/Ho_Chi_Minh', () => {
+    expect(calculateLongestStreak(['2026-09-20', '2026-09-19'], NOW)).toBe(1);
+  });
+});
+
+describe('E10-S1-T1 — dải ngày ôn trong tuần', () => {
+  it('trả bảy ngày từ Thứ Hai tới Chủ Nhật của tuần chứa hôm nay', () => {
+    // 19/09/2026 là Thứ Bảy.
+    expect(reviewWeek(['2026-09-19', '2026-09-15', '2026-09-13'], NOW)).toEqual([
+      { date: '2026-09-14', reviewed: false },
+      { date: '2026-09-15', reviewed: true },
+      { date: '2026-09-16', reviewed: false },
+      { date: '2026-09-17', reviewed: false },
+      { date: '2026-09-18', reviewed: false },
+      { date: '2026-09-19', reviewed: true },
+      { date: '2026-09-20', reviewed: false },
+    ]);
+  });
+
+  it('Thứ Hai mở đầu tuần, Chủ Nhật khép lại tuần', () => {
+    const monday = new Date('2026-09-21T01:00:00Z');
+    const sunday = new Date('2026-09-20T16:59:59Z'); // 23:59:59 Chủ Nhật tại Việt Nam
+
+    expect(reviewWeek([], monday)[0]!.date).toBe('2026-09-21');
+    expect(reviewWeek([], sunday)[6]!.date).toBe('2026-09-20');
   });
 });
