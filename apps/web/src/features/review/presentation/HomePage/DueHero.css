@@ -1,0 +1,148 @@
+.due-hero {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding: var(--space-6);
+
+  & h2,
+  & p {
+    margin: 0;
+  }
+}
+
+/* Vệt sáng hổ phách trên mép trên — nhấn khối chính mà không dùng gradient nền */
+.due-hero:not(.due-hero--quiet)::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: var(--color-accent);
+}
+
+.due-hero__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  color: var(--color-text-secondary);
+}
+
+.due-hero__estimate {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-weight: 500;
+}
+
+.due-hero__engine {
+  padding: 2px var(--space-2);
+  border-radius: 999px;
+  background: var(--color-secondary-active-bg);
+  font-weight: 600;
+}
+
+.due-hero__count {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2);
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 500;
+
+  & span {
+    color: var(--color-text-secondary);
+  }
+}
+
+.due-hero__topics {
+  margin-top: var(--space-2);
+  color: var(--color-text-secondary);
+
+  & strong {
+    color: var(--color-text);
+  }
+}
+
+.due-hero__progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.due-hero__progress-label {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  color: var(--color-text-secondary);
+}
+
+.due-hero__progress-count {
+  font-weight: 600;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.due-hero__start {
+  align-self: stretch;
+}
+
+.due-hero--quiet {
+  gap: var(--space-4);
+}
+
+.due-hero__icon {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--color-accent-soft);
+  color: var(--color-accent-strong);
+}
+
+.due-hero__icon--done {
+  background: var(--color-success-surface);
+  color: var(--color-success);
+}
+
+.due-hero__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+
+  & p {
+    color: var(--color-text-secondary);
+  }
+
+  & .due-hero__progress {
+    margin-top: var(--space-2);
+  }
+}
+
+.due-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+@media (min-width: 640px) {
+  .due-hero__start {
+    align-self: flex-start;
+  }
+
+  .due-hero--quiet {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+  }
+
+  /* Hai nút đứng cùng hàng với chữ thì ép cột chữ còn vài từ mỗi dòng */
+  .due-hero__actions {
+    grid-column: 2;
+  }
+}

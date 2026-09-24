@@ -47,7 +47,7 @@ function ReviewRun({ source }: { source: ReviewSource }) {
         refetchType: 'none',
       });
       void queryClient.invalidateQueries({
-        queryKey: ['review', 'streak'],
+        queryKey: ['home', 'overview'],
         refetchType: 'none',
       });
       // Xoá hẳn thay vì đánh dấu stale: dữ liệu cũ sẽ hiện ra trong lúc nạp lại

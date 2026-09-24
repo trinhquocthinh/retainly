@@ -1,0 +1,109 @@
+.home-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.home-header__intro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+
+  & h1,
+  & p {
+    margin: 0;
+  }
+}
+
+.home-header__date {
+  color: var(--color-text-secondary);
+}
+
+.home-week {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* Bề mặt panel nới padding ở ≥640px; dải tuần là khối phụ nên giữ gọn. */
+.home-week.surface-panel {
+  padding: var(--space-3) var(--space-4);
+}
+
+.home-week__streak {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--color-accent-strong);
+}
+
+.home-week__days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.home-week__day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.home-week__label {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.home-week__mark {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  font-size: 12px;
+  color: var(--color-placeholder);
+}
+
+.home-week__day[data-state='reviewed'] .home-week__mark {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-text);
+}
+
+.home-week__day[data-state='missed'] .home-week__mark {
+  background: var(--color-secondary-active-bg);
+}
+
+.home-week__day[aria-current='date'] .home-week__label {
+  color: var(--color-accent-strong);
+}
+
+.home-week__day[aria-current='date'] .home-week__mark {
+  box-shadow:
+    0 0 0 2px var(--color-surface),
+    0 0 0 4px var(--color-accent-highlight);
+}
+
+@media (min-width: 768px) {
+  .home-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .home-week {
+    flex: 0 0 auto;
+  }
+}

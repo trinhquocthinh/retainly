@@ -186,8 +186,15 @@
   color: var(--color-accent-strong);
 }
 
-.shell__user {
+/* Tiến độ hôm nay + người dùng, dồn xuống đáy cột */
+.shell__footer {
   margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.shell__user {
   display: flex;
   align-items: center;
   gap: var(--space-2);
@@ -263,7 +270,8 @@
   /* Cột 720px là mặc định cho mọi màn. Màn tạo thẻ khi đang mở nguồn cần hai
      cột nên tự xin nới ra, thay vì phải luồn prop qua AppShell. */
   .shell__content:has(.create-card--wide),
-  .shell__content:has(.card-library) {
+  .shell__content:has(.card-library),
+  .shell__content:has(.home) {
     max-width: 1120px;
   }
 }

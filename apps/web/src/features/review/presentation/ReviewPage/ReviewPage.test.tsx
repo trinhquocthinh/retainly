@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { homeOverview } from '@src/shared/test/homeOverview';
 import { renderWithProviders } from '@src/shared/test/renderWithProviders';
 
 import { ReviewPage } from './ReviewPage';
@@ -154,65 +155,65 @@ describe('E1-S3-T7 — màn ôn tập', () => {
     expect(await screen.findByText('Hỏi B')).toBeInTheDocument();
   });
 
-  it('hoàn thành phiên thì Home tải lại due count và streak, không cần F5', async () => {
+  it('giữa phiên không nạp lại tổng quan; về Trang chủ thì nạp lại, không cần F5', async () => {
     let reviewed = false;
 
     const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
-      if (url === '/api/cards/due') {
-        return {
-          ok: true,
-          status: 200,
-          json: async () =>
+      const reply = (body: unknown) => ({ ok: true, status: 200, json: async () => body });
+
+      if (url === '/api/home/overview') {
+        return reply(
+          homeOverview(
             reviewed
-              ? { dueCount: 0, dueCards: [] }
+              ? {
+                  todayProgress: { reviewed: 1, total: 1 },
+                  streak: { current: 1, longest: 1, week: [] },
+                }
               : {
-                  dueCount: 1,
-                  dueCards: [
-                    {
-                      id: 'card-1',
-                      front: 'Hỏi A',
-                      back: 'Đáp A',
-                      memory: NEW_MEMORY,
-                      dueDate: '2026-09-20T09:00:00.000Z',
-                    },
-                  ],
+                  todayProgress: { reviewed: 0, total: 1 },
+                  dueByTopic: [{ topic: null, count: 1 }],
                 },
-        };
+          ),
+        );
+      }
+
+      if (url === '/api/cards/due') {
+        return reply({
+          dueCount: 1,
+          dueCards: [
+            {
+              id: 'card-1',
+              front: 'Hỏi A',
+              back: 'Đáp A',
+              memory: NEW_MEMORY,
+              dueDate: '2026-09-20T09:00:00.000Z',
+            },
+          ],
+        });
       }
 
       if (url === '/api/review-outcomes' && init?.method === 'POST') {
         reviewed = true;
-
-        return {
-          ok: true,
-          status: 200,
-          json: async () => ({ updatedSchedule: {} }),
-        };
+        return reply({ outcomeId: 'outcome-1' });
       }
 
-      if (url === '/api/streak') {
-        return {
-          ok: true,
-          status: 200,
-          json: async () => ({ currentStreak: reviewed ? 1 : 0 }),
-        };
-      }
-
-      throw new TypeError(`Không có route giả cho ${init?.method ?? 'GET'} ${url}`);
+      // Phiên và số liệu Thư viện không liên quan tới kịch bản này.
+      return { ok: false, status: 404, json: async () => null };
     });
 
     vi.stubGlobal('fetch', fetchMock);
 
+    // staleTime như bản chạy thật: không invalidate thì Trang chủ hiện số cũ từ cache.
     const queryClient = new QueryClient({
       defaultOptions: {
-        queries: { retry: false },
+        queries: { retry: false, staleTime: 30_000 },
         mutations: { retry: false },
       },
     });
 
     render(
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={['/review']}>
+        <MemoryRouter initialEntries={['/']}>
           <Routes>
             <Route path="/review" element={<ReviewPage />} />
             <Route path="/" element={<HomePage />} />
@@ -221,19 +222,19 @@ describe('E1-S3-T7 — màn ôn tập', () => {
       </QueryClientProvider>,
     );
 
+    await userEvent.click(await screen.findByRole('link', { name: /Bắt đầu ôn tập/ }));
     await userEvent.click(await screen.findByText('Hỏi A'));
     await userEvent.click(screen.getByRole('button', { name: /Nhớ/ }));
+
+    const overviewCalls = () =>
+      fetchMock.mock.calls.filter(([url]) => url === '/api/home/overview').length;
+    expect(overviewCalls()).toBe(1);
 
     await userEvent.click(await screen.findByRole('button', { name: 'Về trang chủ' }));
 
     expect(await screen.findByText('Bạn đã hoàn thành hôm nay')).toBeVisible();
-    expect(screen.getByLabelText('Chuỗi 1 ngày')).toBeVisible();
-
-    const dueRequests = fetchMock.mock.calls.filter(
-      ([url, init]) => url === '/api/cards/due' && (init?.method ?? 'GET') === 'GET',
-    );
-
-    expect(dueRequests).toHaveLength(2);
+    expect(screen.getByText('1 ngày liền')).toBeVisible();
+    expect(overviewCalls()).toBe(2);
   });
 });
 

@@ -1,32 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 
-type HomeOverviewPorts = {
-  fetchDueCards: () => Promise<{ dueCount: number }>;
-  fetchCurrentStreak: () => Promise<{ currentStreak: number }>;
-};
+import type { HomeOverview } from '../domain/home';
 
-export function useHomeOverview(deps: HomeOverviewPorts) {
-  const due = useQuery({
-    queryKey: ['cards', 'due'],
-    queryFn: deps.fetchDueCards,
-    staleTime: 60_000,
-  });
-
-  const streak = useQuery({
-    queryKey: ['review', 'streak'],
-    queryFn: deps.fetchCurrentStreak,
-    staleTime: 60_000,
-  });
-
-  return {
-    dueCount: due.data?.dueCount ?? 0,
-    currentStreak: streak.data?.currentStreak ?? 0,
-    loading: due.isPending || streak.isPending,
-    failed: due.isError || streak.isError,
-    error: due.error ?? streak.error,
-
-    reload: () => {
-      void Promise.all([due.refetch(), streak.refetch()]);
-    },
-  };
+/**
+ * Trang chủ và khối tiến độ ở sidebar cùng đọc một key nên chỉ tốn một lần gọi.
+ * Màn ôn nằm ngoài shell, nên giữa phiên không có gì nạp lại số này; rời phiên
+ * thì ReviewPage đánh dấu stale.
+ */
+export function useHomeOverview(fetchHomeOverview: () => Promise<HomeOverview>) {
+  return useQuery({ queryKey: ['home', 'overview'], queryFn: fetchHomeOverview });
 }

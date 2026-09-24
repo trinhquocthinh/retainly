@@ -36,6 +36,7 @@ export function useCardLibrary(deps: CardLibraryPorts, { filters, goToPage }: Li
     await Promise.all([
       queryClient.invalidateQueries({ queryKey: ['cards', 'library'] }),
       queryClient.invalidateQueries({ queryKey: ['cards', 'due'] }),
+      queryClient.invalidateQueries({ queryKey: ['home', 'overview'] }),
     ]);
   }
 

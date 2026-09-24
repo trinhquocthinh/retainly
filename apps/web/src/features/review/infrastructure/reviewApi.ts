@@ -1,10 +1,10 @@
 import { api } from '@src/shared/api/client';
 
+import type { HomeOverview } from '../domain/home';
 import type { DueCard, ReviewOutcome } from '../domain/review';
 
 export type DueCardsResponse = { dueCards: DueCard[]; dueCount: number };
 export type ExtraCardsResponse = { extraCards: DueCard[] };
-export type StreakResponse = { currentStreak: number };
 
 /** GET /api/cards/due — SPEC-003. */
 export function fetchDueCards(): Promise<DueCardsResponse> {
@@ -29,6 +29,7 @@ export function undoOutcome(outcomeId: string): Promise<unknown> {
   return api.delete(`/review-outcomes/${outcomeId}`);
 }
 
-export function fetchCurrentStreak(): Promise<StreakResponse> {
-  return api.get<StreakResponse>('/streak');
+/** GET /api/home/overview — SPEC-017, dùng chung cho Trang chủ và sidebar. */
+export function fetchHomeOverview(): Promise<HomeOverview> {
+  return api.get<HomeOverview>('/home/overview');
 }

@@ -12,6 +12,7 @@ import {
   IconUser,
 } from '@src/shared/ui/Icons/Icons';
 import { useDueCount } from '@src/features/review/application/useDueCount';
+import { SidebarProgress } from '@src/features/review/presentation/TodayProgress/TodayProgress';
 import { useSession, useSignOut } from '@src/features/auth/application/useSession';
 import { fetchSession, signOut as signOutRequest } from '@src/features/auth/infrastructure/authApi';
 
@@ -116,20 +117,24 @@ export function AppShell({ children }: { children: ReactNode }) {
           </NavLink>
         </div>
 
-        <div className="shell__user">
-          <span className="shell__user-avatar icon-disc">
-            <IconUser />
-          </span>
-          {/* Shell chỉ render sau RequireAuth nên phiên luôn có sẵn trong cache. */}
-          <span className="shell__user-name text-small">{session.data?.displayName}</span>
-          <button
-            type="button"
-            className="shell__logout text-small"
-            disabled={signOut.isPending}
-            onClick={() => signOut.mutate()}
-          >
-            Đăng xuất
-          </button>
+        <div className="shell__footer">
+          <SidebarProgress />
+
+          <div className="shell__user">
+            <span className="shell__user-avatar icon-disc">
+              <IconUser />
+            </span>
+            {/* Shell chỉ render sau RequireAuth nên phiên luôn có sẵn trong cache. */}
+            <span className="shell__user-name text-small">{session.data?.displayName}</span>
+            <button
+              type="button"
+              className="shell__logout text-small"
+              disabled={signOut.isPending}
+              onClick={() => signOut.mutate()}
+            >
+              Đăng xuất
+            </button>
+          </div>
         </div>
       </nav>
 

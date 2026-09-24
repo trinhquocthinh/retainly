@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { homeOverview } from '@src/shared/test/homeOverview';
 import { renderWithProviders } from '@src/shared/test/renderWithProviders';
 
 import { App } from './App';
@@ -22,7 +23,17 @@ const UNAUTHORIZED: Reply = {
   body: { error: { code: 'ERR_UNAUTHORIZED', message: 'Vui lòng đăng nhập lại' } },
 };
 
-const SIGNED_IN = { 'GET /api/session': { status: 200, body: { session: SESSION } } };
+const SIGNED_IN = {
+  'GET /api/session': { status: 200, body: { session: SESSION } },
+  // Sidebar đọc tổng quan ở mọi màn trong shell.
+  'GET /api/home/overview': {
+    status: 200,
+    body: homeOverview({
+      todayProgress: { reviewed: 3, total: 12 },
+      streak: { current: 7, longest: 12, week: [] },
+    }),
+  },
+};
 
 /** Giả lập API theo đường dẫn (bỏ query); đường nào không khai báo thì trả 200 `{}`. */
 function stubApi(routes: Record<string, Reply>) {
@@ -53,7 +64,7 @@ afterEach(() => vi.unstubAllGlobals());
 
 describe('E0-S2-T4 — khung định tuyến', () => {
   it.each([
-    ['/', 'Hôm nay'],
+    ['/', /^Chào buổi/],
     ['/cards', 'Thư viện thẻ'],
     ['/cards/new', 'Thẻ mới'],
     ['/stats', 'Thống kê & Hiệu quả ghi nhớ'],
@@ -95,6 +106,23 @@ describe('E4-S1-T6 — chặn truy cập khi chưa đăng nhập', () => {
     stubApi({ ...SIGNED_IN, 'GET /api/cards': UNAUTHORIZED });
     renderAt('/cards');
     expect(await findSsoButton()).toBeVisible();
+  });
+
+  it('sidebar hiện tiến độ hôm nay và kỷ lục chuỗi (E10-S1-T2)', async () => {
+    stubApi(SIGNED_IN);
+    renderAt('/cards');
+
+    const progress = await screen.findByRole('region', { name: 'Tiến độ hôm nay' });
+    expect(progress).toHaveTextContent('3/12');
+    expect(progress).toHaveTextContent('Chuỗi 7 ngày · Kỷ lục 12');
+  });
+
+  it('tổng quan lỗi thì sidebar ẩn khối tiến độ, điều hướng vẫn dùng được', async () => {
+    stubApi({ ...SIGNED_IN, 'GET /api/home/overview': { status: 500, body: {} } });
+    renderAt('/cards');
+
+    expect(await screen.findByRole('link', { name: 'Thống kê' })).toBeVisible();
+    expect(screen.queryByRole('region', { name: 'Tiến độ hôm nay' })).not.toBeInTheDocument();
   });
 
   it('sidebar hiện tên hiển thị của người đang đăng nhập', async () => {
