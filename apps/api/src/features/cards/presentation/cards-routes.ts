@@ -13,6 +13,7 @@ import {
   type CardSort,
 } from '../application/list-cards';
 import { deleteCard, type CardDeleteRepository } from '../application/delete-card';
+import { getLibraryStats, type LibraryScheduleQuery } from '../application/get-library-stats';
 import { updateCard, type CardUpdateRepository } from '../application/update-card';
 import { requireAuth } from '../../../shared/request-auth';
 
@@ -53,6 +54,7 @@ const UNASSIGNED_TOPIC = 'none';
 type CardsRouteDeps = {
   cards: CardRepository & CardUpdateRepository & CardDeleteRepository;
   cardList: CardListQuery;
+  libraryStats: LibraryScheduleQuery;
   sources: SourceOwnership;
   topics: TopicOwnership;
   now: () => Date;
@@ -117,6 +119,13 @@ export function registerCardsRoutes(app: FastifyInstance, deps: CardsRouteDeps):
 
       return reply.status(200).send(result);
     },
+  );
+
+  app.get('/api/cards/stats', async (request) =>
+    getLibraryStats(
+      { schedules: deps.libraryStats, now: deps.now },
+      { userId: requireAuth(request).userId },
+    ),
   );
 
   app.post<{ Body: CreateBody }>(

@@ -21,6 +21,11 @@ export function isNewCard(memory: CardMemory): boolean {
   return memory.lastReviewedAt === null;
 }
 
+/** Tỷ lệ 0–1 thành phần trăm nguyên, ví dụ 0,914 → "91%". */
+export function formatPercent(ratio: number): string {
+  return `${Math.round(ratio * 100)}%`;
+}
+
 export function formatStability(stability: number): string {
   return `${ONE_DECIMAL.format(stability)} ngày`;
 }
@@ -33,7 +38,7 @@ export function formatMemory(memory: CardMemory) {
   return {
     stability: formatStability(memory.stability),
     difficulty: formatDifficulty(memory.difficulty),
-    retrievability: `${Math.round(memory.retrievability * 100)}%`,
+    retrievability: formatPercent(memory.retrievability),
   };
 }
 

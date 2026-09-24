@@ -4,6 +4,8 @@ import { buildApp } from '../../../app';
 import { registerCardsRoutes } from './cards-routes';
 import type { CardRepository, SourceOwnership, TopicOwnership } from '../application/create-card';
 import type { CardListQuery, CardListQueryInput } from '../application/list-cards';
+import type { LibraryScheduleQuery } from '../application/get-library-stats';
+import { createInitialSchedule } from '../../review/domain/review-scheduler';
 import type { CardDeleteRepository } from '../application/delete-card';
 import type { CardUpdateRepository } from '../application/update-card';
 import { SIGNED_IN_USER_ID, signInAs } from '../../../shared/test/sign-in-as';
@@ -61,6 +63,16 @@ const fakeCardList: CardListQuery = {
   },
 };
 
+const statsUsers: string[] = [];
+
+// Một thẻ mới tạo lúc NOW: đến hạn ngay, chưa ôn lần nào.
+const fakeLibraryStats: LibraryScheduleQuery = {
+  async findByUser(userId) {
+    statsUsers.push(userId);
+    return [createInitialSchedule(NOW)];
+  },
+};
+
 function appWithCards(
   options: {
     sources?: SourceOwnership;
@@ -68,6 +80,7 @@ function appWithCards(
   } = {},
 ) {
   listInputs.length = 0;
+  statsUsers.length = 0;
   updateInputs.length = 0;
   deleteInputs.length = 0;
 
@@ -77,6 +90,7 @@ function appWithCards(
   registerCardsRoutes(app, {
     cards: fakeCards,
     cardList: fakeCardList,
+    libraryStats: fakeLibraryStats,
     sources: options.sources ?? { belongsToUser: async () => true },
     topics: options.topics ?? { belongsToUser: async () => true },
     now: () => NOW,
@@ -482,6 +496,28 @@ describe('E3-S1-T2 — DELETE /api/cards/:id', () => {
   });
 });
 
+describe('E9-S1-T3 — GET /api/cards/stats', () => {
+  it('tổng hợp lịch của user đang đăng nhập', async () => {
+    const app = appWithCards();
+
+    const res = await app.inject({ method: 'GET', url: '/api/cards/stats' });
+
+    expect(res.statusCode).toBe(200);
+    expect(statsUsers).toEqual([SIGNED_IN_USER_ID]);
+    expect(res.json()).toEqual({
+      totalCards: 1,
+      dueToday: 1,
+      overdue: 0,
+      reviewedCards: 0,
+      averageRetrievability: null,
+      averageStability: null,
+      masteredCards: 0,
+    });
+
+    await app.close();
+  });
+});
+
 describe('E4-S1-T3 — route thẻ yêu cầu đăng nhập', () => {
   it('không có phiên trả 401 ERR_UNAUTHORIZED và không chạm repository', async () => {
     listInputs.length = 0;
@@ -489,6 +525,7 @@ describe('E4-S1-T3 — route thẻ yêu cầu đăng nhập', () => {
     registerCardsRoutes(app, {
       cards: fakeCards,
       cardList: fakeCardList,
+      libraryStats: fakeLibraryStats,
       sources: { belongsToUser: async () => true },
       topics: { belongsToUser: async () => true },
       now: () => NOW,

@@ -8,6 +8,7 @@ import type {
   LibraryFilters,
   UpdateCardInput,
 } from '../domain/cardLibrary';
+import type { LibraryStats } from '../domain/libraryStats';
 
 export type NewCard = Omit<CardDraft, 'note'> & {
   note?: string;
@@ -36,6 +37,11 @@ export function fetchCards(input: CardListRequest): Promise<CardListResponse> {
   if (input.topic !== '') query.set('topic', input.topic);
 
   return api.get<CardListResponse>(`/cards?${query.toString()}`);
+}
+
+/** GET /api/cards/stats — SPEC-016, số liệu trên toàn bộ Thư viện. */
+export function fetchLibraryStats(): Promise<LibraryStats> {
+  return api.get<LibraryStats>('/cards/stats');
 }
 
 /** PATCH /api/cards/:id — chỉ sửa nội dung, không thay đổi lịch ôn. */

@@ -13,13 +13,21 @@ import {
 import { Toast } from '@src/shared/ui/Toast/Toast';
 
 import { useCardLibrary } from '../../application/useCardLibrary';
+import { useLibraryStats } from '../../application/useLibraryStats';
 import { LibraryTable } from './LibraryTable';
 import { useLibraryFilters } from '../../application/useLibraryFilters';
 import { isFiltering, type CardEdit, type CardListItem } from '../../domain/cardLibrary';
-import { assignCardTopic, deleteCard, fetchCards, updateCard } from '../../infrastructure/cardsApi';
+import {
+  assignCardTopic,
+  deleteCard,
+  fetchCards,
+  fetchLibraryStats,
+  updateCard,
+} from '../../infrastructure/cardsApi';
 import { DeleteCardDialog } from './DeleteCardDialog';
 import { EditCardDialog } from './EditCardDialog';
 import { LibraryCard } from './LibraryCard';
+import { LibraryStats } from './LibraryStats';
 import { LibraryToolbar } from './LibraryToolbar';
 
 import './CardLibraryPage.css';
@@ -44,6 +52,7 @@ export function CardLibraryPage() {
   const { filters } = view;
   const library = useCardLibrary({ fetchCards, updateCard, assignCardTopic, deleteCard }, view);
   const dueCount = useDueCount();
+  const libraryStats = useLibraryStats(fetchLibraryStats);
   const layout = useLibraryLayout();
   // Mốc "hôm nay" cho badge hạn ôn, chốt lúc mở trang như hàng đợi ôn.
   const [now] = useState(() => new Date());
@@ -130,6 +139,10 @@ export function CardLibraryPage() {
           </Link>
         </div>
       </header>
+
+      {!libraryEmpty && !libraryStats.failed ? (
+        <LibraryStats stats={libraryStats.stats} loading={libraryStats.loading} />
+      ) : null}
 
       {!libraryEmpty ? (
         <LibraryToolbar

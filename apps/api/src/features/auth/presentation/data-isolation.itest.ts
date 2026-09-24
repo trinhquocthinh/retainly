@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { buildApp } from '../../../app';
 import { OTHER_USER_ID, resetDatabase, TEST_USER_ID, testPrisma } from '../../../shared/test/db';
 import { prismaCardListQuery } from '../../cards/infrastructure/prisma-card-list-query';
+import { prismaLibraryScheduleQuery } from '../../cards/infrastructure/prisma-library-schedule-query';
 import { prismaCardRepository } from '../../cards/infrastructure/prisma-card-repository';
 import { prismaSourceOwnership } from '../../cards/infrastructure/prisma-source-ownership';
 import { registerCardsRoutes } from '../../cards/presentation/cards-routes';
@@ -34,6 +35,7 @@ function buildFullApp() {
   registerCardsRoutes(app, {
     cards: prismaCardRepository,
     cardList: prismaCardListQuery,
+    libraryStats: prismaLibraryScheduleQuery,
     sources: prismaSourceOwnership,
     topics: prismaTopicRepository,
     now,
@@ -238,6 +240,33 @@ describe('E4-S1-T7 — TC-022 cô lập dữ liệu giữa các tài khoản', (
     });
   });
 
+  it('E9-S1-T3: số liệu Thư viện của B không tính thẻ của A', async () => {
+    await ownerReviews('remembered');
+
+    const owner = await app.inject({
+      method: 'GET',
+      url: '/api/cards/stats',
+      cookies: ownerCookies,
+    });
+    const intruder = await app.inject({
+      method: 'GET',
+      url: '/api/cards/stats',
+      cookies: intruderCookies,
+    });
+
+    // Đối chứng: A thấy đúng một thẻ đã ôn của mình.
+    expect(owner.json()).toMatchObject({ totalCards: 1, reviewedCards: 1 });
+    expect(intruder.json()).toEqual({
+      totalCards: 0,
+      dueToday: 0,
+      overdue: 0,
+      reviewedCards: 0,
+      averageRetrievability: null,
+      averageStability: null,
+      masteredCards: 0,
+    });
+  });
+
   it('streak chỉ tính kết quả ôn tập của tài khoản đang đăng nhập', async () => {
     await ownerReviews('remembered');
 
@@ -363,6 +392,7 @@ describe('E4-S1-T7 — TC-022 cô lập dữ liệu giữa các tài khoản', (
   it.each<[string, (ids: typeof owned) => InjectOptions]>([
     ['GET /api/cards', () => ({ method: 'GET', url: '/api/cards' })],
     ['GET /api/cards/due', () => ({ method: 'GET', url: '/api/cards/due' })],
+    ['GET /api/cards/stats', () => ({ method: 'GET', url: '/api/cards/stats' })],
     ['GET /api/cards/extra', () => ({ method: 'GET', url: '/api/cards/extra' })],
     ['GET /api/streak', () => ({ method: 'GET', url: '/api/streak' })],
     ['GET /api/topics', () => ({ method: 'GET', url: '/api/topics' })],

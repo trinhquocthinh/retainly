@@ -11,6 +11,7 @@ import { registerSourcesRoutes } from './features/sources/presentation/sources-r
 import { registerHealthRoutes } from './shared/health-routes';
 import { prismaHealthProbe } from './shared/prisma-health-probe';
 import { prismaCardListQuery } from './features/cards/infrastructure/prisma-card-list-query';
+import { prismaLibraryScheduleQuery } from './features/cards/infrastructure/prisma-library-schedule-query';
 import { readAuthConfig } from './features/auth/infrastructure/auth-config';
 import { createOpenIdSsoClient } from './features/auth/infrastructure/openid-sso-client';
 import {
@@ -51,6 +52,7 @@ registerHealthRoutes(app, { probe: prismaHealthProbe });
 registerCardsRoutes(app, {
   cards: prismaCardRepository,
   cardList: prismaCardListQuery,
+  libraryStats: prismaLibraryScheduleQuery,
   sources: prismaSourceOwnership,
   topics: prismaTopicRepository,
   now: () => new Date(),

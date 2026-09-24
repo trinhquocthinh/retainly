@@ -5,6 +5,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderWithProviders } from '@src/shared/test/renderWithProviders';
 
 import type { CardListItem } from '../../domain/cardLibrary';
+import type { LibraryStats } from '../../domain/libraryStats';
 import { CardLibraryPage } from './CardLibraryPage';
 
 const TOPIC = { id: '00000000-0000-4000-8000-0000000000a1', name: 'Trí nhớ' };
@@ -29,6 +30,18 @@ const CARD: CardListItem = {
 };
 
 type FetchHandler = (url: string, options?: RequestInit) => unknown;
+
+// Mặc định thư viện chưa có thẻ trong số liệu, nên khối số liệu không hiện và
+// các ca cũ không phải biết tới nó.
+const NO_STATS: LibraryStats = {
+  totalCards: 0,
+  dueToday: 0,
+  overdue: 0,
+  reviewedCards: 0,
+  averageRetrievability: null,
+  averageStability: null,
+  masteredCards: 0,
+};
 
 function response(status: number, body: unknown) {
   return Promise.resolve({
@@ -60,16 +73,26 @@ function libraryPayload(items: CardListItem[] = [CARD]) {
 
 /**
  * Giả lập API theo URL. `library` trả thân của GET /api/cards; `write` xử lý
- * PATCH/DELETE. Hàng đợi và danh sách Topic có giá trị mặc định.
+ * PATCH/DELETE; `stats = 'error'` làm GET /api/cards/stats trả 500. Hàng đợi,
+ * số liệu và danh sách Topic có giá trị mặc định.
  */
 function stubApi({
   library = () => libraryPayload(),
   write = () => ({}),
   dueCount = 0,
-}: { library?: FetchHandler; write?: FetchHandler; dueCount?: number } = {}) {
+  stats = NO_STATS,
+}: {
+  library?: FetchHandler;
+  write?: FetchHandler;
+  dueCount?: number;
+  stats?: LibraryStats | 'error';
+} = {}) {
   const fetchMock = vi.fn((url: string, options?: RequestInit) => {
     if (options?.method && options.method !== 'GET') return response(200, write(url, options));
     if (url === '/api/cards/due') return response(200, { dueCount, dueCards: [] });
+    if (url === '/api/cards/stats') {
+      return stats === 'error' ? response(500, {}) : response(200, stats);
+    }
     if (url === '/api/topics') {
       return response(200, {
         topics: [TOPIC, OTHER_TOPIC].map((topic) => ({ ...topic, createdAt: CARD.createdAt })),
@@ -416,6 +439,71 @@ function stubDesktop() {
     removeEventListener: vi.fn(),
   }));
 }
+
+describe('E9-S1-T3 — TC-069 ô số liệu Thư viện', () => {
+  it('hiện cần ôn kèm quá hạn, độ nhớ và S trung bình, tỷ lệ đã thuộc', async () => {
+    stubApi({
+      stats: {
+        totalCards: 5,
+        dueToday: 3,
+        overdue: 1,
+        reviewedCards: 4,
+        averageRetrievability: 0.914,
+        averageStability: 18.64,
+        masteredCards: 2,
+      },
+    });
+
+    renderWithProviders(<CardLibraryPage />, { route: '/cards' });
+
+    const stats = await screen.findByLabelText('Số liệu thư viện');
+    expect(stats).toHaveTextContent('Cần ôn hôm nay3thẻTrong đó 1 quá hạn');
+    expect(stats).toHaveTextContent('Độ nhớ trung bình91%Trên 4 thẻ đã ôn');
+    expect(stats).toHaveTextContent('Độ ổn định (S)18,6 ngàyTrên 4 thẻ đã ôn');
+    expect(stats).toHaveTextContent('Đã thuộc2/ 5 thẻ40% · S trên 30 ngày');
+  });
+
+  it('chưa ôn thẻ nào thì độ nhớ và S hiện "—", không báo quá hạn', async () => {
+    stubApi({ stats: { ...NO_STATS, totalCards: 1, dueToday: 1 } });
+
+    renderWithProviders(<CardLibraryPage />, { route: '/cards' });
+
+    const stats = await screen.findByLabelText('Số liệu thư viện');
+    expect(stats).toHaveTextContent('Cần ôn hôm nay1thẻKhông có thẻ quá hạn');
+    expect(stats).toHaveTextContent('Độ nhớ trung bình—Chưa ôn thẻ nào');
+    expect(stats).toHaveTextContent('Độ ổn định (S)—Chưa ôn thẻ nào');
+    expect(stats).toHaveTextContent('Đã thuộc0/ 1 thẻ0% · S trên 30 ngày');
+  });
+
+  it('không tải được số liệu thì ẩn khối số liệu, danh sách thẻ vẫn dùng được', async () => {
+    stubApi({ stats: 'error' });
+
+    renderWithProviders(<CardLibraryPage />, { route: '/cards' });
+
+    expect(await screen.findByText('FSRS dùng để làm gì?')).toBeVisible();
+    await waitFor(() =>
+      expect(screen.queryByLabelText('Số liệu thư viện')).not.toBeInTheDocument(),
+    );
+  });
+
+  it('xoá thẻ thì nạp lại số liệu', async () => {
+    const fetchMock = stubApi({
+      stats: { ...NO_STATS, totalCards: 1, dueToday: 1 },
+      write: () => ({ deleted: true }),
+    });
+    const statsCalls = () =>
+      fetchMock.mock.calls.filter(([url]) => url === '/api/cards/stats').length;
+
+    renderWithProviders(<CardLibraryPage />, { route: '/cards' });
+    await screen.findByLabelText('Số liệu thư viện');
+    expect(statsCalls()).toBe(1);
+
+    await userEvent.click(screen.getByRole('button', { name: /Xoá thẻ/ }));
+    await userEvent.click(screen.getByRole('button', { name: 'Xác nhận xoá' }));
+
+    await waitFor(() => expect(statsCalls()).toBe(2));
+  });
+});
 
 describe('E9-S1-T2b — TC-068 kiểu xem Lưới / Bảng', () => {
   it('mobile và tablet chỉ có Lưới, kể cả khi đã lưu chọn Bảng trên desktop', async () => {
