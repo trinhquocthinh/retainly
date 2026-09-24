@@ -19,7 +19,8 @@ export type DueCard = QueueCard & { memory: CardMemory };
 
 /** Cổng đọc hàng đợi ôn. Hiện thực thật nằm ở tầng infrastructure. */
 export type DueCardQuery = {
-  findDueBy(userId: string, cutoff: Date): Promise<ScheduledCard[]>;
+  /** Thẻ có hạn tới `cutoff`; có `topicId` thì chỉ lấy thẻ thuộc Topic đó. */
+  findDueBy(userId: string, cutoff: Date, topicId?: string): Promise<ScheduledCard[]>;
   /**
    * Thẻ đã ôn ít nhất một lần, hạn sau `dueAfter`, không có outcome nào từ
    * `notReviewedSince` trở đi (BR-026); sắp theo hạn rồi id tăng dần.
@@ -36,10 +37,10 @@ export function toDueCard({ card, schedule }: ScheduledCard, now: Date): DueCard
 
 export async function listDueCards(
   deps: { schedules: DueCardQuery; now: () => Date },
-  input: { userId: string },
+  input: { userId: string; topicId?: string },
 ): Promise<{ dueCards: DueCard[]; dueCount: number }> {
   const now = deps.now();
-  const rows = await deps.schedules.findDueBy(input.userId, endOfToday(now));
+  const rows = await deps.schedules.findDueBy(input.userId, endOfToday(now), input.topicId);
   const dueCards = rows.map((row) => toDueCard(row, now));
 
   return { dueCards, dueCount: dueCards.length };

@@ -11,6 +11,7 @@ import { requireAuth } from '../../../shared/request-auth';
 
 type OutcomeBody = { cardId: string; outcome: string };
 type OutcomeParams = { id: string };
+type DueQuerystring = { topicId?: string };
 
 export function registerReviewRoutes(
   app: FastifyInstance,
@@ -21,8 +22,24 @@ export function registerReviewRoutes(
     now: () => Date;
   },
 ): void {
-  app.get('/api/cards/due', async (request) =>
-    listDueCards(deps, { userId: requireAuth(request).userId }),
+  app.get<{ Querystring: DueQuerystring }>(
+    '/api/cards/due',
+    {
+      schema: {
+        querystring: {
+          type: 'object',
+          properties: {
+            // Cột topic_id là UUID: chuỗi sai dạng xuống tới Postgres thành 500.
+            topicId: { type: 'string', format: 'uuid' },
+          },
+        },
+      },
+    },
+    async (request) =>
+      listDueCards(deps, {
+        userId: requireAuth(request).userId,
+        topicId: request.query.topicId,
+      }),
   );
 
   app.get('/api/cards/extra', async (request) =>

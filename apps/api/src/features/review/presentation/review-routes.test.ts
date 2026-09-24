@@ -21,6 +21,7 @@ const throwingReviews: ReviewRepository = {
 
 const CARD = '11111111-1111-1111-1111-111111111111';
 const UNKNOWN_OUTCOME = '22222222-2222-2222-2222-222222222222';
+const TOPIC = '33333333-3333-3333-3333-333333333333';
 
 function queued(id: string): ScheduledCard {
   return {
@@ -42,9 +43,11 @@ function appWith(
   reviewDays: string[] = [],
   reviews: ReviewRepository = throwingReviews,
   extras: ScheduledCard[] = [],
+  dueTopics: (string | undefined)[] = [],
 ) {
   const schedules: DueCardQuery = {
-    async findDueBy() {
+    async findDueBy(_userId, _cutoff, topicId) {
+      dueTopics.push(topicId);
       return rows;
     },
     async findExtraCandidates() {
@@ -81,6 +84,30 @@ describe('E1-S2-T4 — GET /api/cards/due', () => {
 
     expect(res.json().dueCount).toBe(2);
     expect(res.json().dueCards.map((c: QueueCard) => c.id)).toEqual(['a', 'b']);
+    await app.close();
+  });
+
+  it('E10-S1-T3: ?topicId= chỉ lấy hàng đợi của Topic đó', async () => {
+    const dueTopics: (string | undefined)[] = [];
+    const app = appWith([queued('a')], [], throwingReviews, [], dueTopics);
+
+    const res = await app.inject({ method: 'GET', url: `/api/cards/due?topicId=${TOPIC}` });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.json().dueCount).toBe(1);
+    expect(dueTopics).toEqual([TOPIC]);
+    await app.close();
+  });
+
+  it('E10-S1-T3: topicId sai định dạng trả 400, không xuống tới Postgres', async () => {
+    const dueTopics: (string | undefined)[] = [];
+    const app = appWith([], [], throwingReviews, [], dueTopics);
+
+    const res = await app.inject({ method: 'GET', url: '/api/cards/due?topicId=khong-phai-uuid' });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.json().error.code).toBe('ERR_BAD_REQUEST');
+    expect(dueTopics).toEqual([]);
     await app.close();
   });
 });

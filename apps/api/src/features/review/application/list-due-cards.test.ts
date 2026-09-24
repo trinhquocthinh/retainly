@@ -15,10 +15,10 @@ function row(id: string): ScheduledCard {
 }
 
 function fakeQuery(rows: ScheduledCard[]) {
-  const calls: { userId: string; cutoff: Date }[] = [];
+  const calls: { userId: string; cutoff: Date; topicId?: string }[] = [];
   const query: DueCardQuery = {
-    async findDueBy(userId, cutoff) {
-      calls.push({ userId, cutoff });
+    async findDueBy(userId, cutoff, topicId) {
+      calls.push({ userId, cutoff, topicId });
       return rows;
     },
     async findExtraCandidates() {
@@ -52,6 +52,16 @@ describe('E1-S2-T4 — danh sách thẻ đến hạn', () => {
     await listDueCards({ schedules: query, now: () => NOW }, { userId: USER });
 
     expect(calls).toEqual([{ userId: USER, cutoff: new Date('2026-09-12T16:59:59.999Z') }]);
+  });
+
+  it('E10-S1-T3: "Ôn ngay" theo Topic chuyển topicId xuống tầng truy vấn', async () => {
+    const { query, calls } = fakeQuery([]);
+
+    await listDueCards({ schedules: query, now: () => NOW }, { userId: USER, topicId: 'topic-1' });
+
+    expect(calls).toEqual([
+      { userId: USER, cutoff: new Date('2026-09-12T16:59:59.999Z'), topicId: 'topic-1' },
+    ]);
   });
 });
 

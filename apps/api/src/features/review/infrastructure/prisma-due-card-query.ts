@@ -21,8 +21,9 @@ async function findQueue(where: ReviewScheduleWhereInput): Promise<ScheduledCard
 }
 
 export const prismaDueCardQuery: DueCardQuery = {
-  findDueBy(userId, cutoff) {
-    return findQueue({ dueDate: { lte: cutoff }, card: { userId } });
+  findDueBy(userId, cutoff, topicId) {
+    // topicId undefined thì Prisma bỏ qua điều kiện, trả cả hàng đợi.
+    return findQueue({ dueDate: { lte: cutoff }, card: { userId, topicId } });
   },
 
   findExtraCandidates(userId, { dueAfter, notReviewedSince }) {

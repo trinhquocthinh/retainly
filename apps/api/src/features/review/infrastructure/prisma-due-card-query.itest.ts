@@ -149,3 +149,33 @@ describe('E8-S1-T3 — ứng viên Ôn thêm trên Postgres thật', () => {
     });
   });
 });
+
+describe('E10-S1-T3 — hàng đợi "Ôn ngay" theo Topic', () => {
+  it('chỉ trả thẻ đến hạn của Topic được chọn', async () => {
+    const now = new Date();
+    const [fsrs, hexagonal] = await Promise.all(
+      ['FSRS', 'Hexagonal'].map((name) =>
+        testPrisma.knowledgeTopic.create({ data: { userId: TEST_USER_ID, name } }),
+      ),
+    );
+    const seedInTopic = (front: string, topicId: string | null, dueDate: Date) =>
+      testPrisma.card.create({
+        data: {
+          userId: TEST_USER_ID,
+          front,
+          back: 'Đáp',
+          topicId,
+          schedule: { create: { state: 'review', dueDate } },
+        },
+      });
+    await seedInTopic('FSRS quá hạn', fsrs!.id, new Date(now.getTime() - DAY));
+    await seedInTopic('FSRS hôm nay', fsrs!.id, now);
+    await seedInTopic('FSRS tuần sau', fsrs!.id, new Date(now.getTime() + 7 * DAY));
+    await seedInTopic('Hexagonal hôm nay', hexagonal!.id, now);
+    await seedInTopic('Không Topic', null, now);
+
+    const due = await prismaDueCardQuery.findDueBy(TEST_USER_ID, endOfToday(now), fsrs!.id);
+
+    expect(due.map(({ card }) => card.front)).toEqual(['FSRS quá hạn', 'FSRS hôm nay']);
+  });
+});

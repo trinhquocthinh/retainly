@@ -5,21 +5,21 @@ const MONDAY_OFFSET = 3;
 /** Hai ngày nghỉ liên tiếp làm đứt chuỗi: hai ngày có ôn cách nhau từ 3 trở lên. */
 const BREAKING_GAP = 3;
 
-function localDayNumber(date: Date): number {
+export function localDayNumber(date: Date): number {
   return Math.floor((date.getTime() + APP_UTC_OFFSET_MS) / DAY_MS);
 }
 
-function dayNumber(day: string): number {
+export function dayNumber(day: string): number {
   const [year, month, date] = day.split('-').map(Number);
   return Date.UTC(year!, month! - 1, date!) / DAY_MS;
 }
 
-function formatDay(day: number): string {
+export function formatDay(day: number): string {
   return new Date(day * DAY_MS).toISOString().slice(0, 10);
 }
 
 /** Ngày có ôn tới hết hôm nay, không trùng, mới nhất trước. */
-function distinctDaysUntil(reviewDays: readonly string[], today: number): number[] {
+export function distinctDaysUntil(reviewDays: readonly string[], today: number): number[] {
   return [...new Set(reviewDays.map(dayNumber))]
     .filter((day) => day <= today)
     .sort((left, right) => right - left);

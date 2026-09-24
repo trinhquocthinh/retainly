@@ -13,6 +13,8 @@ import { prismaHomeOverviewQuery } from '../../review/infrastructure/prisma-home
 import { prismaReviewRepository } from '../../review/infrastructure/prisma-review-repository';
 import { registerReviewRoutes } from '../../review/presentation/review-routes';
 import { registerHomeRoutes } from '../../review/presentation/home-routes';
+import { prismaStatsQuery } from '../../review/infrastructure/prisma-stats-query';
+import { registerStatsRoutes } from '../../review/presentation/stats-routes';
 import { startSession } from '../application/sessions';
 import { prismaSessionRepository } from '../infrastructure/prisma-auth-repositories';
 import { registerPrismaAuthRoutes } from '../../../shared/test/prisma-auth-routes';
@@ -49,6 +51,7 @@ function buildFullApp() {
     now,
   });
   registerHomeRoutes(app, { overview: prismaHomeOverviewQuery, streaks: prismaStreakQuery, now });
+  registerStatsRoutes(app, { stats: prismaStatsQuery, streaks: prismaStreakQuery, now });
   registerTopicsRoutes(app, {
     topics: prismaTopicRepository,
     cards: prismaCardTopicRepository,
@@ -123,6 +126,13 @@ async function ownerAssignsTopic() {
     payload: { topicId: owned.topicId },
   });
   expect(res.statusCode).toBe(200);
+}
+
+/** Cùng một GET, lần lượt bằng phiên của A và của B. */
+async function getAsOwnerAndIntruder(url: string) {
+  const owner = await app.inject({ method: 'GET', url, cookies: ownerCookies });
+  const intruder = await app.inject({ method: 'GET', url, cookies: intruderCookies });
+  return { owner: owner.json(), intruder: intruder.json() };
 }
 
 function snapshotOwnerRows() {
@@ -338,6 +348,43 @@ describe('E4-S1-T7 — TC-022 cô lập dữ liệu giữa các tài khoản', (
     expect(owner.statusCode).toBe(200);
   });
 
+  it('E10-S1-T3: Thống kê của B không tính thẻ, Topic hay lượt ôn của A', async () => {
+    await ownerAssignsTopic();
+    await ownerReviews('forgotten');
+
+    const { owner, intruder } = await getAsOwnerAndIntruder('/api/stats?range=all');
+
+    // Đối chứng: A thấy lượt ôn, chuỗi và Topic của mình.
+    expect(owner).toMatchObject({
+      consistency: { reviewDays: 1, totalDays: 1 },
+      streak: { current: 1 },
+      durable: { totalCards: 1 },
+      recall: { remembered: 0, total: 1 },
+      topics: [{ topic: { id: owned.topicId }, reviews: 1, forgotten: 1 }],
+    });
+    expect(intruder).toMatchObject({
+      period: { from: null },
+      consistency: { reviewDays: 0, totalDays: 0, rate: null },
+      streak: { current: 0, longest: 0 },
+      durable: { cards: 0, totalCards: 0, share: null },
+      recall: { remembered: 0, total: 0, rate: null },
+      topics: [],
+    });
+    expect(intruder.week.every((day: { reviews: number }) => day.reviews === 0)).toBe(true);
+  });
+
+  it('E10-S1-T3: B lọc hàng đợi bằng Topic của A không nhận thẻ nào', async () => {
+    await ownerAssignsTopic();
+
+    const { owner, intruder } = await getAsOwnerAndIntruder(
+      `/api/cards/due?topicId=${owned.topicId}`,
+    );
+
+    // Đối chứng: A thấy thẻ của mình trong hàng đợi của Topic.
+    expect(owner.dueCards.map((card: { id: string }) => card.id)).toEqual([owned.cardId]);
+    expect(intruder).toEqual({ dueCards: [], dueCount: 0 });
+  });
+
   it('E8-S1-T3: Ôn thêm của B không chứa thẻ của A', async () => {
     await ownerReviews('remembered');
     // Lùi lượt ôn về hôm kia: thẻ vừa ôn hôm nay không thuộc diện Ôn thêm.
@@ -433,6 +480,7 @@ describe('E4-S1-T7 — TC-022 cô lập dữ liệu giữa các tài khoản', (
     ['GET /api/cards/extra', () => ({ method: 'GET', url: '/api/cards/extra' })],
     ['GET /api/streak', () => ({ method: 'GET', url: '/api/streak' })],
     ['GET /api/home/overview', () => ({ method: 'GET', url: '/api/home/overview' })],
+    ['GET /api/stats', () => ({ method: 'GET', url: '/api/stats' })],
     ['GET /api/topics', () => ({ method: 'GET', url: '/api/topics' })],
     ['GET /api/topics/forget-rate', () => ({ method: 'GET', url: '/api/topics/forget-rate' })],
     ['DELETE /api/cards/:id', ({ cardId }) => ({ method: 'DELETE', url: `/api/cards/${cardId}` })],

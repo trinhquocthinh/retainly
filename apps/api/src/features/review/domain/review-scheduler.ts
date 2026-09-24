@@ -74,7 +74,16 @@ const FSRS_WEIGHTS = [
   0.0614, 0.2629, 1.6483, 0.6014, 1.8729, 0.5425, 0.0912, 0.0658, 0.1542,
 ];
 
-const scheduler = fsrs(generatorParameters({ w: FSRS_WEIGHTS, enable_short_term: false }));
+/** Xác suất nhớ lại mà FSRS nhắm tới khi xếp lịch (request_retention, mặc định ts-fsrs). */
+export const DESIRED_RETENTION = 0.9;
+
+const scheduler = fsrs(
+  generatorParameters({
+    w: FSRS_WEIGHTS,
+    request_retention: DESIRED_RETENTION,
+    enable_short_term: false,
+  }),
+);
 
 const RATING: Record<ReviewOutcome, Rating.Again | Rating.Good> = {
   forgotten: Rating.Again,
