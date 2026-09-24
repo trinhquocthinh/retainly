@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
 
+import { TopicPicker } from '@src/features/topics/presentation/TopicSelector/TopicPicker';
 import { ApiError, NetworkError, TimeoutError } from '@src/shared/api/client';
 import { Button } from '@src/shared/ui/Button/Button';
 import { Field } from '@src/shared/ui/Field/Field';
@@ -11,14 +12,14 @@ import {
   type CardDraft,
   type CardField,
 } from '../../domain/cardDraft';
-import type { CardListItem, UpdateCardInput } from '../../domain/cardLibrary';
+import type { CardEdit, CardListItem } from '../../domain/cardLibrary';
 
 type EditCardDialogProps = {
   card: CardListItem;
   saving: boolean;
   error: unknown;
   onCancel: () => void;
-  onSave: (input: UpdateCardInput) => Promise<void>;
+  onSave: (edit: CardEdit) => Promise<void>;
 };
 
 function bannerFor(error: unknown): string | null {
@@ -35,6 +36,8 @@ export function EditCardDialog({ card, saving, error, onCancel, onSave }: EditCa
     back: card.back,
     note: card.note ?? '',
   });
+  // '' là "Chưa phân nhánh", như ô chọn của màn tạo thẻ.
+  const [topicId, setTopicId] = useState(card.topic?.id ?? '');
   const firstFieldRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -49,10 +52,10 @@ export function EditCardDialog({ card, saving, error, onCancel, onSave }: EditCa
   }, [onCancel, saving]);
 
   const failedField = error instanceof ApiError ? fieldForErrorCode(error.code) : undefined;
-  const canSave =
-    isDraftComplete(draft) &&
-    (draft.front !== card.front || draft.back !== card.back || draft.note !== (card.note ?? '')) &&
-    !saving;
+  const contentChanged =
+    draft.front !== card.front || draft.back !== card.back || draft.note !== (card.note ?? '');
+  const topicChanged = topicId !== (card.topic?.id ?? '');
+  const canSave = isDraftComplete(draft) && (contentChanged || topicChanged) && !saving;
 
   function errorOf(field: CardField) {
     return failedField === field ? (error as ApiError).message : undefined;
@@ -65,7 +68,10 @@ export function EditCardDialog({ card, saving, error, onCancel, onSave }: EditCa
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!canSave) return;
-    void onSave(draft);
+    void onSave({
+      ...(contentChanged ? { content: draft } : {}),
+      ...(topicChanged ? { topicId: topicId === '' ? null : topicId } : {}),
+    });
   }
 
   function saveOnShortcut(event: KeyboardEvent<HTMLFormElement>) {
@@ -151,6 +157,8 @@ export function EditCardDialog({ card, saving, error, onCancel, onSave }: EditCa
               />
             )}
           </Field>
+
+          <TopicPicker value={topicId} onChange={setTopicId} />
 
           <footer className="card-dialog__footer">
             <span className="card-dialog__shortcut text-caption">

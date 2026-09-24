@@ -1,0 +1,133 @@
+.library-table table {
+  width: 100%;
+  border-collapse: collapse;
+  /* Cột cố định để mặt hỏi dài không đẩy các cột số ra khỏi khung. */
+  table-layout: fixed;
+}
+
+.library-table th {
+  padding: var(--space-3);
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  text-align: left;
+}
+
+.library-table th abbr {
+  text-decoration: none;
+}
+
+.library-table td {
+  padding: var(--space-2) var(--space-3);
+  vertical-align: middle;
+}
+
+/* Kẻ ngăn giữa các thẻ; đáp án đang mở thuộc về hàng phía trên nên không kẻ. */
+.library-table__answer-row + .library-table__row td,
+.library-table__row + .library-table__row td {
+  border-top: 1px solid var(--color-border);
+}
+
+.library-table__row:hover {
+  background: var(--color-secondary-hover-bg);
+}
+
+.library-table__answer-row td {
+  padding-top: 0;
+  padding-bottom: var(--space-3);
+}
+
+.library-table__row:hover + .library-table__answer-row {
+  background: var(--color-secondary-hover-bg);
+}
+
+.library-table__topic-col,
+.library-table__due-col {
+  width: 144px;
+}
+
+.library-table__stability-col {
+  width: 88px;
+}
+
+.library-table__difficulty-col {
+  width: 56px;
+}
+
+.library-table__last-col {
+  width: 120px;
+}
+
+.library-table__actions-col {
+  width: 124px;
+  text-align: right !important;
+}
+
+.library-table__toggle,
+.library-table__static {
+  width: 100%;
+  min-height: var(--control-height);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.library-table__toggle {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.library-table__toggle svg {
+  flex: 0 0 auto;
+  color: var(--color-text-secondary);
+  transform: rotate(-90deg);
+  transition: transform var(--duration-fast);
+}
+
+.library-table__toggle[aria-expanded='true'] svg {
+  transform: none;
+}
+
+/* Thẻ không có gì để mở: thụt vào bằng đúng bề rộng mũi tên cho thẳng hàng. */
+.library-table__static {
+  padding-left: calc(16px + var(--space-2));
+}
+
+.library-table__front-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.library-table__toggle:hover .library-table__front-text {
+  color: var(--color-accent-active);
+}
+
+.library-table__number,
+.library-table__last {
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.library-table__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+/* Desktop hẹp (có sidebar): bỏ cột Ôn gần nhất để mặt hỏi còn chỗ. */
+@media (max-width: 1279px) {
+  .library-table__last,
+  .library-table__last-col {
+    display: none;
+  }
+}

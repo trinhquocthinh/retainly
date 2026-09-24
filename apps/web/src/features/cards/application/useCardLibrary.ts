@@ -1,9 +1,10 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
 
 import type {
+  CardEdit,
   CardListResponse,
   DeletedCard,
+  LibraryFilters,
   UpdateCardInput,
   CardListItem,
 } from '../domain/cardLibrary';
@@ -11,18 +12,23 @@ import type {
 const PAGE_SIZE = 20;
 
 type CardLibraryPorts = {
-  fetchCards: (input: { page: number; pageSize: number }) => Promise<CardListResponse>;
+  fetchCards: (input: LibraryFilters & { pageSize: number }) => Promise<CardListResponse>;
   updateCard: (cardId: string, input: UpdateCardInput) => Promise<CardListItem>;
+  assignCardTopic: (cardId: string, topicId: string | null) => Promise<unknown>;
   deleteCard: (cardId: string) => Promise<DeletedCard>;
 };
 
-export function useCardLibrary(deps: CardLibraryPorts) {
+type LibraryView = {
+  filters: LibraryFilters;
+  goToPage: (page: number) => void;
+};
+
+export function useCardLibrary(deps: CardLibraryPorts, { filters, goToPage }: LibraryView) {
   const queryClient = useQueryClient();
-  const [page, setPage] = useState(1);
 
   const query = useQuery({
-    queryKey: ['cards', 'library', { page, pageSize: PAGE_SIZE }],
-    queryFn: () => deps.fetchCards({ page, pageSize: PAGE_SIZE }),
+    queryKey: ['cards', 'library', filters],
+    queryFn: () => deps.fetchCards({ ...filters, pageSize: PAGE_SIZE }),
     placeholderData: keepPreviousData,
   });
 
@@ -33,37 +39,46 @@ export function useCardLibrary(deps: CardLibraryPorts) {
     ]);
   }
 
+  // Nội dung và Topic là hai endpoint riêng; gửi tuần tự, phần nào không đổi thì bỏ.
+  // Topic hỏng sau khi nội dung đã lưu thì dialog vẫn mở, lưu lại chỉ ghi đè cùng giá trị.
   const updateMutation = useMutation({
-    mutationFn: ({ cardId, input }: { cardId: string; input: UpdateCardInput }) =>
-      deps.updateCard(cardId, input),
-    onSuccess: refreshCardQueries,
+    mutationFn: async ({ cardId, edit }: { cardId: string; edit: CardEdit }) => {
+      if (edit.content) await deps.updateCard(cardId, edit.content);
+      if (edit.topicId !== undefined) await deps.assignCardTopic(cardId, edit.topicId);
+    },
+    onSuccess: async (_result, { edit }) => {
+      await Promise.all([
+        refreshCardQueries(),
+        // Báo cáo tỷ lệ quên theo Topic đổi khi thẻ đổi nhánh.
+        edit.topicId === undefined
+          ? undefined
+          : queryClient.invalidateQueries({ queryKey: ['topics', 'forget-rate'] }),
+      ]);
+    },
   });
 
   const deleteMutation = useMutation({
     mutationFn: deps.deleteCard,
     onSuccess: async () => {
-      if ((query.data?.items.length ?? 0) === 1 && page > 1) {
-        setPage((current) => current - 1);
+      if ((query.data?.items.length ?? 0) === 1 && filters.page > 1) {
+        goToPage(filters.page - 1);
       }
       await refreshCardQueries();
     },
   });
 
   return {
-    page,
     pageSize: PAGE_SIZE,
     data: query.data,
     loading: query.isPending,
     refreshing: query.isFetching && !query.isPending,
     loadError: query.error,
     reload: () => void query.refetch(),
-    goToPage: setPage,
 
     updating: updateMutation.isPending,
     updateError: updateMutation.error,
     resetUpdate: updateMutation.reset,
-    saveCard: (cardId: string, input: UpdateCardInput) =>
-      updateMutation.mutateAsync({ cardId, input }),
+    saveCard: (cardId: string, edit: CardEdit) => updateMutation.mutateAsync({ cardId, edit }),
 
     deleting: deleteMutation.isPending,
     deleteError: deleteMutation.error,

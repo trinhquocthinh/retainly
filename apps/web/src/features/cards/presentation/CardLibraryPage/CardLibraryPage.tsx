@@ -1,47 +1,36 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
 
+import { useDueCount } from '@src/features/review/application/useDueCount';
 import { Button } from '@src/shared/ui/Button/Button';
 import {
   IconArrowLeft,
   IconArrowRight,
-  IconDelete,
-  IconEdit,
   IconLibrary,
   IconNewCard,
+  IconSearch,
 } from '@src/shared/ui/Icons/Icons';
 import { Toast } from '@src/shared/ui/Toast/Toast';
-import { InlineMarkdown } from '@src/shared/ui/Markdown/InlineMarkdown';
 
 import { useCardLibrary } from '../../application/useCardLibrary';
-import type { CardListItem, UpdateCardInput } from '../../domain/cardLibrary';
-import { deleteCard, fetchCards, updateCard } from '../../infrastructure/cardsApi';
+import { LibraryTable } from './LibraryTable';
+import { useLibraryFilters } from '../../application/useLibraryFilters';
+import { isFiltering, type CardEdit, type CardListItem } from '../../domain/cardLibrary';
+import { assignCardTopic, deleteCard, fetchCards, updateCard } from '../../infrastructure/cardsApi';
 import { DeleteCardDialog } from './DeleteCardDialog';
 import { EditCardDialog } from './EditCardDialog';
+import { LibraryCard } from './LibraryCard';
+import { LibraryToolbar } from './LibraryToolbar';
 
 import './CardLibraryPage.css';
-import { stripMarkdown } from '@src/shared/ui/Markdown/MarkdownSyntax';
+import { useLibraryLayout } from '../../application/useLibraryLayout';
 
-const dateFormatter = new Intl.DateTimeFormat('vi-VN', {
-  day: '2-digit',
-  month: '2-digit',
-  year: 'numeric',
-});
-
-function formatCreatedAt(value: string) {
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? 'Không rõ' : dateFormatter.format(date);
-}
-
-function LoadingRows() {
+function LoadingGrid() {
   return (
-    <div
-      className="card-library__skeleton surface-panel surface-panel--flush"
-      role="status"
-      aria-label="Đang tải thư viện thẻ"
-    >
-      {Array.from({ length: 5 }, (_, index) => (
-        <div className="card-library__skeleton-row" key={index}>
+    <div className="card-library__grid" role="status" aria-label="Đang tải thư viện thẻ">
+      {Array.from({ length: 6 }, (_, index) => (
+        <div className="card-library__skeleton surface-panel" key={index}>
+          <span className="card-library__skeleton-line card-library__skeleton-line--short" />
           <span className="card-library__skeleton-line card-library__skeleton-line--strong" />
           <span className="card-library__skeleton-line" />
         </div>
@@ -51,13 +40,23 @@ function LoadingRows() {
 }
 
 export function CardLibraryPage() {
-  const library = useCardLibrary({ fetchCards, updateCard, deleteCard });
+  const view = useLibraryFilters();
+  const { filters } = view;
+  const library = useCardLibrary({ fetchCards, updateCard, assignCardTopic, deleteCard }, view);
+  const dueCount = useDueCount();
+  const layout = useLibraryLayout();
+  // Mốc "hôm nay" cho badge hạn ôn, chốt lúc mở trang như hàng đợi ôn.
+  const [now] = useState(() => new Date());
   const [editingCard, setEditingCard] = useState<CardListItem | null>(null);
   const [deletingCard, setDeletingCard] = useState<CardListItem | null>(null);
   const [notice, setNotice] = useState<{ id: number; message: string } | null>(null);
 
   const cards = library.data?.items ?? [];
   const pagination = library.data?.pagination;
+  const filtering = isFiltering(filters);
+  const ready = !library.loading && !library.loadError;
+  const libraryEmpty = ready && pagination?.totalItems === 0 && !filtering;
+  const noMatch = ready && pagination?.totalItems === 0 && filtering;
 
   function announce(message: string) {
     setNotice({ id: Date.now(), message });
@@ -73,11 +72,11 @@ export function CardLibraryPage() {
     setDeletingCard(card);
   }
 
-  async function saveEdit(input: UpdateCardInput) {
+  async function saveEdit(edit: CardEdit) {
     if (!editingCard) return;
 
     try {
-      await library.saveCard(editingCard.id, input);
+      await library.saveCard(editingCard.id, edit);
       setEditingCard(null);
       announce('Đã lưu thay đổi của thẻ');
     } catch {
@@ -109,21 +108,43 @@ export function CardLibraryPage() {
           <div className="card-library__heading-row">
             <h1 className="text-h1">Thư viện thẻ</h1>
             {pagination ? (
-              <span className="card-library__count text-caption">{pagination.totalItems} thẻ</span>
+              <span className="card-library__count text-caption">
+                {pagination.totalItems} {filtering ? 'kết quả' : 'thẻ'}
+              </span>
             ) : null}
           </div>
           <p className="card-library__description text-small">
-            Xem lại nội dung, chỉnh sửa lỗi và loại bỏ những thẻ không còn cần thiết.
+            Tìm lại kiến thức, xem độ nhớ của từng thẻ và dọn những thẻ không còn cần.
           </p>
         </div>
 
-        <Link className="card-library__create btn btn--primary" to="/cards/new">
-          <IconNewCard />
-          Tạo thẻ mới
-        </Link>
+        <div className="card-library__header-actions">
+          {dueCount > 0 ? (
+            <Link className="link-button link-button--outline" to="/review">
+              Ôn ngay ({dueCount} đến hạn)
+            </Link>
+          ) : null}
+          <Link className="link-button link-button--accent" to="/cards/new">
+            <IconNewCard />
+            Tạo thẻ mới
+          </Link>
+        </div>
       </header>
 
-      {library.loading ? <LoadingRows /> : null}
+      {!libraryEmpty ? (
+        <LibraryToolbar
+          query={filters.q}
+          sort={filters.sort}
+          topic={filters.topic}
+          counts={library.data?.topicCounts}
+          layout={layout.canChoose ? { value: layout.layout, onChange: layout.choose } : undefined}
+          onQueryChange={view.setQuery}
+          onSortChange={view.setSort}
+          onTopicChange={view.setTopic}
+        />
+      ) : null}
+
+      {library.loading ? <LoadingGrid /> : null}
 
       {!library.loading && library.loadError ? (
         <section className="card-library__load-error feedback-danger" role="alert">
@@ -135,74 +156,49 @@ export function CardLibraryPage() {
         </section>
       ) : null}
 
-      {!library.loading && !library.loadError && pagination?.totalItems === 0 ? (
+      {libraryEmpty ? (
         <section className="card-library__empty surface-panel">
           <span className="card-library__empty-icon" aria-hidden="true">
             <IconLibrary size={28} />
           </span>
           <h2 className="text-h2">Thư viện chưa có thẻ nào</h2>
           <p className="text-small">Tạo thẻ đầu tiên để bắt đầu xây dựng kho kiến thức của bạn.</p>
-          <Link className="card-library__create btn btn--primary" to="/cards/new">
+          <Link className="link-button link-button--accent" to="/cards/new">
             <IconNewCard />
             Tạo thẻ đầu tiên
           </Link>
         </section>
       ) : null}
 
-      {!library.loading && !library.loadError && cards.length > 0 ? (
-        <section
-          className="card-library__panel surface-panel surface-panel--flush"
-          aria-label="Danh sách thẻ"
-        >
-          <div className="card-library__table-header text-caption-caps" aria-hidden="true">
-            <span>Mặt hỏi &amp; đáp án tóm lược</span>
-            <span>Ngày tạo</span>
-            <span className="card-library__actions-heading">Thao tác</span>
-          </div>
+      {noMatch ? (
+        <section className="card-library__empty surface-panel">
+          <span className="card-library__empty-icon" aria-hidden="true">
+            <IconSearch size={28} />
+          </span>
+          <h2 className="text-h2">Không có thẻ nào khớp</h2>
+          <p className="text-small">Thử từ khoá khác, hoặc bỏ bộ lọc để xem toàn bộ thư viện.</p>
+          <Button onClick={view.clearFilters}>Xoá bộ lọc</Button>
+        </section>
+      ) : null}
 
-          <div className="card-library__rows">
-            {cards.map((card) => (
-              <article className="card-library__row" key={card.id}>
-                <button
-                  type="button"
-                  className="card-library__content"
-                  onClick={() => openEdit(card)}
-                >
-                  <span className="card-library__front">
-                    <InlineMarkdown text={card.front} />
-                  </span>
-                  {card.back ? (
-                    <span className="card-library__back text-caption">
-                      <InlineMarkdown text={card.back} />
-                    </span>
-                  ) : null}
-                </button>
-
-                <time className="card-library__date text-caption" dateTime={card.createdAt}>
-                  <span className="card-library__mobile-label">Ngày tạo: </span>
-                  {formatCreatedAt(card.createdAt)}
-                </time>
-
-                <div className="card-library__row-actions">
-                  <button
-                    type="button"
-                    className="card-library__icon-button"
-                    aria-label={`Sửa thẻ “${stripMarkdown(card.front)}”`}
-                    onClick={() => openEdit(card)}
-                  >
-                    <IconEdit />
-                  </button>
-                  <button
-                    type="button"
-                    className="card-library__icon-button card-library__icon-button--danger"
-                    aria-label={`Xoá thẻ “${stripMarkdown(card.front)}”`}
-                    onClick={() => openDelete(card)}
-                  >
-                    <IconDelete />
-                  </button>
-                </div>
-              </article>
-            ))}
+      {ready && cards.length > 0 ? (
+        <section aria-label="Danh sách thẻ">
+          <div className={library.refreshing ? 'card-library__refreshing' : undefined}>
+            {layout.layout === 'table' ? (
+              <LibraryTable cards={cards} now={now} onEdit={openEdit} onDelete={openDelete} />
+            ) : (
+              <div className="card-library__grid">
+                {cards.map((card) => (
+                  <LibraryCard
+                    key={card.id}
+                    card={card}
+                    now={now}
+                    onEdit={() => openEdit(card)}
+                    onDelete={() => openDelete(card)}
+                  />
+                ))}
+              </div>
+            )}
           </div>
 
           {pagination && pagination.totalPages > 1 ? (
@@ -213,7 +209,7 @@ export function CardLibraryPage() {
               <div className="card-library__page-actions">
                 <Button
                   disabled={pagination.page <= 1 || library.refreshing}
-                  onClick={() => library.goToPage(pagination.page - 1)}
+                  onClick={() => view.goToPage(pagination.page - 1)}
                 >
                   <IconArrowLeft />
                   Trước
@@ -223,7 +219,7 @@ export function CardLibraryPage() {
                 </span>
                 <Button
                   disabled={pagination.page >= pagination.totalPages || library.refreshing}
-                  onClick={() => library.goToPage(pagination.page + 1)}
+                  onClick={() => view.goToPage(pagination.page + 1)}
                 >
                   Sau
                   <IconArrowRight />

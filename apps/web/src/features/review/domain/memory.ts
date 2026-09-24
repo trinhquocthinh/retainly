@@ -21,10 +21,18 @@ export function isNewCard(memory: CardMemory): boolean {
   return memory.lastReviewedAt === null;
 }
 
+export function formatStability(stability: number): string {
+  return `${ONE_DECIMAL.format(stability)} ngày`;
+}
+
+export function formatDifficulty(difficulty: number): string {
+  return ONE_DECIMAL.format(difficulty);
+}
+
 export function formatMemory(memory: CardMemory) {
   return {
-    stability: `${ONE_DECIMAL.format(memory.stability)} ngày`,
-    difficulty: ONE_DECIMAL.format(memory.difficulty),
+    stability: formatStability(memory.stability),
+    difficulty: formatDifficulty(memory.difficulty),
     retrievability: `${Math.round(memory.retrievability * 100)}%`,
   };
 }
@@ -33,12 +41,14 @@ export function formatForecast(days: number): string {
   return `+${days} ngày`;
 }
 
-/** Đếm theo ngày lịch giờ Việt Nam, không theo 24 giờ: ôn lúc 23h thì sáng mai là "hôm qua". */
+/** Số ngày lịch giờ Việt Nam từ `from` tới `to` (âm nếu `to` ở trước), không đếm theo 24 giờ. */
+export function calendarDaysBetween(from: Date, to: Date): number {
+  return (Date.parse(CALENDAR_DAY.format(to)) - Date.parse(CALENDAR_DAY.format(from))) / DAY_MS;
+}
+
+/** Ôn lúc 23h thì sáng mai đã là "hôm qua". */
 export function formatLastReview(lastReviewedAt: string, now: Date): string {
-  const days =
-    (Date.parse(CALENDAR_DAY.format(now)) -
-      Date.parse(CALENDAR_DAY.format(new Date(lastReviewedAt)))) /
-    DAY_MS;
+  const days = calendarDaysBetween(new Date(lastReviewedAt), now);
 
   if (days <= 0) return 'hôm nay';
   if (days === 1) return 'hôm qua';

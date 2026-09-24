@@ -204,3 +204,32 @@ export function IconClock({ size = 14 }: IconProps) {
     </svg>
   );
 }
+
+export function IconSearch({ size = 18 }: IconProps) {
+  return (
+    <svg {...base(size)}>
+      <circle cx="11" cy="11" r="7" />
+      <path d="m20 20-3.5-3.5" />
+    </svg>
+  );
+}
+
+export function IconGrid({ size = 18 }: IconProps) {
+  return (
+    <svg {...base(size)}>
+      <rect x="4" y="4" width="6.5" height="6.5" rx="1" />
+      <rect x="13.5" y="4" width="6.5" height="6.5" rx="1" />
+      <rect x="4" y="13.5" width="6.5" height="6.5" rx="1" />
+      <rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1" />
+    </svg>
+  );
+}
+
+export function IconTable({ size = 18 }: IconProps) {
+  return (
+    <svg {...base(size)}>
+      <rect x="3.5" y="4.5" width="17" height="15" rx="1.5" />
+      <path d="M3.5 9.5h17M3.5 14.5h17M9 9.5v10" />
+    </svg>
+  );
+}

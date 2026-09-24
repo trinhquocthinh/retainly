@@ -14,9 +14,7 @@ import { createCard } from '../infrastructure/cardsApi';
 import { CardPreview } from './CardPreview';
 import { CreateCardForm } from './CreateCardForm';
 import { ModeTabs, type CreateMode } from './ModeTabs';
-import { useTopics } from '@src/features/topics/application/useTopics';
-import { createTopic, fetchTopics } from '@src/features/topics/infrastructure/topicsApi';
-import { TopicSelector } from '@src/features/topics/presentation/TopicSelector/TopicSelector';
+import { TopicPicker } from '@src/features/topics/presentation/TopicSelector/TopicPicker';
 
 const ATOMIC_RULES = [
   'Một ý chính trên mỗi thẻ: nếu câu hỏi có hơn 3 ý con, hãy chia nhỏ thành nhiều thẻ độc lập.',
@@ -30,7 +28,6 @@ export function CreateCardPage() {
   const [topicId, setTopicId] = useState('');
   const sourceContentRef = useRef<HTMLDivElement>(null);
 
-  const topics = useTopics({ fetchTopics, createTopic });
   const loader = useSourceLoader({ extractSource });
   const source = mode === 'url' ? loader.source : null;
   const form = useCreateCard({
@@ -117,20 +114,7 @@ export function CreateCardPage() {
           <CardPreview draft={form.draft} />
 
           <CreateCardForm
-            topicSelector={
-              <TopicSelector
-                topics={topics.topics}
-                value={topicId}
-                loading={topics.loading}
-                loadError={topics.loadError}
-                creating={topics.creating}
-                createError={topics.createError}
-                onChange={setTopicId}
-                onReload={topics.reload}
-                onCreate={topics.addTopic}
-                onResetCreate={topics.resetCreate}
-              />
-            }
+            topicSelector={<TopicPicker value={topicId} onChange={setTopicId} />}
             draft={form.draft}
             canSave={form.canSave}
             saving={form.saving}

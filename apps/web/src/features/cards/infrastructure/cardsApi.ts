@@ -5,6 +5,7 @@ import type {
   CardListItem,
   CardListResponse,
   DeletedCard,
+  LibraryFilters,
   UpdateCardInput,
 } from '../domain/cardLibrary';
 
@@ -20,12 +21,19 @@ export function createCard(card: NewCard): Promise<CreatedCard> {
   return api.post<CreatedCard>('/cards', card);
 }
 
-/** GET /api/cards — danh sách phân trang của người dùng hiện tại. */
-export function fetchCards(input: { page: number; pageSize: number }): Promise<CardListResponse> {
+export type CardListRequest = LibraryFilters & { pageSize: number };
+
+/** GET /api/cards — SPEC-015. Chỉ gửi tham số khác mặc định. */
+export function fetchCards(input: CardListRequest): Promise<CardListResponse> {
   const query = new URLSearchParams({
     page: String(input.page),
     pageSize: String(input.pageSize),
   });
+  const keyword = input.q.trim();
+
+  if (keyword !== '') query.set('q', keyword);
+  if (input.sort !== 'recent') query.set('sort', input.sort);
+  if (input.topic !== '') query.set('topic', input.topic);
 
   return api.get<CardListResponse>(`/cards?${query.toString()}`);
 }
@@ -33,6 +41,11 @@ export function fetchCards(input: { page: number; pageSize: number }): Promise<C
 /** PATCH /api/cards/:id — chỉ sửa nội dung, không thay đổi lịch ôn. */
 export function updateCard(cardId: string, input: UpdateCardInput): Promise<CardListItem> {
   return api.patch<CardListItem>(`/cards/${encodeURIComponent(cardId)}`, input);
+}
+
+/** PATCH /api/cards/:id/topic — SPEC-006; `null` là bỏ gán Topic. */
+export function assignCardTopic(cardId: string, topicId: string | null): Promise<unknown> {
+  return api.patch<unknown>(`/cards/${encodeURIComponent(cardId)}/topic`, { topicId });
 }
 
 /** DELETE /api/cards/:id — máy chủ chịu trách nhiệm xóa cascade. */
