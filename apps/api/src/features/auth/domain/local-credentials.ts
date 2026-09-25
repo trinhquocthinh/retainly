@@ -45,7 +45,14 @@ export function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
 }
 
-/** Tên hiển thị mặc định khi đăng ký nội bộ: phần trước `@`. */
-export function displayNameFromEmail(email: string): string {
-  return email.slice(0, email.indexOf('@'));
+/** Họ và tên nhập khi đăng ký (US-019), đếm theo code point như `maxLength` của route. */
+export const DISPLAY_NAME_MAX_LENGTH = 50;
+
+/**
+ * Tên hiển thị khi đăng ký nội bộ (US-019): gộp khoảng trắng thừa. Không gửi
+ * hoặc chỉ toàn khoảng trắng thì lấy phần trước `@` của email như trước v0.1.2.
+ */
+export function makeDisplayName(input: string | undefined, email: string): string {
+  const name = input?.trim().replace(/\s+/g, ' ') ?? '';
+  return name === '' ? email.slice(0, email.indexOf('@')) : name;
 }

@@ -1,9 +1,5 @@
 import { AppError } from '../../../shared/errors';
-import {
-  displayNameFromEmail,
-  DUMMY_PASSWORD_HASH,
-  normalizeEmail,
-} from '../domain/local-credentials';
+import { DUMMY_PASSWORD_HASH, makeDisplayName, normalizeEmail } from '../domain/local-credentials';
 import { isStrongPassword } from '../domain/password-policy';
 import { startSession, type SessionRepository, type StartedSession } from './sessions';
 import { assertUserSlotAvailable, UserCounter } from './user-limit';
@@ -44,10 +40,10 @@ type LocalCredentialsDeps = {
 
 type Credentials = { email: string; password: string };
 
-/** SPEC-011 — đăng ký tài khoản nội bộ rồi đăng nhập luôn. Giới hạn 6 user: E4-S1-T5. */
+/** SPEC-011 — đăng ký tài khoản nội bộ rồi đăng nhập luôn. `displayName` là ô "Họ và tên" (US-019). */
 export async function registerLocal(
   deps: LocalCredentialsDeps,
-  input: Credentials,
+  input: Credentials & { displayName?: string },
 ): Promise<StartedSession> {
   if (!isStrongPassword(input.password)) throw new AppError('ERR_WEAK_PASSWORD');
   // trước khi băm Argon2: hệ thống đã đầy thì khỏi tốn CPU.
@@ -60,7 +56,7 @@ export async function registerLocal(
   const user = await deps.localUsers.createLocal({
     email,
     passwordHash: await deps.hasher.hash(input.password),
-    displayName: displayNameFromEmail(email),
+    displayName: makeDisplayName(input.displayName, email),
   });
 
   return startSession(deps, user.id);

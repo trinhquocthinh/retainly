@@ -49,6 +49,14 @@ describe('registerLocal', () => {
     expect(d.sessions.rows.get(hashSessionToken(result.token))).toEqual(result.session);
   });
 
+  it('TC-078: lưu họ và tên đã chuẩn hoá làm tên hiển thị', async () => {
+    const d = deps();
+
+    await registerLocal(d, { ...CREDENTIALS, displayName: '  Nguyễn  Văn A ' });
+
+    expect(d.localUsers.rows[0].displayName).toBe('Nguyễn Văn A');
+  });
+
   it('TC-031: email đã tồn tại (khác hoa/thường) trả ERR_EMAIL_TAKEN', async () => {
     const d = deps();
     await registerLocal(d, CREDENTIALS);

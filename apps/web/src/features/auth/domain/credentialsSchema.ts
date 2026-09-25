@@ -4,10 +4,12 @@ import { z } from 'zod';
 import type { AuthMode } from './authAlert';
 
 /**
- * Giá trị của form; `confirmPassword` chỉ dùng ở tab Đăng ký và không gửi lên API,
- * `remember` ("Duy trì đăng nhập 30 ngày") chỉ gửi ở tab Đăng nhập.
+ * Giá trị của form; `displayName` ("Họ và tên") chỉ gửi ở tab Đăng ký, `confirmPassword`
+ * chỉ dùng ở tab Đăng ký và không gửi lên API, `remember` ("Duy trì đăng nhập 30 ngày")
+ * chỉ gửi ở tab Đăng nhập.
  */
 export type AuthFormValues = {
+  displayName: string;
   email: string;
   password: string;
   confirmPassword: string;
@@ -29,10 +31,21 @@ export const WEAK_PASSWORD_MESSAGE =
 
 export const PASSWORD_MISMATCH_MESSAGE = 'Mật khẩu nhập lại không khớp';
 
+/** Khớp `maxLength` của `POST /api/auth/register` (US-019). */
+export const DISPLAY_NAME_MAX_LENGTH = 50;
+
+// API cho bỏ trống (client cũ), nhưng form đòi nhập để tên hiển thị không phải phần trước @.
+const displayName = z
+  .string()
+  .trim()
+  .min(1, 'Vui lòng nhập họ và tên')
+  .max(DISPLAY_NAME_MAX_LENGTH, `Họ và tên tối đa ${DISPLAY_NAME_MAX_LENGTH} ký tự`);
+
 const requiredPassword = z.string().min(1, 'Vui lòng nhập mật khẩu');
 
 /** Đăng nhập không áp luật mạnh: tài khoản tạo theo luật cũ vẫn phải vào được. */
 const loginSchema = z.object({
+  displayName: z.string(),
   email,
   password: requiredPassword,
   confirmPassword: z.string(),
@@ -41,6 +54,7 @@ const loginSchema = z.object({
 
 const registerSchema = z
   .object({
+    displayName,
     email,
     password: requiredPassword.refine(isStrongPassword, WEAK_PASSWORD_MESSAGE),
     confirmPassword: z.string().min(1, 'Vui lòng nhập lại mật khẩu'),

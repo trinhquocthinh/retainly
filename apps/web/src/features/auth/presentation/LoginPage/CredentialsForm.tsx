@@ -5,12 +5,17 @@ import { Button } from '@src/shared/ui/Button/Button';
 import { Field } from '@src/shared/ui/Field/Field';
 
 import type { AuthMode } from '../../domain/authAlert';
-import { credentialsSchema, type AuthFormValues } from '../../domain/credentialsSchema';
+import {
+  credentialsSchema,
+  DISPLAY_NAME_MAX_LENGTH,
+  type AuthFormValues,
+} from '../../domain/credentialsSchema';
 import type { Credentials } from '../../domain/session';
 import { fieldBinding, visibleError } from '../formFields';
 import { PasswordCriteria, PasswordInput } from '../PasswordFields/PasswordFields';
 
 const EMPTY_VALUES: AuthFormValues = {
+  displayName: '',
   email: '',
   password: '',
   confirmPassword: '',
@@ -42,7 +47,7 @@ export function CredentialsForm({
         email: value.email.trim(),
         password: value.password,
         // Đăng ký luôn mở phiên trình duyệt, không gửi cờ vô nghĩa lên API.
-        ...(registering ? {} : { remember: value.remember }),
+        ...(registering ? { displayName: value.displayName.trim() } : { remember: value.remember }),
       }),
   });
 
@@ -60,6 +65,27 @@ export function CredentialsForm({
 
   return (
     <form className="login-form" onSubmit={handleSubmit} noValidate>
+      {registering ? (
+        <form.Field name="displayName">
+          {(field) => (
+            <div className="login-form__register-only">
+              <Field label="Họ và tên" error={visibleError(field.state.meta, submitted)}>
+                {(props) => (
+                  <input
+                    {...props}
+                    {...fieldBinding(field)}
+                    type="text"
+                    autoComplete="name"
+                    placeholder="Nguyễn Văn A"
+                    maxLength={DISPLAY_NAME_MAX_LENGTH}
+                  />
+                )}
+              </Field>
+            </div>
+          )}
+        </form.Field>
+      ) : null}
+
       <form.Field name="email">
         {(field) => (
           <Field label="Email" error={visibleError(field.state.meta, submitted)}>

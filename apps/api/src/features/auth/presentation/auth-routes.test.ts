@@ -282,6 +282,7 @@ describe('E4-S1-T4 — tài khoản nội bộ', () => {
     ['email sai định dạng', { ...CREDENTIALS, email: 'khong-phai-email' }],
     ['thiếu mật khẩu', { email: CREDENTIALS.email }],
     ['mật khẩu quá 1024 ký tự', { ...CREDENTIALS, password: 'a'.repeat(1025) }],
+    ['TC-078: họ và tên quá 50 ký tự', { ...CREDENTIALS, displayName: 'ă'.repeat(51) }],
   ])('%s trả 400 ERR_BAD_REQUEST', async (_name, payload) => {
     const { app } = setup();
 

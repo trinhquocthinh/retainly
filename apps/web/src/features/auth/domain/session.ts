@@ -7,7 +7,15 @@ export type Session = {
   authMethod: 'local' | 'sso';
 };
 
-/** `remember` là ô "Duy trì đăng nhập 30 ngày" (US-019), chỉ gửi khi đăng nhập. */
-export type Credentials = { email: string; password: string; remember?: boolean };
+/**
+ * `displayName` là ô "Họ và tên", chỉ gửi khi đăng ký; `remember` là ô "Duy trì
+ * đăng nhập 30 ngày", chỉ gửi khi đăng nhập (US-019).
+ */
+export type Credentials = {
+  email: string;
+  password: string;
+  displayName?: string;
+  remember?: boolean;
+};
 
 export type PasswordChange = { currentPassword: string; newPassword: string };

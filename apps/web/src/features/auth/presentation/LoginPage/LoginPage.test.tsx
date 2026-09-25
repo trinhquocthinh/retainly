@@ -55,12 +55,22 @@ async function submitCredentials(
   user: ReturnType<typeof userEvent.setup>,
   {
     mode,
+    displayName = 'Nguyễn Văn A',
     email,
     password,
     confirmPassword = password,
-  }: { mode: 'login' | 'register'; email: string; password: string; confirmPassword?: string },
+  }: {
+    mode: 'login' | 'register';
+    displayName?: string;
+    email: string;
+    password: string;
+    confirmPassword?: string;
+  },
 ) {
-  if (mode === 'register') await user.click(screen.getByRole('tab', { name: 'Đăng ký' }));
+  if (mode === 'register') {
+    await user.click(screen.getByRole('tab', { name: 'Đăng ký' }));
+    if (displayName !== '') await user.type(screen.getByLabelText('Họ và tên'), displayName);
+  }
   await user.type(screen.getByLabelText('Email'), email);
   await user.type(screen.getByLabelText('Mật khẩu'), password);
   if (mode === 'register') {
@@ -216,10 +226,11 @@ describe('E4-S1-T6 — đăng ký tài khoản nội bộ', () => {
     expect(fetchMock.mock.calls.some(([url]) => url === '/api/auth/register')).toBe(false);
   });
 
-  it('tab Đăng nhập không có ô nhập lại mật khẩu và tiêu chuẩn mật khẩu', () => {
+  it('tab Đăng nhập không có ô họ tên, ô nhập lại mật khẩu và tiêu chuẩn mật khẩu', () => {
     stubApi();
     renderLogin();
 
+    expect(screen.queryByLabelText('Họ và tên')).toBeNull();
     expect(screen.queryByLabelText('Nhập lại mật khẩu')).toBeNull();
     expect(screen.queryByText('Tiêu chuẩn mật khẩu an toàn:')).toBeNull();
   });
@@ -259,6 +270,7 @@ describe('E4-S1-T6 — đăng ký tài khoản nội bộ', () => {
 
     await submitCredentials(user, {
       mode: 'register',
+      displayName: '  Nguyễn Văn A ',
       email: 'moi@retainly.app',
       password: 'Mat-khau-moi-1',
     });
@@ -267,9 +279,25 @@ describe('E4-S1-T6 — đăng ký tài khoản nội bộ', () => {
     // Ô nhập lại chỉ để kiểm tra ở client, không gửi lên máy chủ.
     const register = fetchMock.mock.calls.find(([url]) => url === '/api/auth/register');
     expect(JSON.parse(String(register?.[1]?.body))).toEqual({
+      displayName: 'Nguyễn Văn A',
       email: 'moi@retainly.app',
       password: 'Mat-khau-moi-1',
     });
+  });
+
+  it('TC-078: chưa nhập họ và tên thì báo dưới ô, không gọi API', async () => {
+    const fetchMock = stubApi();
+    const user = renderLogin();
+
+    await submitCredentials(user, {
+      mode: 'register',
+      displayName: '',
+      email: 'moi@retainly.app',
+      password: 'Mat-khau-moi-1',
+    });
+
+    expect(await screen.findByText('Vui lòng nhập họ và tên')).toBeVisible();
+    expect(fetchMock.mock.calls.some(([url]) => url === '/api/auth/register')).toBe(false);
   });
 
   it.each([

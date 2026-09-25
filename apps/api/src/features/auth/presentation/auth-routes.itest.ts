@@ -62,3 +62,26 @@ describe('E4-S1-T5 — trần tài khoản với Postgres thật', () => {
     await app.close();
   });
 });
+
+describe('E11-S1-T4 — họ và tên khi đăng ký với Postgres thật', () => {
+  it('TC-078: họ và tên đã nhập thành tên hiển thị của phiên', async () => {
+    const app = buildAuthApp();
+
+    const register = await app.inject({
+      method: 'POST',
+      url: '/api/auth/register',
+      payload: { ...CREDENTIALS, displayName: ' Nguyễn  Văn A ' },
+    });
+    const token = register.cookies.find((cookie) => cookie.name === 'retainly_session')?.value;
+    const session = await app.inject({
+      method: 'GET',
+      url: '/api/session',
+      cookies: { retainly_session: token ?? '' },
+    });
+
+    expect(register.statusCode).toBe(201);
+    expect(session.json().session.displayName).toBe('Nguyễn Văn A');
+
+    await app.close();
+  });
+});

@@ -9,6 +9,7 @@ import {
 
 function messages(mode: 'login' | 'register', input: Partial<AuthFormValues>) {
   const values = {
+    displayName: 'Nguyễn Văn A',
     email: 'ban@vidu.com',
     password: '',
     confirmPassword: '',
@@ -59,5 +60,19 @@ describe('E4-S1-T6 — schema form xác thực', () => {
     expect(messages('register', { password: 'Abc12!xy', confirmPassword: 'Abc12!xz' })).toEqual([
       PASSWORD_MISMATCH_MESSAGE,
     ]);
+  });
+
+  it.each([
+    ['trống', '', 'Vui lòng nhập họ và tên'],
+    ['chỉ toàn khoảng trắng', '   ', 'Vui lòng nhập họ và tên'],
+    ['quá 50 ký tự', 'ă'.repeat(51), 'Họ và tên tối đa 50 ký tự'],
+  ])('TC-078: đăng ký với họ và tên %s thì báo lỗi', (_name, displayName, message) => {
+    expect(
+      messages('register', { displayName, password: 'Abc12!xy', confirmPassword: 'Abc12!xy' }),
+    ).toEqual([message]);
+  });
+
+  it('TC-078: đăng nhập không đòi họ và tên', () => {
+    expect(messages('login', { displayName: '', password: 'x' })).toEqual([]);
   });
 });

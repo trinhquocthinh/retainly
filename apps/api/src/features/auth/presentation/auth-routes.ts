@@ -26,6 +26,7 @@ import {
   signInLocal,
 } from '../application/local-credentials';
 import { UserCounter } from '../application/user-limit';
+import { DISPLAY_NAME_MAX_LENGTH } from '../domain/local-credentials';
 
 const SESSION_COOKIE = 'retainly_session';
 const SSO_COOKIE = 'retainly_sso';
@@ -34,6 +35,7 @@ const SSO_COOKIE_PATH = '/api/auth/sso';
 const SSO_COOKIE_MAX_AGE_SECONDS = 10 * 60;
 
 type CredentialsBody = { email: string; password: string };
+type RegisterBody = CredentialsBody & { displayName?: string };
 type LoginBody = CredentialsBody & { remember: boolean };
 type ChangePasswordBody = { currentPassword: string; newPassword: string };
 
@@ -53,6 +55,18 @@ const credentialsSchema = {
       // Không đặt minLength: mật khẩu ngắn phải ra ERR_WEAK_PASSWORD, không phải
       // ERR_BAD_REQUEST. maxLength chặn chuỗi khổng lồ bắt Argon2 băm vô ích.
       password: { type: 'string', maxLength: 1024 },
+    },
+  },
+} as const;
+
+// Đăng ký nhận thêm ô "Họ và tên" (US-019), tuỳ chọn: thiếu thì use case lấy phần
+// trước `@` của email. Quá dài là lỗi của client (web đã chặn) nên để Ajv trả 400.
+const registerSchema = {
+  body: {
+    ...credentialsSchema.body,
+    properties: {
+      ...credentialsSchema.body.properties,
+      displayName: { type: 'string', maxLength: DISPLAY_NAME_MAX_LENGTH },
     },
   },
 } as const;
@@ -169,9 +183,9 @@ export function registerAuthRoutes(app: FastifyInstance, deps: AuthRoutesDeps): 
 
     const rateLimit = { config: { rateLimit: CREDENTIALS_RATE_LIMIT } };
 
-    scope.post<{ Body: CredentialsBody }>(
+    scope.post<{ Body: RegisterBody }>(
       '/api/auth/register',
-      { schema: credentialsSchema, ...rateLimit },
+      { schema: registerSchema, ...rateLimit },
       async (request, reply) => {
         const signedIn = await registerLocal(deps, request.body);
         setSessionCookie(reply, signedIn, secure);

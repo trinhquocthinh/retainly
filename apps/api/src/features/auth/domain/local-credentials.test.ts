@@ -1,11 +1,7 @@
 import { randomInt } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 
-import {
-  displayNameFromEmail,
-  generateTemporaryPassword,
-  normalizeEmail,
-} from './local-credentials';
+import { generateTemporaryPassword, makeDisplayName, normalizeEmail } from './local-credentials';
 import { isStrongPassword } from './password-policy';
 
 describe('normalizeEmail', () => {
@@ -14,9 +10,16 @@ describe('normalizeEmail', () => {
   });
 });
 
-describe('displayNameFromEmail', () => {
-  it('lấy phần trước @', () => {
-    expect(displayNameFromEmail('thinh.quoc@example.com')).toBe('thinh.quoc');
+describe('makeDisplayName', () => {
+  it('TC-078: bỏ khoảng trắng hai đầu và gộp khoảng trắng thừa giữa các chữ', () => {
+    expect(makeDisplayName('  Nguyễn   Văn\tA ', 'a@example.com')).toBe('Nguyễn Văn A');
+  });
+
+  it.each([
+    ['không nhập', undefined],
+    ['chỉ toàn khoảng trắng', ' \n '],
+  ])('TC-078: %s thì lấy phần trước @ của email', (_name, input) => {
+    expect(makeDisplayName(input, 'thinh.quoc@example.com')).toBe('thinh.quoc');
   });
 });
 

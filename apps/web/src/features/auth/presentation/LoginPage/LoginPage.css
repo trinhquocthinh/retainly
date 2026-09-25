@@ -33,6 +33,12 @@
   color: var(--color-text-secondary);
 }
 
+/* Phần giới thiệu chỉ có chỗ khi màn đủ rộng cho hai cột. */
+.login__pitch,
+.login__trust {
+  display: none;
+}
+
 .login__card {
   padding: var(--space-6);
   display: flex;
@@ -49,6 +55,76 @@
 @media (min-width: 640px) {
   .login__card {
     padding: var(--space-8);
+  }
+}
+
+@media (min-width: 1024px) {
+  .login__main {
+    max-width: 1040px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-content: center;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .login__hero {
+    padding: var(--space-12);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+    background: var(--color-accent-soft);
+    border: 1px solid var(--color-accent-highlight);
+    border-right: 0;
+    border-radius: var(--radius-xl) 0 0 var(--radius-xl);
+  }
+
+  .login__brand {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .login__pitch {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+
+    & p {
+      margin: 0;
+    }
+
+    /* Không để chữ "quên." rớt một mình xuống dòng. */
+    & .text-display {
+      text-wrap: balance;
+    }
+  }
+
+  .login__eyebrow {
+    color: var(--color-accent-active);
+  }
+
+  .login__pitch-body {
+    color: var(--color-text-secondary);
+  }
+
+  .login__trust {
+    margin: auto 0 0;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+    color: var(--color-text-secondary);
+
+    & svg {
+      flex: 0 0 auto;
+      color: var(--color-success);
+    }
+  }
+
+  /* Hai cột ghép thành một khung: card bỏ bo góc phía hero. */
+  .login__card {
+    padding: var(--space-12);
+    justify-content: center;
+    border-radius: 0 var(--radius-xl) var(--radius-xl) 0;
   }
 }
 
