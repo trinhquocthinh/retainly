@@ -37,9 +37,15 @@ type CredentialsFormProps = {
   mode: AuthMode;
   submitting: boolean;
   onSubmit: (credentials: Credentials) => void;
+  onForgotPassword: () => void;
 };
 
-export function CredentialsForm({ mode, submitting, onSubmit }: CredentialsFormProps) {
+export function CredentialsForm({
+  mode,
+  submitting,
+  onSubmit,
+  onForgotPassword,
+}: CredentialsFormProps) {
   const registering = mode === 'register';
 
   const form = useForm({
@@ -102,6 +108,17 @@ export function CredentialsForm({ mode, submitting, onSubmit }: CredentialsFormP
             <Field
               label="Mật khẩu"
               error={visibleError(field.state.meta, registering ? 'submit' : 'blur')}
+              aside={
+                registering ? undefined : (
+                  <button
+                    type="button"
+                    className="login-form__forgot text-small"
+                    onClick={onForgotPassword}
+                  >
+                    Quên mật khẩu?
+                  </button>
+                )
+              }
             >
               {(props) => (
                 <PasswordInput

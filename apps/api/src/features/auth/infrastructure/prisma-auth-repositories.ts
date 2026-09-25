@@ -57,6 +57,14 @@ export const prismaLocalUserRepository: LocalUserRepository = {
       throw error;
     }
   },
+
+  async replacePassword(userId, passwordHash) {
+    // Chung một transaction: không có lúc nào mật khẩu đã đổi mà phiên cũ vẫn sống.
+    await prisma.$transaction([
+      prisma.user.update({ where: { id: userId }, data: { passwordHash } }),
+      prisma.session.deleteMany({ where: { userId } }),
+    ]);
+  },
 };
 
 export const prismaSessionRepository: SessionRepository = {

@@ -126,6 +126,24 @@ describe('E4-S1-T6 — đăng nhập email/mật khẩu', () => {
     expect(screen.getByRole('button', { name: 'Đăng nhập' })).toBeEnabled();
   });
 
+  it('TC-075: "Quên mật khẩu?" hướng dẫn liên hệ quản trị viên, không gọi API', async () => {
+    const fetchMock = stubApi();
+    const user = renderLogin();
+    await screen.findByRole('button', { name: 'Đăng nhập' });
+    const callsBefore = fetchMock.mock.calls.length;
+
+    await user.click(screen.getByRole('button', { name: 'Quên mật khẩu?' }));
+
+    const alert = screen.getByRole('alert');
+    expect(alert).toHaveTextContent('Quên mật khẩu');
+    expect(alert).toHaveTextContent('Liên hệ quản trị viên Retainly để được cấp mật khẩu tạm');
+    expect(fetchMock).toHaveBeenCalledTimes(callsBefore);
+
+    await user.click(screen.getByRole('tab', { name: 'Đăng ký' }));
+    expect(screen.queryByRole('alert')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Quên mật khẩu?' })).toBeNull();
+  });
+
   it('đã có phiên thì vào thẳng trang chủ', async () => {
     stubApi({ 'GET /api/session': { status: 200, body: { session: SESSION } } });
     renderLogin();

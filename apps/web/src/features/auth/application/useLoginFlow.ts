@@ -2,7 +2,12 @@ import { useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router';
 
-import { alertFromError, type AuthAlert, type AuthMode } from '../domain/authAlert';
+import {
+  alertFromError,
+  FORGOT_PASSWORD_ALERT,
+  type AuthAlert,
+  type AuthMode,
+} from '../domain/authAlert';
 import type { Credentials } from '../domain/session';
 import { forgetCachedSession } from './useSession';
 
@@ -83,6 +88,7 @@ export function useLoginFlow(deps: LoginPorts, initialAlert: AuthAlert | null) {
       setConnectingSso(true);
     },
     cancelSso: () => setConnectingSso(false),
+    showForgotPassword: () => setAlert(FORGOT_PASSWORD_ALERT),
     submitCredentials: (credentials: Credentials) => submit.mutate({ mode, credentials }),
   };
 }

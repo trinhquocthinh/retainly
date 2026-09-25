@@ -64,8 +64,13 @@ export function userCounterAt(total: number): UserCounter & { total: number } {
 
 type LocalUserRow = { id: string; email: string; passwordHash: string; displayName: string };
 
-/** User nội bộ trong bộ nhớ, id `local-1`, `local-2`, ... theo thứ tự tạo. */
-export function inMemoryLocalUsers(): LocalUserRepository & { rows: LocalUserRow[] } {
+/**
+ * User nội bộ trong bộ nhớ, id `local-1`, `local-2`, ... theo thứ tự tạo. Truyền
+ * `sessions` vào thì `replacePassword` huỷ luôn phiên như transaction thật.
+ */
+export function inMemoryLocalUsers(sessions?: {
+  rows: Map<string, SessionRecord>;
+}): LocalUserRepository & { rows: LocalUserRow[] } {
   const rows: LocalUserRow[] = [];
 
   return {
@@ -79,6 +84,14 @@ export function inMemoryLocalUsers(): LocalUserRepository & { rows: LocalUserRow
       const row = { id: `local-${rows.length + 1}`, ...user };
       rows.push(row);
       return { id: row.id };
+    },
+    async replacePassword(userId, passwordHash) {
+      const row = rows.find((user) => user.id === userId);
+      if (row !== undefined) row.passwordHash = passwordHash;
+
+      for (const [tokenHash, session] of sessions?.rows ?? []) {
+        if (session.userId === userId) sessions?.rows.delete(tokenHash);
+      }
     },
   };
 }

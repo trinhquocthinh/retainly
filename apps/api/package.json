@@ -10,7 +10,8 @@
     "prisma:push": "prisma db push",
     "prisma:studio": "prisma studio",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test:integration": "vitest run --config vitest.integration.config.mts"
+    "test:integration": "vitest run --config vitest.integration.config.mts",
+    "reset-password": "tsx --env-file=.env src/features/auth/cli/reset-password.ts"
   },
   "devDependencies": {
     "@types/node": "^24",

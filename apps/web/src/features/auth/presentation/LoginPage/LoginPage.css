@@ -168,6 +168,20 @@
   }
 }
 
+.login-form__forgot {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-weight: 500;
+  color: var(--color-accent-active);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--color-accent-strong);
+    text-decoration: underline;
+  }
+}
+
 /* Ô chỉ có ở tab Đăng ký hiện ra nhẹ nhàng thay vì bật phắt. */
 .login-form__register-only {
   animation: login-field-in 250ms cubic-bezier(0.16, 1, 0.3, 1);

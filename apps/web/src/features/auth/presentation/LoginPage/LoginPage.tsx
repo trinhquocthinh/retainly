@@ -81,6 +81,7 @@ export function LoginPage() {
                 mode={flow.mode}
                 submitting={flow.submitting}
                 onSubmit={flow.submitCredentials}
+                onForgotPassword={flow.showForgotPassword}
               />
 
               <p className="login__switch text-small">

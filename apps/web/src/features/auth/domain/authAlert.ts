@@ -21,6 +21,14 @@ const SSO_FAILED_ALERT: AuthAlert = {
   message: 'Không hoàn tất được xác thực với Authentik. Vui lòng thử lại.',
 };
 
+/** BR-027: không có tự khôi phục qua Email, chỉ quản trị viên đặt lại được. */
+export const FORGOT_PASSWORD_ALERT: AuthAlert = {
+  tone: 'warning',
+  title: 'Quên mật khẩu',
+  message:
+    'Liên hệ quản trị viên Retainly để được cấp mật khẩu tạm. Tài khoản đăng nhập bằng Authentik SSO sẽ được gửi đường dẫn khôi phục.',
+};
+
 /** Đọc `?error=` do callback SSO của API gắn khi chuyển hướng về /login. */
 export function alertFromSsoRedirect(reason: string | null): AuthAlert | null {
   if (reason === 'user_limit') return USER_LIMIT_ALERT;

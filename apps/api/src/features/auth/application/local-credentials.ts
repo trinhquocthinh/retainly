@@ -20,6 +20,8 @@ export type LocalUserRepository = {
   createLocal(user: { email: string; passwordHash: string; displayName: string }): Promise<{
     id: string;
   }>;
+  /** Đổi hash và huỷ mọi phiên của user trong cùng một transaction (BR-027). */
+  replacePassword(userId: string, passwordHash: string): Promise<void>;
 };
 
 type LocalCredentialsDeps = {
