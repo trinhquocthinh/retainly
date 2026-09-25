@@ -46,10 +46,13 @@ type ChangePasswordBody = { currentPassword: string; newPassword: string };
  */
 export const CREDENTIALS_RATE_LIMIT = { max: 10, timeWindow: 15 * 60 * 1000 };
 
+// additionalProperties: false — Ajv của Fastify (removeAdditional) gỡ trường lạ
+// khỏi body trước khi tới route, nên body không thể mang theo userId hay token.
 const credentialsSchema = {
   body: {
     type: 'object',
     required: ['email', 'password'],
+    additionalProperties: false,
     properties: {
       email: { type: 'string', format: 'email', maxLength: 254 },
       // Không đặt minLength: mật khẩu ngắn phải ra ERR_WEAK_PASSWORD, không phải
@@ -88,6 +91,7 @@ const changePasswordSchema = {
   body: {
     type: 'object',
     required: ['currentPassword', 'newPassword'],
+    additionalProperties: false,
     properties: {
       currentPassword: { type: 'string', maxLength: 1024 },
       newPassword: { type: 'string', maxLength: 1024 },
@@ -211,11 +215,12 @@ export function registerAuthRoutes(app: FastifyInstance, deps: AuthRoutesDeps): 
       async (request, reply) => {
         const { userId } = requireAuth(request);
         await changePassword(deps, {
+          ...request.body,
+          // Danh tính đứng sau body: chỉ lấy từ phiên, không bao giờ từ client.
           userId,
           // Đã qua requireAuth thì cookie chắc chắn có; chuỗi rỗng chỉ khiến
           // không phiên nào được giữ — hỏng theo hướng an toàn.
           sessionToken: request.cookies[SESSION_COOKIE] ?? '',
-          ...request.body,
         });
         return reply.status(204).send();
       },

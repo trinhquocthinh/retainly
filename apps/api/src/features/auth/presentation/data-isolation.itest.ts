@@ -407,6 +407,23 @@ describe('E4-S1-T7 — TC-022 cô lập dữ liệu giữa các tài khoản', (
     expect(intruder.json()).toEqual({ extraCards: [] });
   });
 
+  it('E11-S1-T5: B tạo thẻ kèm userId của A trong body — thẻ thuộc B, dữ liệu A giữ nguyên', async () => {
+    const before = await snapshotOwnerRows();
+
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/cards',
+      cookies: intruderCookies,
+      payload: { userId: TEST_USER_ID, front: 'Thẻ B muốn cài vào A', back: 'Đáp án' },
+    });
+
+    expect(res.statusCode).toBe(201);
+    await expect(
+      testPrisma.card.findUniqueOrThrow({ where: { id: res.json().id }, select: { userId: true } }),
+    ).resolves.toEqual({ userId: OTHER_USER_ID });
+    expect(await snapshotOwnerRows()).toEqual(before);
+  });
+
   it('danh sách topic của B không chứa topic của A', async () => {
     const res = await app.inject({ method: 'GET', url: '/api/topics', cookies: intruderCookies });
 

@@ -135,6 +135,7 @@ export function registerCardsRoutes(app: FastifyInstance, deps: CardsRouteDeps):
         body: {
           type: 'object',
           required: ['front', 'back'],
+          additionalProperties: false,
           properties: {
             // format uuid chặn ngay ở tầng schema: cột source_id là UUID, chuỗi
             // sai dạng mà xuống tới Postgres sẽ thành lỗi 500 thay vì 400.
@@ -148,7 +149,8 @@ export function registerCardsRoutes(app: FastifyInstance, deps: CardsRouteDeps):
       },
     },
     async (request, reply) => {
-      const card = await createCard(deps, { userId: requireAuth(request).userId, ...request.body });
+      // userId đứng sau body: chủ thẻ luôn là người đang đăng nhập (BR-008).
+      const card = await createCard(deps, { ...request.body, userId: requireAuth(request).userId });
       return reply.status(201).send(card);
     },
   );
