@@ -71,6 +71,7 @@ describe('prismaSessionRepository', () => {
       userId: user.id,
       expiresAt: EXPIRES_AT,
       displayName: IDENTITY.displayName,
+      authMethod: 'sso',
     });
 
     await prismaSessionRepository.deleteByTokenHash('hash-1');

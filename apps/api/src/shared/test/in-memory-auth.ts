@@ -19,12 +19,17 @@ export function inMemorySessions(): SessionRepository & { rows: Map<string, Sess
     async create({ tokenHash, ...session }) {
       rows.set(tokenHash, session);
     },
-    // Không giữ bảng user nên tên hiển thị suy từ userId — đủ để test thấy nó đi qua.
+    // Không giữ bảng user nên tên hiển thị và cách đăng nhập suy từ userId
+    // (`local-*` do inMemoryLocalUsers tạo) — đủ để test thấy chúng đi qua.
     async findByTokenHash(tokenHash) {
       const session = rows.get(tokenHash);
       return session === undefined
         ? null
-        : { ...session, displayName: `Người dùng ${session.userId}` };
+        : {
+            ...session,
+            displayName: `Người dùng ${session.userId}`,
+            authMethod: session.userId.startsWith('local-') ? 'local' : 'sso',
+          };
     },
     async deleteByTokenHash(tokenHash) {
       rows.delete(tokenHash);
@@ -66,7 +71,8 @@ type LocalUserRow = { id: string; email: string; passwordHash: string; displayNa
 
 /**
  * User nội bộ trong bộ nhớ, id `local-1`, `local-2`, ... theo thứ tự tạo. Truyền
- * `sessions` vào thì `replacePassword` huỷ luôn phiên như transaction thật.
+ * `sessions` vào thì `replacePassword` huỷ luôn phiên (trừ phiên được giữ) như
+ * transaction thật.
  */
 export function inMemoryLocalUsers(sessions?: {
   rows: Map<string, SessionRecord>;
@@ -79,18 +85,24 @@ export function inMemoryLocalUsers(sessions?: {
       const row = rows.find((user) => user.email === email);
       return row === undefined ? null : { id: row.id, passwordHash: row.passwordHash };
     },
+    async findById(id) {
+      const row = rows.find((user) => user.id === id);
+      return row === undefined ? null : { id: row.id, passwordHash: row.passwordHash };
+    },
     async createLocal(user) {
       if (rows.some((row) => row.email === user.email)) throw new AppError('ERR_EMAIL_TAKEN');
       const row = { id: `local-${rows.length + 1}`, ...user };
       rows.push(row);
       return { id: row.id };
     },
-    async replacePassword(userId, passwordHash) {
+    async replacePassword(userId, passwordHash, options) {
       const row = rows.find((user) => user.id === userId);
       if (row !== undefined) row.passwordHash = passwordHash;
 
       for (const [tokenHash, session] of sessions?.rows ?? []) {
-        if (session.userId === userId) sessions?.rows.delete(tokenHash);
+        if (session.userId === userId && tokenHash !== options?.keepSessionTokenHash) {
+          sessions?.rows.delete(tokenHash);
+        }
       }
     },
   };

@@ -10,6 +10,7 @@ import {
   SessionRecord,
   type SessionRepository,
 } from '../application/sessions';
+import { changePassword } from '../application/change-password';
 import {
   signInWithSso,
   type SsoClient,
@@ -32,10 +33,11 @@ const SSO_COOKIE_PATH = '/api/auth/sso';
 const SSO_COOKIE_MAX_AGE_SECONDS = 10 * 60;
 
 type CredentialsBody = { email: string; password: string };
+type ChangePasswordBody = { currentPassword: string; newPassword: string };
 
 /**
  * Chống dò mật khẩu: mỗi IP được 10 request / 15 phút cho từng route đăng nhập,
- * đăng ký (hai bộ đếm riêng). Đếm mọi request chứ không chỉ lần sai. Cố ý không
+ * đăng ký, đổi mật khẩu (ba bộ đếm riêng). Đếm mọi request chứ không chỉ lần sai. Cố ý không
  * khoá theo email: kẻ xấu sẽ gõ sai 10 lần để khoá tài khoản của nạn nhân.
  */
 export const CREDENTIALS_RATE_LIMIT = { max: 10, timeWindow: 15 * 60 * 1000 };
@@ -49,6 +51,18 @@ const credentialsSchema = {
       // Không đặt minLength: mật khẩu ngắn phải ra ERR_WEAK_PASSWORD, không phải
       // ERR_BAD_REQUEST. maxLength chặn chuỗi khổng lồ bắt Argon2 băm vô ích.
       password: { type: 'string', maxLength: 1024 },
+    },
+  },
+} as const;
+
+// maxLength cùng lý do như credentialsSchema; luật mạnh do use case kiểm.
+const changePasswordSchema = {
+  body: {
+    type: 'object',
+    required: ['currentPassword', 'newPassword'],
+    properties: {
+      currentPassword: { type: 'string', maxLength: 1024 },
+      newPassword: { type: 'string', maxLength: 1024 },
     },
   },
 } as const;
@@ -163,11 +177,35 @@ export function registerAuthRoutes(app: FastifyInstance, deps: AuthRoutesDeps): 
         return reply.status(200).send({ session: toSessionDto(signedIn.session) });
       },
     );
+
+    // BR-027: sai mật khẩu hiện tại trả ERR_INVALID_CREDENTIALS (401) như đăng
+    // nhập — web phân biệt với hết phiên (ERR_UNAUTHORIZED) theo mã lỗi.
+    scope.post<{ Body: ChangePasswordBody }>(
+      '/api/auth/password',
+      { schema: changePasswordSchema, config: { rateLimit: CREDENTIALS_RATE_LIMIT } },
+      async (request, reply) => {
+        const { userId } = requireAuth(request);
+        await changePassword(deps, {
+          userId,
+          // Đã qua requireAuth thì cookie chắc chắn có; chuỗi rỗng chỉ khiến
+          // không phiên nào được giữ — hỏng theo hướng an toàn.
+          sessionToken: request.cookies[SESSION_COOKIE] ?? '',
+          ...request.body,
+        });
+        return reply.status(204).send();
+      },
+    );
   });
 
   app.get('/api/session', async (request) => {
     const auth = requireAuth(request);
-    return { session: { ...toSessionDto(auth), displayName: auth.displayName } };
+    return {
+      session: {
+        ...toSessionDto(auth),
+        displayName: auth.displayName,
+        authMethod: auth.authMethod,
+      },
+    };
   });
 
   app.post('/api/auth/logout', async (request, reply) => {

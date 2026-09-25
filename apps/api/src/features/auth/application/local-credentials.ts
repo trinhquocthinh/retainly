@@ -2,9 +2,9 @@ import { AppError } from '../../../shared/errors';
 import {
   displayNameFromEmail,
   DUMMY_PASSWORD_HASH,
-  isStrongPassword,
   normalizeEmail,
 } from '../domain/local-credentials';
+import { isStrongPassword } from '../domain/password-policy';
 import { startSession, type SessionRecord, type SessionRepository } from './sessions';
 import { assertUserSlotAvailable, UserCounter } from './user-limit';
 
@@ -20,8 +20,18 @@ export type LocalUserRepository = {
   createLocal(user: { email: string; passwordHash: string; displayName: string }): Promise<{
     id: string;
   }>;
-  /** Đổi hash và huỷ mọi phiên của user trong cùng một transaction (BR-027). */
-  replacePassword(userId: string, passwordHash: string): Promise<void>;
+  /** `passwordHash` là `null` với user SSO (mật khẩu nằm ở Authentik). */
+  findById(userId: string): Promise<{ id: string; passwordHash: string | null } | null>;
+  /**
+   * Đổi hash và huỷ phiên của user trong cùng một transaction (BR-027). Có
+   * `keepSessionTokenHash` thì chừa lại đúng phiên đó — người tự đổi mật khẩu
+   * không bị đá khỏi chính thiết bị đang dùng.
+   */
+  replacePassword(
+    userId: string,
+    passwordHash: string,
+    options?: { keepSessionTokenHash: string },
+  ): Promise<void>;
 };
 
 type LocalCredentialsDeps = {

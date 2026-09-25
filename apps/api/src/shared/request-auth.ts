@@ -6,6 +6,7 @@ type RequestAuth = {
   userId: string;
   expiresAt: Date;
   displayName: string;
+  authMethod: 'local' | 'sso';
 };
 
 declare module 'fastify' {

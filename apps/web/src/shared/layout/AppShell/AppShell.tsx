@@ -25,6 +25,7 @@ const TITLE_BY_PATH: Record<string, string> = {
   '/cards': 'Thư viện thẻ',
   '/cards/new': 'Thẻ mới',
   '/stats': 'Thống kê',
+  '/account': 'Tài khoản',
 };
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -68,9 +69,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           {TITLE_BY_PATH[pathname] ?? 'Retainly'}
         </span>
 
-        <button type="button" className="shell__avatar" aria-label="Tài khoản của bạn">
+        <Link className="shell__avatar" to="/account" aria-label="Tài khoản của bạn">
           <IconUser />
-        </button>
+        </Link>
       </header>
 
       <div
@@ -125,7 +126,13 @@ export function AppShell({ children }: { children: ReactNode }) {
               <IconUser />
             </span>
             {/* Shell chỉ render sau RequireAuth nên phiên luôn có sẵn trong cache. */}
-            <span className="shell__user-name text-small">{session.data?.displayName}</span>
+            <Link
+              className="shell__user-name text-small"
+              to="/account"
+              aria-label={`Tài khoản: ${session.data?.displayName ?? ''}`}
+            >
+              {session.data?.displayName}
+            </Link>
             <button
               type="button"
               className="shell__logout text-small"

@@ -9,7 +9,13 @@ export default defineConfig({
     proxy: { '/api': 'http://127.0.0.1:3100' },
   },
   resolve: {
-    alias: { '@src': fileURLToPath(new URL('./src', import.meta.url)) },
+    alias: {
+      '@src': fileURLToPath(new URL('./src', import.meta.url)),
+      // Luật mật khẩu SPEC-011 chỉ có một bản, nằm bên API (nợ #14).
+      '@retainly/password-policy': fileURLToPath(
+        new URL('../api/src/features/auth/domain/password-policy.ts', import.meta.url),
+      ),
+    },
   },
   test: {
     name: 'web',

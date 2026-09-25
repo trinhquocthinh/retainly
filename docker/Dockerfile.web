@@ -9,6 +9,7 @@ COPY apps/web/package.json ./apps/web/
 RUN yarn workspaces focus web
 COPY tsconfig.json ./
 COPY apps/web ./apps/web
+COPY apps/api/src/features/auth/domain/password-policy.ts ./apps/api/src/features/auth/domain/
 RUN yarn workspace web build
 
 FROM nginxinc/nginx-unprivileged:alpine AS runtime

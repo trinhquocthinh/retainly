@@ -58,11 +58,19 @@ export const prismaLocalUserRepository: LocalUserRepository = {
     }
   },
 
-  async replacePassword(userId, passwordHash) {
+  async findById(id) {
+    return prisma.user.findUnique({ where: { id }, select: { id: true, passwordHash: true } });
+  },
+
+  async replacePassword(userId, passwordHash, options) {
+    const keep = options?.keepSessionTokenHash;
+
     // Chung một transaction: không có lúc nào mật khẩu đã đổi mà phiên cũ vẫn sống.
     await prisma.$transaction([
       prisma.user.update({ where: { id: userId }, data: { passwordHash } }),
-      prisma.session.deleteMany({ where: { userId } }),
+      prisma.session.deleteMany({
+        where: keep === undefined ? { userId } : { userId, tokenHash: { not: keep } },
+      }),
     ]);
   },
 };
@@ -76,11 +84,21 @@ export const prismaSessionRepository: SessionRepository = {
     // Lấy luôn tên hiển thị trong cùng một query: hook phiên chạy ở mọi request.
     const row = await prisma.session.findUnique({
       where: { tokenHash },
-      select: { userId: true, expiresAt: true, user: { select: { displayName: true } } },
+      select: {
+        userId: true,
+        expiresAt: true,
+        user: { select: { displayName: true, externalAuthId: true } },
+      },
     });
     if (row === null) return null;
 
-    return { userId: row.userId, expiresAt: row.expiresAt, displayName: row.user.displayName };
+    return {
+      userId: row.userId,
+      expiresAt: row.expiresAt,
+      displayName: row.user.displayName,
+      // Ràng buộc users_exactly_one_auth_method_chk: có externalAuthId thì là SSO, không thì nội bộ.
+      authMethod: row.user.externalAuthId === null ? 'local' : 'sso',
+    };
   },
 
   async deleteByTokenHash(tokenHash) {

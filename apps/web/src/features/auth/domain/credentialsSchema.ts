@@ -1,7 +1,7 @@
+import { isStrongPassword } from '@retainly/password-policy';
 import { z } from 'zod';
 
 import type { AuthMode } from './authAlert';
-import { isStrongPassword } from './passwordRules';
 
 /** Giá trị của form; `confirmPassword` chỉ dùng ở tab Đăng ký và không gửi lên API. */
 export type AuthFormValues = { email: string; password: string; confirmPassword: string };

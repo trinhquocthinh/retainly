@@ -1,6 +1,6 @@
 import { api } from '@src/shared/api/client';
 
-import type { Credentials, Session } from '../domain/session';
+import type { Credentials, PasswordChange, Session } from '../domain/session';
 
 type SessionResponse = { session: Session };
 
@@ -20,6 +20,11 @@ export async function signIn(credentials: Credentials): Promise<void> {
 /** POST /api/auth/register — SPEC-011, BR-020. */
 export async function register(credentials: Credentials): Promise<void> {
   await api.post<unknown>('/auth/register', credentials);
+}
+
+/** POST /api/auth/password — BR-027; 204, máy chủ giữ phiên này và huỷ phiên khác. */
+export function changePassword(change: PasswordChange): Promise<void> {
+  return api.post<void>('/auth/password', change);
 }
 
 /** POST /api/auth/logout — 204, xoá phiên phía máy chủ. */

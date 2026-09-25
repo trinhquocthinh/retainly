@@ -64,6 +64,20 @@ describe('client gọi API', () => {
     expect(onUnauthorized).toHaveBeenCalledTimes(1);
   });
 
+  it('E11-S1-T2: 401 sai mật khẩu không phải hết phiên — không gọi chỗ xử lý 401', async () => {
+    mockFetch(401, {
+      error: { code: 'ERR_INVALID_CREDENTIALS', message: 'Email hoặc mật khẩu không đúng' },
+    });
+    const onUnauthorized = vi.fn();
+    setUnauthorizedHandler(onUnauthorized);
+
+    await expect(api.post('/auth/password', {})).rejects.toMatchObject({
+      code: 'ERR_INVALID_CREDENTIALS',
+      status: 401,
+    });
+    expect(onUnauthorized).not.toHaveBeenCalled();
+  });
+
   it('502/503/504 đáng thử lại — máy chủ chết sau proxy, không phải lỗi nghiệp vụ', async () => {
     for (const status of [502, 503, 504]) {
       mockFetch(status, null);

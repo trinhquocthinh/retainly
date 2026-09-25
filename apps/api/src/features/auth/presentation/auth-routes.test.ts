@@ -34,7 +34,7 @@ function setup(
   registerAuthRoutes(app, {
     sso,
     users,
-    localUsers: inMemoryLocalUsers(),
+    localUsers: inMemoryLocalUsers(sessions),
     hasher: fakePasswordHasher(),
     sessions,
     userCounter: userCounterAt(options.userCount ?? 0),
@@ -209,6 +209,7 @@ describe('E4-S1-T3 — phiên và đăng xuất', () => {
         userId: 'user-1',
         expiresAt: '2026-10-01T10:00:00.000Z',
         displayName: 'Người dùng user-1',
+        authMethod: 'sso',
       },
     });
 
@@ -334,6 +335,155 @@ describe('E4-S1-T4 — tài khoản nội bộ', () => {
     expect(res.statusCode).toBe(403);
     expect(res.json().error.code).toBe('ERR_USER_LIMIT_REACHED');
     expect(cookieNamed(res, 'retainly_session')).toBeUndefined();
+
+    await app.close();
+  });
+});
+
+describe('E11-S1-T2 — đổi mật khẩu', () => {
+  const CREDENTIALS = { email: 'thinh@example.com', password: 'Mat-khau-du-dai-1' };
+  const NEW_PASSWORD = 'Mat-khau-moi-3';
+
+  /** Đăng ký rồi đăng nhập thêm lần nữa: hai thiết bị, trả cookie của từng cái. */
+  async function twoDevices(app: App) {
+    const register = await app.inject({
+      method: 'POST',
+      url: '/api/auth/register',
+      payload: CREDENTIALS,
+    });
+    const login = await app.inject({
+      method: 'POST',
+      url: '/api/auth/login',
+      payload: CREDENTIALS,
+    });
+    const cookie = (res: typeof login) => ({
+      retainly_session: cookieNamed(res, 'retainly_session')?.value ?? '',
+    });
+    return { current: cookie(register), other: cookie(login) };
+  }
+
+  function changePassword(app: App, cookies: Record<string, string>, payload: object) {
+    return app.inject({ method: 'POST', url: '/api/auth/password', cookies, payload });
+  }
+
+  function sessionStatus(app: App, cookies: Record<string, string>) {
+    return app
+      .inject({ method: 'GET', url: '/api/session', cookies })
+      .then((res) => res.statusCode);
+  }
+
+  it('TC-076: đúng mật khẩu hiện tại trả 204; thiết bị đang dùng còn phiên, thiết bị kia bị đăng xuất', async () => {
+    const { app } = setup();
+    const { current, other } = await twoDevices(app);
+
+    const res = await changePassword(app, current, {
+      currentPassword: CREDENTIALS.password,
+      newPassword: NEW_PASSWORD,
+    });
+
+    expect(res.statusCode).toBe(204);
+    await expect(sessionStatus(app, current)).resolves.toBe(200);
+    await expect(sessionStatus(app, other)).resolves.toBe(401);
+
+    await app.close();
+  });
+
+  it('TC-076: sai mật khẩu hiện tại trả 401 ERR_INVALID_CREDENTIALS, phiên vẫn còn', async () => {
+    const { app } = setup();
+    const { current, other } = await twoDevices(app);
+
+    const res = await changePassword(app, current, {
+      currentPassword: 'Sai-mat-khau-9',
+      newPassword: NEW_PASSWORD,
+    });
+
+    expect(res.statusCode).toBe(401);
+    expect(res.json().error.code).toBe('ERR_INVALID_CREDENTIALS');
+    await expect(sessionStatus(app, current)).resolves.toBe(200);
+    await expect(sessionStatus(app, other)).resolves.toBe(200);
+
+    await app.close();
+  });
+
+  it('TC-076: mật khẩu mới yếu trả 400 ERR_WEAK_PASSWORD', async () => {
+    const { app } = setup();
+    const { current } = await twoDevices(app);
+
+    const res = await changePassword(app, current, {
+      currentPassword: CREDENTIALS.password,
+      newPassword: 'mat-khau-yeu',
+    });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.json().error.code).toBe('ERR_WEAK_PASSWORD');
+
+    await app.close();
+  });
+
+  it('chưa đăng nhập trả 401 ERR_UNAUTHORIZED', async () => {
+    const { app } = setup();
+
+    const res = await changePassword(
+      app,
+      {},
+      {
+        currentPassword: CREDENTIALS.password,
+        newPassword: NEW_PASSWORD,
+      },
+    );
+
+    expect(res.statusCode).toBe(401);
+    expect(res.json().error.code).toBe('ERR_UNAUTHORIZED');
+
+    await app.close();
+  });
+
+  it('TC-076: tài khoản SSO không đổi mật khẩu tại Retainly — trả ERR_INVALID_CREDENTIALS', async () => {
+    const { app } = setup();
+    const callback = await signIn(app);
+    const cookies = { retainly_session: cookieNamed(callback, 'retainly_session')?.value ?? '' };
+
+    const res = await changePassword(app, cookies, {
+      currentPassword: 'Bat-ky-gi-1',
+      newPassword: NEW_PASSWORD,
+    });
+
+    expect(res.statusCode).toBe(401);
+    expect(res.json().error.code).toBe('ERR_INVALID_CREDENTIALS');
+
+    await app.close();
+  });
+
+  it.each([
+    ['thiếu mật khẩu hiện tại', { newPassword: NEW_PASSWORD }],
+    ['mật khẩu mới quá 1024 ký tự', { currentPassword: 'x', newPassword: 'a'.repeat(1025) }],
+  ])('%s trả 400 ERR_BAD_REQUEST', async (_name, payload) => {
+    const { app } = setup();
+    const { current } = await twoDevices(app);
+
+    const res = await changePassword(app, current, payload);
+
+    expect(res.statusCode).toBe(400);
+    expect(res.json().error.code).toBe('ERR_BAD_REQUEST');
+
+    await app.close();
+  });
+
+  it('TC-076: quá 10 lần trong 15 phút trả 429, bộ đếm riêng với đăng nhập', async () => {
+    const { app } = setup();
+    const { current } = await twoDevices(app);
+    const wrong = { currentPassword: 'Sai-mat-khau-9', newPassword: NEW_PASSWORD };
+
+    for (let i = 0; i < CREDENTIALS_RATE_LIMIT.max; i++) {
+      expect((await changePassword(app, current, wrong)).statusCode).toBe(401);
+    }
+
+    expect((await changePassword(app, current, wrong)).statusCode).toBe(429);
+    await expect(
+      app
+        .inject({ method: 'POST', url: '/api/auth/login', payload: CREDENTIALS })
+        .then((res) => res.statusCode),
+    ).resolves.toBe(200);
 
     await app.close();
   });

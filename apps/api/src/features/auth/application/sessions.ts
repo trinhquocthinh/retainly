@@ -5,8 +5,14 @@ export type SessionRecord = {
   expiresAt: Date;
 };
 
-/** Phiên đang dùng, kèm tên hiển thị của chủ phiên để UI chào đúng người. */
-export type ActiveSession = SessionRecord & { displayName: string };
+/** Cách User xác thực: mật khẩu tại Retainly hay Authentik SSO (BR-022, không đổi được). */
+type AuthMethod = 'local' | 'sso';
+
+/**
+ * Phiên đang dùng, kèm tên hiển thị của chủ phiên để UI chào đúng người và
+ * cách đăng nhập để UI biết có cho đổi mật khẩu hay không (BR-027).
+ */
+export type ActiveSession = SessionRecord & { displayName: string; authMethod: AuthMethod };
 
 export type SessionRepository = {
   create(session: SessionRecord & { tokenHash: string }): Promise<void>;

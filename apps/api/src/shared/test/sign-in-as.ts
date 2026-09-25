@@ -12,6 +12,7 @@ export function signInAs(app: FastifyInstance, userId: string = SIGNED_IN_USER_I
       userId,
       expiresAt: new Date('2099-01-01T00:00:00Z'),
       displayName: 'Người dùng test',
+      authMethod: 'sso',
     };
   });
 }

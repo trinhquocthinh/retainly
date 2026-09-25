@@ -22,6 +22,7 @@ describe('resolveSession', () => {
       userId: 'user-1',
       expiresAt,
       displayName: 'Người dùng user-1',
+      authMethod: 'sso',
     });
   });
 

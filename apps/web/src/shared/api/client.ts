@@ -78,9 +78,13 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
 
   if (response.ok) return payload as T;
 
-  if (response.status === 401) unauthorizedHandler?.();
-
   const error = (payload as { error?: { code: string; message: string } } | null)?.error;
+
+  // Sai mật khẩu (đăng nhập, đổi mật khẩu) cũng là 401 nhưng phiên vẫn còn —
+  // chỉ các 401 khác mới là hết phiên (BR-027, E11-S1-T2).
+  if (response.status === 401 && error?.code !== 'ERR_INVALID_CREDENTIALS') {
+    unauthorizedHandler?.();
+  }
 
   throw new ApiError(
     error?.code ?? 'ERR_INTERNAL',

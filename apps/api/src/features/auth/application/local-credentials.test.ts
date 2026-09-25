@@ -120,6 +120,7 @@ describe('signInLocal', () => {
       localUsers: {
         findByEmail: async () => ({ id: 'sso-1', passwordHash: null }),
         createLocal: async () => ({ id: 'never' }),
+        findById: async () => null,
         replacePassword: async () => {},
       },
     };

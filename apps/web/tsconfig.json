@@ -8,7 +8,8 @@
     "types": ["vite/client"],
     "noEmit": true,
     "paths": {
-      "@src/*": ["./src/*"]
+      "@src/*": ["./src/*"],
+      "@retainly/password-policy": ["../api/src/features/auth/domain/password-policy.ts"]
     }
   },
   "include": ["src", "vite.config.ts"]

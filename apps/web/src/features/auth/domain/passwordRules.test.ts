@@ -1,20 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { isStrongPassword, passwordStrength } from './passwordRules';
-
-describe('E4-S1-T6 — luật mật khẩu SPEC-011', () => {
-  it.each([
-    ['Abc12!xy', true],
-    ['Mậtkhẩu8!', true],
-    ['Abc12!x', false],
-    ['abc12!xy', false],
-    ['ABC12!XY', false],
-    ['Abcde!xy', false],
-    ['Abc123xy', false],
-  ])('"%s" đạt luật: %s', (password, expected) => {
-    expect(isStrongPassword(password)).toBe(expected);
-  });
-});
+import { passwordStrength } from './passwordRules';
 
 describe('E4-S1-T6 — thanh độ mạnh', () => {
   it('chưa gõ gì thì chưa đánh giá', () => {
