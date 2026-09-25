@@ -1,4 +1,4 @@
-import { startSession, type SessionRecord, type SessionRepository } from './sessions';
+import { startSession, type SessionRepository, type StartedSession } from './sessions';
 import { assertUserSlotAvailable, UserCounter } from './user-limit';
 
 /** Danh tính Authentik đã xác minh xong (chữ ký, state, nonce, PKCE). */
@@ -35,7 +35,7 @@ type SignInDeps = {
 export async function signInWithSso(
   deps: SignInDeps,
   identity: SsoIdentity,
-): Promise<{ token: string; session: SessionRecord }> {
+): Promise<StartedSession> {
   let user = await deps.users.findBySubject(identity.subject);
 
   // BR-020 chỉ chặn tạo mới: user đã có vẫn đăng nhập được khi hệ thống đầy.

@@ -8,7 +8,13 @@ import {
 } from './credentialsSchema';
 
 function messages(mode: 'login' | 'register', input: Partial<AuthFormValues>) {
-  const values = { email: 'ban@vidu.com', password: '', confirmPassword: '', ...input };
+  const values = {
+    email: 'ban@vidu.com',
+    password: '',
+    confirmPassword: '',
+    remember: false,
+    ...input,
+  };
   const result = credentialsSchema(mode).safeParse(values);
   return result.success ? [] : result.error.issues.map((issue) => issue.message);
 }

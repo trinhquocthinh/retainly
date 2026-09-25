@@ -114,7 +114,7 @@ describe('E4-S1-T3 — GET /api/auth/sso/login', () => {
 });
 
 describe('E4-S1-T3 — GET /api/auth/sso/callback', () => {
-  it('TC-021: tạo user, đặt session cookie an toàn rồi về trang chủ', async () => {
+  it('TC-021: tạo user, đặt session cookie an toàn (phiên trình duyệt) rồi về trang chủ', async () => {
     const { app, sso, users, sessions } = setup();
 
     const res = await signIn(app);
@@ -133,8 +133,9 @@ describe('E4-S1-T3 — GET /api/auth/sso/callback', () => {
       secure: true,
       sameSite: 'Lax',
       path: '/',
-      expires: new Date('2026-10-01T10:00:00Z'),
     });
+    // TC-077: SSO không có ô "Duy trì đăng nhập" — cookie mất khi đóng trình duyệt.
+    expect(cookieNamed(res, 'retainly_session')?.expires).toBeUndefined();
 
     await app.close();
   });
@@ -207,7 +208,7 @@ describe('E4-S1-T3 — phiên và đăng xuất', () => {
     expect(session.json()).toEqual({
       session: {
         userId: 'user-1',
-        expiresAt: '2026-10-01T10:00:00.000Z',
+        expiresAt: '2026-09-18T10:00:00.000Z',
         displayName: 'Người dùng user-1',
         authMethod: 'sso',
       },
@@ -238,7 +239,7 @@ describe('E4-S1-T4 — tài khoản nội bộ', () => {
 
     expect(res.statusCode).toBe(201);
     expect(res.json()).toEqual({
-      session: { userId: 'local-1', expiresAt: '2026-10-01T10:00:00.000Z' },
+      session: { userId: 'local-1', expiresAt: '2026-09-18T10:00:00.000Z' },
     });
     expect(cookieNamed(res, 'retainly_session')).toMatchObject({
       httpOnly: true,
@@ -246,6 +247,7 @@ describe('E4-S1-T4 — tài khoản nội bộ', () => {
       sameSite: 'Lax',
       path: '/',
     });
+    expect(cookieNamed(res, 'retainly_session')?.expires).toBeUndefined();
 
     await app.close();
   });
@@ -302,6 +304,47 @@ describe('E4-S1-T4 — tài khoản nội bộ', () => {
     const cookies = { retainly_session: cookieNamed(login, 'retainly_session')?.value ?? '' };
     const session = await app.inject({ method: 'GET', url: '/api/session', cookies });
     expect(session.json().session.userId).toBe('local-1');
+
+    await app.close();
+  });
+
+  it('TC-077: không tick "Duy trì đăng nhập" thì cookie không có Expires, phiên 24 giờ', async () => {
+    const { app } = setup();
+    await post(app, '/api/auth/register', CREDENTIALS);
+
+    const login = await post(app, '/api/auth/login', { ...CREDENTIALS, remember: false });
+
+    expect(login.json().session.expiresAt).toBe('2026-09-18T10:00:00.000Z');
+    expect(cookieNamed(login, 'retainly_session')?.expires).toBeUndefined();
+
+    await app.close();
+  });
+
+  it('TC-077: tick "Duy trì đăng nhập" thì cookie và phiên cùng sống 30 ngày', async () => {
+    const { app } = setup();
+    await post(app, '/api/auth/register', CREDENTIALS);
+
+    const login = await post(app, '/api/auth/login', { ...CREDENTIALS, remember: true });
+
+    expect(login.json().session.expiresAt).toBe('2026-10-17T10:00:00.000Z');
+    expect(cookieNamed(login, 'retainly_session')).toMatchObject({
+      httpOnly: true,
+      secure: true,
+      sameSite: 'Lax',
+      path: '/',
+      expires: new Date('2026-10-17T10:00:00Z'),
+    });
+
+    await app.close();
+  });
+
+  it('TC-077: `remember` không phải boolean trả 400 ERR_BAD_REQUEST', async () => {
+    const { app } = setup();
+
+    const res = await post(app, '/api/auth/login', { ...CREDENTIALS, remember: 'co' });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.json().error.code).toBe('ERR_BAD_REQUEST');
 
     await app.close();
   });

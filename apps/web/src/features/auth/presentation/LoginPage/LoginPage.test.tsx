@@ -99,6 +99,7 @@ describe('E4-S1-T6 — đăng nhập email/mật khẩu', () => {
     expect(JSON.parse(String(login?.[1]?.body))).toEqual({
       email: 'learner@retainly.app',
       password: 'mat-khau-dung',
+      remember: false,
     });
 
     await act(() => vi.advanceTimersByTimeAsync(1200));
@@ -142,6 +143,26 @@ describe('E4-S1-T6 — đăng nhập email/mật khẩu', () => {
     await user.click(screen.getByRole('tab', { name: 'Đăng ký' }));
     expect(screen.queryByRole('alert')).toBeNull();
     expect(screen.queryByRole('button', { name: 'Quên mật khẩu?' })).toBeNull();
+  });
+
+  it('TC-077: tick "Duy trì đăng nhập 30 ngày" thì gửi remember: true', async () => {
+    const fetchMock = stubApi({
+      'POST /api/auth/login': { status: 200, body: { session: SESSION } },
+    });
+    const user = renderLogin();
+    const remember = await screen.findByRole('checkbox', { name: 'Duy trì đăng nhập 30 ngày' });
+    expect(remember).not.toBeChecked();
+
+    await user.click(remember);
+    await submitCredentials(user, {
+      mode: 'login',
+      email: 'learner@retainly.app',
+      password: 'mat-khau-dung',
+    });
+
+    await screen.findByText('Xác thực thành công!');
+    const login = fetchMock.mock.calls.find(([url]) => url === '/api/auth/login');
+    expect(JSON.parse(String(login?.[1]?.body))).toMatchObject({ remember: true });
   });
 
   it('đã có phiên thì vào thẳng trang chủ', async () => {
@@ -201,6 +222,15 @@ describe('E4-S1-T6 — đăng ký tài khoản nội bộ', () => {
 
     expect(screen.queryByLabelText('Nhập lại mật khẩu')).toBeNull();
     expect(screen.queryByText('Tiêu chuẩn mật khẩu an toàn:')).toBeNull();
+  });
+
+  it('TC-077: tab Đăng ký không có ô "Duy trì đăng nhập"', async () => {
+    stubApi();
+    const user = renderLogin();
+
+    await user.click(screen.getByRole('tab', { name: 'Đăng ký' }));
+
+    expect(screen.queryByRole('checkbox')).toBeNull();
   });
 
   it('SPEC-011: mật khẩu chưa đủ điều kiện thì báo dưới ô, không gọi API', async () => {

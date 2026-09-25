@@ -5,7 +5,7 @@ import {
   normalizeEmail,
 } from '../domain/local-credentials';
 import { isStrongPassword } from '../domain/password-policy';
-import { startSession, type SessionRecord, type SessionRepository } from './sessions';
+import { startSession, type SessionRepository, type StartedSession } from './sessions';
 import { assertUserSlotAvailable, UserCounter } from './user-limit';
 
 export type PasswordHasher = {
@@ -43,13 +43,12 @@ type LocalCredentialsDeps = {
 };
 
 type Credentials = { email: string; password: string };
-type SignedIn = { token: string; session: SessionRecord };
 
 /** SPEC-011 — đăng ký tài khoản nội bộ rồi đăng nhập luôn. Giới hạn 6 user: E4-S1-T5. */
 export async function registerLocal(
   deps: LocalCredentialsDeps,
   input: Credentials,
-): Promise<SignedIn> {
+): Promise<StartedSession> {
   if (!isStrongPassword(input.password)) throw new AppError('ERR_WEAK_PASSWORD');
   // trước khi băm Argon2: hệ thống đã đầy thì khỏi tốn CPU.
   await assertUserSlotAvailable(deps);
@@ -67,11 +66,14 @@ export async function registerLocal(
   return startSession(deps, user.id);
 }
 
-/** SPEC-012 — mọi kiểu sai đều trả chung một lỗi, chống dò tài khoản. */
+/**
+ * SPEC-012 — mọi kiểu sai đều trả chung một lỗi, chống dò tài khoản. `remember`
+ * là ô "Duy trì đăng nhập 30 ngày" (US-019); không truyền thì là phiên trình duyệt.
+ */
 export async function signInLocal(
   deps: LocalCredentialsDeps,
-  input: Credentials,
-): Promise<SignedIn> {
+  input: Credentials & { remember?: boolean },
+): Promise<StartedSession> {
   const user = await deps.localUsers.findByEmail(normalizeEmail(input.email));
 
   // Luôn verify, kể cả khi không có user: bỏ qua bước băm thì phản hồi nhanh
@@ -85,5 +87,5 @@ export async function signInLocal(
     throw new AppError('ERR_INVALID_CREDENTIALS');
   }
 
-  return startSession(deps, user.id);
+  return startSession(deps, user.id, { remember: input.remember ?? false });
 }

@@ -7,7 +7,11 @@ import {
   userCounterAt,
 } from '../../../shared/test/in-memory-auth';
 import { DUMMY_PASSWORD_HASH } from '../domain/local-credentials';
-import { hashSessionToken, SESSION_TTL_MS } from '../domain/session-token';
+import {
+  hashSessionToken,
+  REMEMBERED_SESSION_TTL_MS,
+  SESSION_TTL_MS,
+} from '../domain/session-token';
 import { registerLocal, signInLocal } from './local-credentials';
 import { MAX_ACTIVE_USERS } from '../domain/user-limit';
 
@@ -93,6 +97,19 @@ describe('signInLocal', () => {
 
     expect(result.session.userId).toBe('local-1');
     expect(d.sessions.rows.size).toBe(2);
+  });
+
+  it.each([
+    ['không tick', false, SESSION_TTL_MS],
+    ['tick', true, REMEMBERED_SESSION_TTL_MS],
+  ])('TC-077: %s "Duy trì đăng nhập" thì phiên có hạn tương ứng', async (_name, remember, ttl) => {
+    const d = deps();
+    await registerLocal(d, CREDENTIALS);
+
+    const result = await signInLocal(d, { ...CREDENTIALS, remember });
+
+    expect(result.remember).toBe(remember);
+    expect(result.session.expiresAt).toEqual(new Date(NOW.getTime() + ttl));
   });
 
   it('TC-035: sai mật khẩu trả ERR_INVALID_CREDENTIALS', async () => {

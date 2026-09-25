@@ -1,7 +1,14 @@
 import { createHash, randomBytes } from 'node:crypto';
 
-/** Phiên sống cố định 14 ngày kể từ lúc đăng nhập, không gia hạn trượt. */
-export const SESSION_TTL_MS = 14 * 24 * 60 * 60 * 1000;
+/**
+ * Phiên mặc định: cookie không có `Expires` nên đóng trình duyệt là mất, và server
+ * vẫn tự huỷ sau 24 giờ phòng khi trình duyệt khôi phục cookie lúc mở lại.
+ * Không gia hạn trượt.
+ */
+export const SESSION_TTL_MS = 24 * 60 * 60 * 1000;
+
+/** Tick "Duy trì đăng nhập 30 ngày" ở màn đăng nhập (US-019): cookie và phiên cùng sống 30 ngày. */
+export const REMEMBERED_SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
 /** Token trả cho trình duyệt: 32 byte ngẫu nhiên, mã hoá base64url. */
 export function newSessionToken(): string {

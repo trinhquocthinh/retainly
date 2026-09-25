@@ -1,4 +1,9 @@
-import { hashSessionToken, newSessionToken, SESSION_TTL_MS } from '../domain/session-token';
+import {
+  hashSessionToken,
+  newSessionToken,
+  REMEMBERED_SESSION_TTL_MS,
+  SESSION_TTL_MS,
+} from '../domain/session-token';
 
 export type SessionRecord = {
   userId: string;
@@ -13,6 +18,12 @@ type AuthMethod = 'local' | 'sso';
  * cách đăng nhập để UI biết có cho đổi mật khẩu hay không (BR-027).
  */
 export type ActiveSession = SessionRecord & { displayName: string; authMethod: AuthMethod };
+
+/**
+ * Phiên vừa mở kèm token cho cookie. `remember` quyết định cookie có `Expires`
+ * hay không; DB không cần lưu cờ này vì `expiresAt` đã phản ánh lựa chọn.
+ */
+export type StartedSession = { token: string; session: SessionRecord; remember: boolean };
 
 export type SessionRepository = {
   create(session: SessionRecord & { tokenHash: string }): Promise<void>;
@@ -42,20 +53,22 @@ export async function resolveSession(
   return session;
 }
 
-/** Mở phiên 14 ngày cho user đã xác thực (SSO hay nội bộ đều đi qua đây). */
+/**
+ * Mở phiên cho user đã xác thực (SSO hay nội bộ đều đi qua đây). Chỉ đăng nhập
+ * nội bộ có ô "Duy trì đăng nhập"; đăng ký và SSO luôn là phiên trình duyệt.
+ */
 export async function startSession(
   deps: SessionDeps,
   userId: string,
-): Promise<{ token: string; session: SessionRecord }> {
+  { remember }: { remember: boolean } = { remember: false },
+): Promise<StartedSession> {
   const token = newSessionToken();
-  const session: SessionRecord = {
-    userId,
-    expiresAt: new Date(deps.now().getTime() + SESSION_TTL_MS),
-  };
+  const ttl = remember ? REMEMBERED_SESSION_TTL_MS : SESSION_TTL_MS;
+  const session: SessionRecord = { userId, expiresAt: new Date(deps.now().getTime() + ttl) };
 
   await deps.sessions.create({ tokenHash: hashSessionToken(token), ...session });
 
-  return { token, session };
+  return { token, session, remember };
 }
 
 /** Đăng xuất: huỷ phiên phía server, cookie cũ không dùng lại được nữa. */

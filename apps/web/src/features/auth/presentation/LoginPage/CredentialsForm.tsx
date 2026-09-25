@@ -10,7 +10,12 @@ import type { Credentials } from '../../domain/session';
 import { fieldBinding, visibleError } from '../formFields';
 import { PasswordCriteria, PasswordInput } from '../PasswordFields/PasswordFields';
 
-const EMPTY_VALUES: AuthFormValues = { email: '', password: '', confirmPassword: '' };
+const EMPTY_VALUES: AuthFormValues = {
+  email: '',
+  password: '',
+  confirmPassword: '',
+  remember: false,
+};
 
 type CredentialsFormProps = {
   mode: AuthMode;
@@ -32,7 +37,13 @@ export function CredentialsForm({
     // Kiểm tra mỗi lần gõ để lỗi tự biến mất khi sửa đúng; khi nào *hiện* lỗi
     // thì do `visibleError` quyết định. `confirmPassword` không bao giờ gửi đi.
     validators: { onChange: credentialsSchema(mode) },
-    onSubmit: ({ value }) => onSubmit({ email: value.email.trim(), password: value.password }),
+    onSubmit: ({ value }) =>
+      onSubmit({
+        email: value.email.trim(),
+        password: value.password,
+        // Đăng ký luôn mở phiên trình duyệt, không gửi cờ vô nghĩa lên API.
+        ...(registering ? {} : { remember: value.remember }),
+      }),
   });
 
   const submitted = useStore(form.store, (state) => state.submissionAttempts > 0);
@@ -127,7 +138,21 @@ export function CredentialsForm({
             </div>
           )}
         </form.Field>
-      ) : null}
+      ) : (
+        <form.Field name="remember">
+          {(field) => (
+            <label className="login-form__remember text-small">
+              <input
+                type="checkbox"
+                name={field.name}
+                checked={field.state.value}
+                onChange={(event) => field.handleChange(event.target.checked)}
+              />
+              Duy trì đăng nhập 30 ngày
+            </label>
+          )}
+        </form.Field>
+      )}
 
       <Button type="submit" variant="primary" disabled={submitting} aria-busy={submitting}>
         {submitting ? <span className="login-spinner" aria-hidden="true" /> : null}

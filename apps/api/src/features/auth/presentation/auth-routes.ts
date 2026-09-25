@@ -7,8 +7,9 @@ import { requireAuth } from '../../../shared/request-auth';
 import {
   endSession,
   resolveSession,
-  SessionRecord,
+  type SessionRecord,
   type SessionRepository,
+  type StartedSession,
 } from '../application/sessions';
 import { changePassword } from '../application/change-password';
 import {
@@ -33,6 +34,7 @@ const SSO_COOKIE_PATH = '/api/auth/sso';
 const SSO_COOKIE_MAX_AGE_SECONDS = 10 * 60;
 
 type CredentialsBody = { email: string; password: string };
+type LoginBody = CredentialsBody & { remember: boolean };
 type ChangePasswordBody = { currentPassword: string; newPassword: string };
 
 /**
@@ -51,6 +53,18 @@ const credentialsSchema = {
       // Không đặt minLength: mật khẩu ngắn phải ra ERR_WEAK_PASSWORD, không phải
       // ERR_BAD_REQUEST. maxLength chặn chuỗi khổng lồ bắt Argon2 băm vô ích.
       password: { type: 'string', maxLength: 1024 },
+    },
+  },
+} as const;
+
+// Đăng nhập nhận thêm ô "Duy trì đăng nhập 30 ngày" (US-019). Thiếu thì Ajv của
+// Fastify điền `false` (useDefaults) — client cũ vẫn chạy, ra phiên trình duyệt.
+const loginSchema = {
+  body: {
+    ...credentialsSchema.body,
+    properties: {
+      ...credentialsSchema.body.properties,
+      remember: { type: 'boolean', default: false },
     },
   },
 } as const;
@@ -153,14 +167,11 @@ export function registerAuthRoutes(app: FastifyInstance, deps: AuthRoutesDeps): 
       errorResponseBuilder: () => new AppError('ERR_TOO_MANY_REQUESTS'),
     });
 
-    const routeOptions = {
-      schema: credentialsSchema,
-      config: { rateLimit: CREDENTIALS_RATE_LIMIT },
-    };
+    const rateLimit = { config: { rateLimit: CREDENTIALS_RATE_LIMIT } };
 
     scope.post<{ Body: CredentialsBody }>(
       '/api/auth/register',
-      routeOptions,
+      { schema: credentialsSchema, ...rateLimit },
       async (request, reply) => {
         const signedIn = await registerLocal(deps, request.body);
         setSessionCookie(reply, signedIn, secure);
@@ -168,9 +179,9 @@ export function registerAuthRoutes(app: FastifyInstance, deps: AuthRoutesDeps): 
       },
     );
 
-    scope.post<{ Body: CredentialsBody }>(
+    scope.post<{ Body: LoginBody }>(
       '/api/auth/login',
-      routeOptions,
+      { schema: loginSchema, ...rateLimit },
       async (request, reply) => {
         const signedIn = await signInLocal(deps, request.body);
         setSessionCookie(reply, signedIn, secure);
@@ -182,7 +193,7 @@ export function registerAuthRoutes(app: FastifyInstance, deps: AuthRoutesDeps): 
     // nhập — web phân biệt với hết phiên (ERR_UNAUTHORIZED) theo mã lỗi.
     scope.post<{ Body: ChangePasswordBody }>(
       '/api/auth/password',
-      { schema: changePasswordSchema, config: { rateLimit: CREDENTIALS_RATE_LIMIT } },
+      { schema: changePasswordSchema, ...rateLimit },
       async (request, reply) => {
         const { userId } = requireAuth(request);
         await changePassword(deps, {
@@ -235,9 +246,13 @@ function readTransaction(request: FastifyRequest): SsoTransaction | null {
   return JSON.parse(unsigned.value) as SsoTransaction;
 }
 
+/**
+ * Không tick "Duy trì đăng nhập" thì cookie không có `Expires`: trình duyệt xoá
+ * khi đóng, còn `expiresAt` 24 giờ phía server chặn trường hợp nó được khôi phục.
+ */
 function setSessionCookie(
   reply: FastifyReply,
-  { token, session }: { token: string; session: SessionRecord },
+  { token, session, remember }: StartedSession,
   secure: boolean,
 ): void {
   reply.setCookie(SESSION_COOKIE, token, {
@@ -245,7 +260,7 @@ function setSessionCookie(
     secure,
     sameSite: 'lax',
     path: '/',
-    expires: session.expiresAt,
+    ...(remember ? { expires: session.expiresAt } : {}),
   });
 }
 
