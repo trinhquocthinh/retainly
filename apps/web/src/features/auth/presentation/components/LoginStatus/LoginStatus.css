@@ -1,0 +1,80 @@
+/* Màn chờ SSO và màn thành công dùng chung khung. */
+.login-status {
+  padding: var(--space-6) 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: center;
+
+  & p {
+    margin: 0;
+  }
+}
+
+.login-status__hint {
+  color: var(--color-text-secondary);
+}
+
+.login-status__icon {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.login-status__icon--sso {
+  color: var(--color-accent-active);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 3px solid var(--color-border);
+    border-top-color: var(--color-accent);
+    border-radius: 50%;
+    animation: login-status-spin 900ms linear infinite;
+  }
+}
+
+.login-status__icon--success {
+  background: var(--color-success-surface);
+  color: var(--color-success);
+}
+
+.login-status__progress {
+  width: 100%;
+  max-width: 200px;
+  height: 4px;
+  border-radius: var(--radius-sm);
+  background: var(--color-border);
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    display: block;
+    height: 100%;
+    background: var(--color-success);
+    transform-origin: left;
+    animation: login-progress 1200ms linear forwards;
+  }
+}
+
+@keyframes login-status-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes login-progress {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
+}

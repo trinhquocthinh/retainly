@@ -1,5 +1,6 @@
-import { calendarDaysBetween } from '@src/features/review/domain/memory';
 import { estimateRemainingMinutes } from '@src/features/review/domain/session';
+import { APP_LOCALE } from '@src/shared/constants/locale';
+import { calendarDaysBetween } from '@src/shared/utils/date';
 
 export type StatsRange = '30d' | 'all';
 
@@ -33,7 +34,7 @@ export function parseRange(value: string | null): StatsRange {
   return value === 'all' ? 'all' : '30d';
 }
 
-const ONE_DECIMAL = new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 1 });
+const ONE_DECIMAL = new Intl.NumberFormat(APP_LOCALE, { maximumFractionDigits: 1 });
 
 /** Tỷ lệ 0–1 thành phần trăm một chữ số thập phân: 0,148 → "14,8%", 0,2 → "20%". */
 export function formatRate(ratio: number): string {

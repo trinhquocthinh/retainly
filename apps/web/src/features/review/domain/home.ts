@@ -1,4 +1,5 @@
-import { calendarDaysBetween } from './memory';
+import { APP_LOCALE, APP_TIME_ZONE } from '@src/shared/constants/locale';
+import { calendarDaysBetween } from '@src/shared/utils/date';
 
 type TopicRef = { id: string; name: string };
 
@@ -40,13 +41,13 @@ const WEEKDAY_LABELS = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
 const HOUR = new Intl.DateTimeFormat('en-GB', {
   hour: 'numeric',
   hourCycle: 'h23',
-  timeZone: 'Asia/Ho_Chi_Minh',
+  timeZone: APP_TIME_ZONE,
 });
-const UPCOMING_DATE = new Intl.DateTimeFormat('vi-VN', {
+const UPCOMING_DATE = new Intl.DateTimeFormat(APP_LOCALE, {
   weekday: 'long',
   day: '2-digit',
   month: '2-digit',
-  timeZone: 'Asia/Ho_Chi_Minh',
+  timeZone: APP_TIME_ZONE,
 });
 
 /** `dueByTopic` gồm mọi thẻ đến hạn tới hết hôm nay, trùng `dueCount` của SPEC-003. */

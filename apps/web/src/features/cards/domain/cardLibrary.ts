@@ -1,4 +1,5 @@
-import { calendarDaysBetween } from '@src/features/review/domain/memory';
+import { calendarDaysBetween, formatLastReview } from '@src/shared/utils/date';
+import { formatDifficulty, formatStability } from '@src/shared/utils/format';
 
 import type { CardDraft } from './cardDraft';
 
@@ -117,6 +118,19 @@ export function describeDue(schedule: CardScheduleSummary, now: Date): DueStatus
   if (days < 0) return { tone: 'due', label: `Quá hạn ${-days} ngày` };
   if (days === 0) return { tone: 'due', label: 'Đến hạn hôm nay' };
   return { tone: 'upcoming', label: `Còn ${days} ngày` };
+}
+
+export type MemoryFacts = { stability: string; difficulty: string; lastReview: string };
+
+/** S, D và lần ôn gần nhất để hiển thị. Thẻ chưa ôn có S = D = 0 — chưa đo được gì nên `null`. */
+export function describeMemoryFacts(schedule: CardScheduleSummary, now: Date): MemoryFacts | null {
+  if (schedule.lastReviewedAt === null) return null;
+
+  return {
+    stability: formatStability(schedule.stability),
+    difficulty: formatDifficulty(schedule.difficulty),
+    lastReview: formatLastReview(schedule.lastReviewedAt, now),
+  };
 }
 
 /** Thẻ đục lỗ có thể không có mặt sau; khi đó mặt hỏi đã hiện đáp án điền sẵn. */

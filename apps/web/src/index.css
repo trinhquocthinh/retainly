@@ -249,6 +249,37 @@ body {
   border-radius: 999px;
 }
 
+/* Nút vuông chỉ có icon (sửa, xoá, đóng hộp thoại); `--danger` đỏ lên khi hover. */
+.icon-button {
+  width: var(--control-height);
+  height: var(--control-height);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition:
+    background var(--duration-fast),
+    border-color var(--duration-fast),
+    color var(--duration-fast);
+}
+
+.icon-button:hover {
+  background: var(--color-secondary-active-bg);
+  border-color: var(--color-secondary-hover-border);
+  color: var(--color-text);
+}
+
+.icon-button--danger:hover {
+  background: var(--color-danger-surface);
+  border-color: var(--color-danger-border);
+  color: var(--color-danger);
+}
+
 @media (min-width: 1024px) {
   .surface-panel {
     padding: var(--space-6);

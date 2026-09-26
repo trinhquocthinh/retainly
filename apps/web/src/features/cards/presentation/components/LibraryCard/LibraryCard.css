@@ -1,0 +1,99 @@
+/* Nền, viền, bo góc lấy từ .surface-panel; footer tự lo phần đệm đáy. */
+.library-card {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-bottom: 0;
+  overflow: hidden;
+  transition: box-shadow var(--duration-fast);
+}
+
+.library-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.library-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.library-card__front,
+.library-card__source,
+.library-card__memory {
+  margin: 0;
+}
+
+.library-card__front {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.library-card__source {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-text-secondary);
+}
+
+/* Footer tràn sát mép thẻ, đẩy xuống đáy để các thẻ cùng hàng thẳng nhau. */
+.library-card__footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: auto calc(-1 * var(--space-4)) 0;
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg);
+}
+
+.library-card__memory {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  color: var(--color-text-secondary);
+}
+
+.library-card__memory abbr {
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--color-text);
+}
+
+.library-card__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.library-card__reveal {
+  min-height: var(--control-height);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-right: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-accent-active);
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.library-card__reveal:hover {
+  color: var(--color-accent-strong);
+}
+
+/* Không có nút Xem đáp án thì hai nút sửa/xoá vẫn nằm bên phải. */
+.library-card__actions > .icon-button:first-child {
+  margin-left: auto;
+}

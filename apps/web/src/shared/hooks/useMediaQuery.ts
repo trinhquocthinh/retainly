@@ -1,8 +1,5 @@
 import { useSyncExternalStore } from 'react';
 
-/** Breakpoint desktop của shell: từ đây sidebar đứng yên (AppShell.css). */
-export const DESKTOP_QUERY = '(min-width: 1024px)';
-
 /**
  * Theo dõi một media query và render lại khi nó đổi (xoay máy, kéo cửa sổ).
  * Môi trường không có `matchMedia` (jsdom) coi như không khớp.

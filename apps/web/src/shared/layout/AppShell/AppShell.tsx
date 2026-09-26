@@ -12,7 +12,8 @@ import {
   IconUser,
 } from '@src/shared/ui/Icons/Icons';
 import { useDueCount } from '@src/features/review/application/useDueCount';
-import { SidebarProgress } from '@src/features/review/presentation/TodayProgress/TodayProgress';
+import { fetchDueCards } from '@src/features/review/infrastructure/reviewApi';
+import { SidebarProgress } from '@src/features/review/presentation/components/TodayProgress/TodayProgress';
 import { useSession, useSignOut } from '@src/features/auth/application/useSession';
 import { fetchSession, signOut as signOutRequest } from '@src/features/auth/infrastructure/authApi';
 
@@ -31,7 +32,7 @@ const TITLE_BY_PATH: Record<string, string> = {
 export function AppShell({ children }: { children: ReactNode }) {
   const { pathname } = useLocation();
   const [navOpen, setNavOpen] = useState(false);
-  const dueCount = useDueCount();
+  const dueCount = useDueCount(fetchDueCards);
   const signOut = useSignOut({ signOut: signOutRequest });
   const session = useSession({ fetchSession });
 

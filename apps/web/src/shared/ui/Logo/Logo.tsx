@@ -1,3 +1,5 @@
+import logoUrl from '@src/assets/images/logo.png';
+
 import './Logo.css';
 
 type LogoProps = { size?: number };
@@ -7,7 +9,7 @@ export function Logo({ size = 28 }: LogoProps) {
   return (
     <img
       className="brand-logo"
-      src="/logo.png"
+      src={logoUrl}
       width={size}
       height={size}
       alt=""

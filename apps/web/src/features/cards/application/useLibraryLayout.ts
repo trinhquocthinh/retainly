@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
-import { DESKTOP_QUERY, useMediaQuery } from '@src/shared/hooks/useMediaQuery';
+import { DESKTOP_QUERY } from '@src/shared/constants/breakpoints';
+import { useMediaQuery } from '@src/shared/hooks/useMediaQuery';
 
 export type LibraryLayout = 'grid' | 'table';
 

@@ -6,7 +6,7 @@ module.exports = {
     'import/resolver': {
       typescript: {
         alwaysTryTypes: true,
-        project: './tsconfig.json',
+        project: ['./tsconfig.json', './apps/*/tsconfig.json'],
       },
       node: true,
     },
@@ -27,6 +27,18 @@ module.exports = {
             from: ['**/infrastructure/**', '**/presentation/**'],
             message:
               'Kiến trúc Retainly: Application layer không được phép import từ Infrastructure hoặc Presentation.',
+          },
+          {
+            target: '**/presentation/components/**',
+            from: '**/presentation/pages/**',
+            message:
+              'Kiến trúc Retainly: component không được import page — chỉ page ráp component, không có chiều ngược lại.',
+          },
+          {
+            target: ['apps/web/src/shared/constants/**', 'apps/web/src/shared/utils/**'],
+            from: 'apps/web/src/features/**',
+            message:
+              'Kiến trúc Retainly: constants/utils dùng chung không được phụ thuộc vào feature nào.',
           },
         ],
       },

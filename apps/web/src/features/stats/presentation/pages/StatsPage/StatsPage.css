@@ -1,0 +1,174 @@
+.stats {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+
+  & h1,
+  & h2,
+  & p {
+    margin: 0;
+  }
+}
+
+.stats-error h1,
+.stats-error p {
+  margin: 0;
+}
+
+.stats__heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.stats__title {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.stats__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-accent-active);
+}
+
+.stats__intro,
+.stats__empty p,
+.stats__note p {
+  color: var(--color-text-secondary);
+}
+
+.stats__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.stats__range {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.stats__actions .btn {
+  flex: 0 0 auto;
+  padding: 0 var(--space-3);
+}
+
+/* Mobile chỉ còn icon; tên nút vẫn đọc được qua aria-label. */
+.stats__export-label {
+  display: none;
+}
+
+/* Đổi khoảng: giữ số cũ trên màn nhưng làm mờ để báo đang nạp. */
+.stats[aria-busy='true'] :is(.stat-tiles, .stats__grid) {
+  opacity: 0.6;
+  transition: opacity var(--duration-fast);
+}
+
+.stats__grid,
+.stats__side {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.stats__note {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* Đề xuất rút gọn — viền trái đổi màu theo mức độ, không dùng nền rực. */
+.stats__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.stats__empty-icon {
+  background: var(--color-accent-soft);
+  color: var(--color-accent-strong);
+}
+
+.stats__empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.stats-error {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.stats-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.stats-skeleton div {
+  min-height: 120px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-secondary-active-bg);
+  animation: stats-pulse 1.2s ease-in-out infinite alternate;
+}
+
+.stats-skeleton div:nth-child(2) {
+  min-height: 220px;
+}
+
+@keyframes stats-pulse {
+  from {
+    opacity: 0.45;
+  }
+
+  to {
+    opacity: 0.85;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stats-skeleton div {
+    animation: none;
+  }
+}
+
+@media (min-width: 768px) {
+  /* Thiếu chỗ (sidebar mở ở tablet) thì bộ lọc + nút xuất xuống dòng dưới tiêu đề. */
+  .stats__heading {
+    flex-flow: row wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+
+  .stats__title {
+    flex: 1 1 20rem;
+  }
+
+  .stats__range {
+    flex: 0 0 auto;
+    min-width: 320px;
+  }
+
+  .stats__actions .btn {
+    padding: 0 var(--space-4);
+  }
+
+  .stats__export-label {
+    display: inline;
+  }
+}
+
+@media (min-width: 1024px) {
+  .stats__grid {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  }
+}

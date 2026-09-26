@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   describeDue,
+  describeMemoryFacts,
   parseLibraryFilters,
   toSearchParams,
   type CardScheduleSummary,
@@ -43,6 +44,20 @@ describe('E9-S1-T2 — describeDue', () => {
     ['2026-10-03T02:00:00.000Z', 'upcoming', 'Còn 10 ngày'],
   ])('hạn %s → %s "%s"', (dueDate, tone, label) => {
     expect(describeDue(schedule({ dueDate }), NOW)).toEqual({ tone, label });
+  });
+});
+
+describe('E9-S1-T2 — chỉ số trí nhớ trong Thư viện', () => {
+  it('thẻ đã ôn hiện S, D, lần ôn gần nhất', () => {
+    expect(describeMemoryFacts(schedule({ stability: 13.83, difficulty: 2.11 }), NOW)).toEqual({
+      stability: '13,8 ngày',
+      difficulty: '2,1',
+      lastReview: '4 ngày trước',
+    });
+  });
+
+  it('thẻ chưa ôn lần nào thì chưa có số đo', () => {
+    expect(describeMemoryFacts(schedule({ lastReviewedAt: null }), NOW)).toBeNull();
   });
 });
 
