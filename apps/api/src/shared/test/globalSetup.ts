@@ -1,7 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import { Client } from 'pg';
 
-import { TEST_DATABASE_NAME, testDatabaseUrl } from './databaseUrl';
+import { TEST_DATABASE_NAME, testDatabaseUrl } from './databaseUrl.mjs';
 
 /** Chạy đúng một lần trước toàn bộ nhóm integration. */
 export default async function setup(): Promise<void> {

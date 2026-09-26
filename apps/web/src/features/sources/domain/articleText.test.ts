@@ -33,6 +33,13 @@ describe('E2-S2-T5 — cắt đoạn văn bản nguồn', () => {
     expect(toParagraphs('Tăng tốc độ học.\\[1\\]')).toEqual(['Tăng tốc độ học.[1]']);
   });
 
+  it('gỡ escape trước mọi dấu câu ASCII, giữ nguyên dấu nhấn đã escape', () => {
+    expect(toParagraphs('Giải G5\\. Tỷ số 2\\-1\\!')).toEqual(['Giải G5. Tỷ số 2-1!']);
+    expect(toParagraphs('Phép tính 5 \\* 3 và biến \\_snake\\_case')).toEqual([
+      'Phép tính 5 * 3 và biến _snake_case',
+    ]);
+  });
+
   it('gỡ dấu in đậm và in nghiêng', () => {
     expect(toParagraphs('**Lặp lại ngắt quãng** là _kỹ thuật_ học.')).toEqual([
       'Lặp lại ngắt quãng là kỹ thuật học.',

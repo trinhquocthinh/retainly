@@ -1,18 +1,21 @@
 module.exports = {
   parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint', 'import'],
+  plugins: ['@typescript-eslint', 'import', 'react-hooks'],
   extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'prettier'],
   settings: {
     'import/resolver': {
       typescript: {
         alwaysTryTypes: true,
         project: ['./tsconfig.json', './apps/*/tsconfig.json'],
+        noWarnOnMultipleProjects: true,
       },
       node: true,
     },
   },
   ignorePatterns: ['generated/', 'dist/'],
   rules: {
+    'react-hooks/rules-of-hooks': 'error',
+    'react-hooks/exhaustive-deps': 'error',
     'import/no-restricted-paths': [
       'error',
       {

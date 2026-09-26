@@ -1,8 +1,0 @@
-{
-  "ignore": ["designs/**"],
-  "workspaces": {
-    "apps/api": {
-      "ignoreDependencies": ["@prisma/client"]
-    }
-  }
-}

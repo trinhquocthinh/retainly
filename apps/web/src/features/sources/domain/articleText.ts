@@ -11,8 +11,10 @@ function cleanArticleBlock(block: string): string {
       .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
       // Link chú thích của Wikipedia để lại đường dẫn trần trong ngoặc đơn.
       .replace(/\(https?:\/\/[^)\s]*\)/g, '')
-      .replace(/[*_`]{1,3}/g, '')
-      .replace(/\\([[\]()])/g, '$1')
+      // Dấu nhấn bị escape (`\*`, `\_`) là chữ thật, không phải cú pháp — giữ lại.
+      .replace(/(?<!\\)[*_`]{1,3}/g, '')
+      // Bộ bóc tách escape mọi dấu câu ASCII theo CommonMark, vd. "G5\." → "G5.".
+      .replace(/\\([!-/:-@[-`{-~])/g, '$1')
       .trim()
   );
 }

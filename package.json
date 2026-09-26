@@ -16,7 +16,7 @@
     "db:up": "docker compose --project-directory . -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up -d db",
     "db:down": "docker compose --project-directory . -f docker/docker-compose.yml -f docker/docker-compose.dev.yml down",
     "prepare": "husky",
-    "verify": "yarn workspace api prisma generate && yarn typecheck && yarn lint && yarn format:check && yarn test && yarn jscpd && yarn knip && yarn build",
+    "verify": "yarn workspace api prisma generate && yarn typecheck && yarn lint && yarn format:check && yarn test && yarn jscpd && yarn knip && yarn knip:prod && yarn build",
     "typecheck": "yarn workspace api typecheck && yarn workspace web typecheck",
     "dev": "yarn workspaces foreach -A -pi --include api --include web run dev",
     "build": "yarn workspace api build && yarn workspace web build"
@@ -31,6 +31,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-import-resolver-typescript": "^4.4.5",
     "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
     "husky": "^9.1.7",
     "jscpd": "^5.2.0",
     "knip": "^6.35.1",

@@ -1,7 +1,7 @@
 import { config } from 'dotenv';
 import { defineConfig } from 'vitest/config';
 
-import { testDatabaseUrl } from './src/shared/test/databaseUrl';
+import { testDatabaseUrl } from './src/shared/test/databaseUrl.mts';
 
 // Nạp .env của apps/api. Hai đường dẫn để chạy được cả khi vitest khởi động từ
 // gốc repo (yarn test) lẫn từ trong workspace — `dotenv/config` mặc định chỉ
