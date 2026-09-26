@@ -1,0 +1,7 @@
+.brand-logo {
+  display: block;
+  flex: 0 0 auto;
+  max-width: none;
+  border-radius: 25%;
+  object-fit: cover;
+}

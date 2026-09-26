@@ -1,0 +1,99 @@
+import { useState, type FormEvent } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+import { ApiError, NetworkError } from '@src/shared/api/client';
+
+import {
+  fieldForErrorCode,
+  isDraftComplete,
+  type CardDraft,
+  type CardField,
+} from '../domain/cardDraft';
+
+/** Cổng lưu thẻ. Hiện thực thật do page container tiêm vào. */
+type CreateCardPort = (
+  card: Omit<CardDraft, 'note'> & { note?: string; sourceId?: string; topicId?: string },
+) => Promise<unknown>;
+
+const EMPTY_DRAFT: CardDraft = { front: '', back: '', note: '' };
+
+/** Lỗi gắn được vào một ô nhập thì gắn xuống đó, phần còn lại thành banner. */
+function bannerFor(error: unknown): string | null {
+  if (!error) return null;
+  if (error instanceof ApiError && fieldForErrorCode(error.code)) return null;
+  if (error instanceof NetworkError) return 'Không lưu được thẻ, kiểm tra mạng rồi thử lại';
+  return error instanceof Error ? error.message : 'Không lưu được thẻ, thử lại sau';
+}
+
+export function useCreateCard(deps: {
+  createCard: CreateCardPort;
+  sourceId?: string;
+  topicId?: string;
+}) {
+  const queryClient = useQueryClient();
+
+  const [draft, setDraft] = useState<CardDraft>(EMPTY_DRAFT);
+  const [justSaved, setJustSaved] = useState(false);
+
+  const mutation = useMutation({
+    mutationFn: deps.createCard,
+    // Chỉ xoá nội dung thẻ. Nguồn do page giữ nên vẫn còn đó: một bài viết đọc
+    // một lần, rút được nhiều thẻ mà không phải nạp lại.
+    onSuccess: async () => {
+      setDraft(EMPTY_DRAFT);
+      setJustSaved(true);
+
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['cards', 'due'] }),
+        queryClient.invalidateQueries({ queryKey: ['cards', 'library'] }),
+        queryClient.invalidateQueries({ queryKey: ['home', 'overview'] }),
+      ]);
+    },
+  });
+
+  const failedField =
+    mutation.error instanceof ApiError ? fieldForErrorCode(mutation.error.code) : undefined;
+
+  function setField(field: CardField, value: string) {
+    setDraft((current) => ({ ...current, [field]: value }));
+    setJustSaved(false);
+  }
+
+  return {
+    draft,
+    canSave: isDraftComplete(draft) && !mutation.isPending,
+    saving: mutation.isPending,
+    justSaved,
+    banner: bannerFor(mutation.error),
+
+    dirty: Object.values(draft).some((value) => value.length > 0),
+
+    errorOf: (field: CardField) =>
+      failedField === field ? (mutation.error as ApiError).message : undefined,
+    setField,
+    // Bỏ cả lỗi của lần lưu trước: nội dung gắn với lỗi đó đã không còn.
+    reset: () => {
+      setDraft(EMPTY_DRAFT);
+      setJustSaved(false);
+      mutation.reset();
+    },
+
+    onSubmit: (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      if (!isDraftComplete(draft) || mutation.isPending) return;
+
+      setJustSaved(false);
+      // Ghi chú trống thì không gửi, như sourceId/topicId: payload chỉ mang
+      // những gì người dùng thực sự nhập.
+      const { note, ...content } = draft;
+      const input = {
+        ...content,
+        ...(note.trim() ? { note } : {}),
+        ...(deps.sourceId ? { sourceId: deps.sourceId } : {}),
+        ...(deps.topicId ? { topicId: deps.topicId } : {}),
+      };
+
+      mutation.mutate(input);
+    },
+  };
+}

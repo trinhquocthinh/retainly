@@ -1,0 +1,294 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_dashboard" name="shell-type"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"on-surface":"#151c27","surface-neutral-hover":"#F9FAFB","surface-bright":"#f9f9ff","secondary-fixed-dim":"#c4c6ce","danger-border":"#FCA5A5","on-error":"#ffffff","surface-light":"#FFFFFF","border-dark":"#2D3138","success-remember":"#16A34A","surface-container":"#e7eefe","on-background":"#151c27","accent-amber-text-hover":"#92400E","surface-tint":"#855300","surface-container-high":"#e2e8f8","text-primary-light":"#1A1D23","border-hover":"#D1D5DB","primary-container":"#f59e0b","inverse-surface":"#2a313d","on-primary-fixed-variant":"#653e00","accent-amber":"#F59E0B","surface-neutral-active":"#F3F4F6","on-primary-container":"#613b00","danger-forgot":"#DC2626","error":"#ba1a1a","primary-fixed-dim":"#ffb95f","error-container":"#ffdad6","accent-amber-highlight":"#FDE68A","tertiary":"#00658b","on-tertiary-fixed":"#001e2d","outline-variant":"#d8c3ad","surface-container-low":"#f0f3ff","text-primary-dark":"#ECEDEE","surface-dark":"#1E2126","text-secondary":"#6B7280","on-primary":"#ffffff","tertiary-fixed-dim":"#7fd0ff","on-error-container":"#93000a","accent-amber-hover":"#D97706","on-tertiary":"#ffffff","surface-dim":"#d3daea","on-secondary-fixed":"#191c22","tertiary-container":"#1abdff","surface":"#f9f9ff","tertiary-fixed":"#c5e7ff","on-secondary":"#ffffff","accent-amber-text":"#B45309","on-primary-fixed":"#2a1700","secondary-container":"#dedfe8","outline":"#867461","primary-fixed":"#ffddb8","border-light":"#E5E7EB","on-tertiary-fixed-variant":"#004c6a","on-tertiary-container":"#004966","bg-light":"#FAFAF8","surface-variant":"#dce2f3","surface-container-lowest":"#ffffff","scrim-backdrop":"rgba(26, 29, 35, 0.4)","surface-container-highest":"#dce2f3","on-secondary-fixed-variant":"#44474d","danger-active":"#991B1B","on-surface-variant":"#534434","inverse-on-surface":"#ebf1ff","on-secondary-container":"#60626a","background":"#f9f9ff","secondary-fixed":"#e1e2ea","secondary":"#5c5e65","text-muted":"#9CA3AF","primary":"#855300","danger-surface":"#FEF2F2","inverse-primary":"#ffb95f","bg-dark":"#14161A"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"gutter":"1rem","margin-desktop":"2rem","space-2xl":"3rem","space-md":"0.75rem","space-lg":"1.5rem","margin-tablet":"1.5rem","space-base":"1rem","space-xs":"0.25rem","space-sm":"0.5rem","space-3xl":"4rem","margin":"1rem","space-xl":"2rem"},"fontFamily":{"caption":["Inter"],"body-default":["Inter"],"display":["Inter"],"label-small-semibold":["Inter"],"body-semibold":["Inter"],"label-small":["Inter"],"label-small-medium":["Inter"],"body-medium":["Inter"],"caption-caps":["Inter"],"headline-h1":["Inter"],"headline-h2":["Inter"]},"fontSize":{"caption":["12px",{"lineHeight":"16px","letterSpacing":"0em","fontWeight":"400"}],"body-default":["16px",{"lineHeight":"24px","letterSpacing":"0em","fontWeight":"400"}],"display":["36px",{"lineHeight":"44px","letterSpacing":"-0.02em","fontWeight":"700"}],"label-small-semibold":["14px",{"lineHeight":"20px","letterSpacing":"0em","fontWeight":"600"}],"body-semibold":["16px",{"lineHeight":"24px","letterSpacing":"0em","fontWeight":"600"}],"label-small":["14px",{"lineHeight":"20px","letterSpacing":"0em","fontWeight":"400"}],"label-small-medium":["14px",{"lineHeight":"20px","letterSpacing":"0em","fontWeight":"500"}],"body-medium":["16px",{"lineHeight":"24px","letterSpacing":"0em","fontWeight":"500"}],"caption-caps":["12px",{"lineHeight":"16px","letterSpacing":"0.08em","fontWeight":"600"}],"headline-h1":["24px",{"lineHeight":"32px","letterSpacing":"-0.01em","fontWeight":"600"}],"headline-h2":["18px",{"lineHeight":"26px","letterSpacing":"0em","fontWeight":"600"}]}}}}</script></head><body class="bg-bg-light font-body-default text-text-primary-light min-h-screen"><aside class="fixed left-0 top-0 h-full w-64 bg-surface-light border-r border-border-light z-50 flex flex-col justify-between p-space-base"><div class="flex flex-col gap-space-lg"><div class="flex items-center gap-space-sm px-space-xs"><img alt="Retainly brand logo" class="h-8 w-8 rounded-lg object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1X5Sqxkpa34OQI1ZVx1_LO3LfETRTovAX9OEeMgoBtus5qJhB1VygLKqdCMhJLc-YNk-FTtVUbiXeTQO6lxD5D7AxLkRFruLcY669eVF9pRIU5bopeRyEpBlDL1JbjaiVkqhUDZ-oDSFDbov6Iy-7HCRkc-Nx0Gx35oN-DbGpG2T4D38VXBfQDsqoQJn9UHrFCRHKsncrBCS1ETPZbxRdUvatBj1IkFdNigH1Nv05JRXymPCWdTt_vn3hot"><div class="flex flex-col"><span class="font-label-small-semibold text-text-primary-light leading-none">Retainly</span><span class="font-caption text-text-muted mt-space-xs leading-none">Spaced Focus</span></div></div><a class="flex items-center justify-center gap-space-sm h-11 px-space-base rounded-lg bg-accent-amber hover:bg-accent-amber-hover text-text-primary-light font-label-small-semibold transition-colors" data-path="tao-the-moi" href="#"><span class="material-symbols-outlined text-[20px]">add</span>Tạo thẻ mới</a><nav class="flex flex-col gap-space-xs" data-active-classes="bg-surface-neutral-active text-text-primary-light font-label-small-semibold"><a aria-current="page" class="flex items-center justify-between px-space-base py-space-sm rounded-lg transition-colors bg-surface-neutral-active text-text-primary-light font-label-small-semibold" data-path="trang-chu" href="#"><div class="flex items-center gap-space-md"><span class="material-symbols-outlined text-[20px]">today</span><span class="font-label-small-medium">Hôm nay</span></div><span class="px-space-sm py-0.5 rounded-full bg-accent-amber-highlight text-accent-amber-text font-caption-caps">18</span></a><a class="flex items-center justify-between px-space-base py-space-sm rounded-lg text-text-secondary hover:bg-surface-neutral-hover hover:text-text-primary-light transition-colors" data-path="thu-vien-the" href="#"><div class="flex items-center gap-space-md"><span class="material-symbols-outlined text-[20px]">style</span><span class="font-label-small-medium">Thư viện</span></div></a><a class="flex items-center justify-between px-space-base py-space-sm rounded-lg text-text-secondary hover:bg-surface-neutral-hover hover:text-text-primary-light transition-colors" data-path="thong-ke" href="#"><div class="flex items-center gap-space-md"><span class="material-symbols-outlined text-[20px]">query_stats</span><span class="font-label-small-medium">Thống kê</span></div></a></nav></div><div class="flex flex-col gap-space-md pt-space-md border-t border-border-light"><div class="flex items-center justify-between px-space-xs py-space-sm rounded-lg bg-surface-neutral-hover border border-border-light"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-accent-amber text-[20px]">local_fire_department</span><span class="font-caption font-semibold text-text-primary-light">Chuỗi 7 ngày</span></div><span class="font-caption text-text-muted">Kỷ lục</span></div><div class="flex items-center justify-between px-space-xs"><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="flex flex-col"><span class="font-label-small-medium text-text-primary-light leading-tight">Minh Quân</span><span class="font-caption text-text-muted leading-none">Pro Scholar</span></div></div><button class="text-text-secondary hover:text-text-primary-light p-space-xs rounded transition-colors" type="button"><span class="material-symbols-outlined text-[18px]">more_vert</span></button></div></div></aside><div class="pl-64"><header class="fixed top-0 left-64 right-0 h-16 bg-surface-light border-b border-border-light z-40 flex items-center justify-between px-space-xl"><div class="flex items-center gap-space-md"><img alt="Retainly brand logo" class="h-8 w-8 rounded-lg object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1X5Sqxkpa34OQI1ZVx1_LO3LfETRTovAX9OEeMgoBtus5qJhB1VygLKqdCMhJLc-YNk-FTtVUbiXeTQO6lxD5D7AxLkRFruLcY669eVF9pRIU5bopeRyEpBlDL1JbjaiVkqhUDZ-oDSFDbov6Iy-7HCRkc-Nx0Gx35oN-DbGpG2T4D38VXBfQDsqoQJn9UHrFCRHKsncrBCS1ETPZbxRdUvatBj1IkFdNigH1Nv05JRXymPCWdTt_vn3hot"><span class="font-label-small-semibold text-text-primary-light">Retainly Studio</span></div><div class="flex items-center gap-space-lg"><div class="flex items-center gap-space-xs px-space-base py-space-xs rounded-full bg-accent-amber-highlight text-accent-amber-text border border-accent-amber"><span class="material-symbols-outlined text-[16px]">bolt</span><span class="font-caption font-semibold">42/50 mục tiêu hôm nay</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></header><main class="relative pt-16 bg-bg-light min-h-screen"><div class="flex flex-col w-full">
+<div class="max-w-[1120px] mx-auto w-full px-space-base sm:px-space-lg lg:px-space-xl py-space-xl flex flex-col gap-space-xl">
+<!-- Top Greeting & Motivation Banner -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-sm text-text-secondary font-caption-caps">
+<span class="inline-block w-2 h-2 rounded-full bg-accent-amber animate-pulse"></span>
+<span class="">Hôm nay • Thứ ba, 8 tháng 9</span>
+</div>
+<h1 class="font-display text-display text-text-primary-light tracking-tight">Chào buổi sáng, Toni!</h1>
+<p class="font-body-default text-text-secondary">Trí não hoạt động tối ưu nhất vào khung giờ này. Hãy bắt nhịp nhẹ nhàng.</p>
+</div>
+<!-- Streak Ribbon Widget -->
+<div class="bg-surface-light rounded-xl p-space-sm shadow-sm flex items-center gap-space-sm self-start md:self-auto">
+<div class="flex items-center gap-space-xs px-space-sm py-space-xs rounded-lg bg-surface-neutral-active">
+<span class="material-symbols-outlined text-accent-amber text-[20px]" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<span class="font-label-small-semibold text-text-primary-light whitespace-nowrap">7 ngày liền</span>
+</div>
+<div class="flex items-center gap-1.5 px-space-xs">
+<!-- Mon -->
+<div class="flex flex-col items-center gap-1">
+<span class="font-caption text-text-muted text-[10px]">T2</span>
+<div class="w-6 h-6 rounded-full bg-accent-amber text-text-primary-light flex items-center justify-center font-caption-caps text-[11px] shadow-sm">
+<span class="material-symbols-outlined text-[14px]">check</span>
+</div>
+</div>
+<!-- Tue (Today) -->
+<div class="flex flex-col items-center gap-1">
+<span class="font-caption text-accent-amber-text font-semibold text-[10px]">T3</span>
+<div class="w-6 h-6 rounded-full bg-accent-amber text-text-primary-light flex items-center justify-center font-caption-caps text-[11px] shadow-sm ring-2 ring-accent-amber ring-offset-2">
+<span class="material-symbols-outlined text-[14px] animate-pulse">star</span>
+</div>
+</div>
+<!-- Wed -->
+<div class="flex flex-col items-center gap-1 opacity-45">
+<span class="font-caption text-text-muted text-[10px]">T4</span>
+<div class="w-6 h-6 rounded-full bg-surface-neutral-active text-text-secondary flex items-center justify-center font-caption text-[11px]">
+              -
+            </div>
+</div>
+<!-- Thu -->
+<div class="flex flex-col items-center gap-1 opacity-45">
+<span class="font-caption text-text-muted text-[10px]">T5</span>
+<div class="w-6 h-6 rounded-full bg-surface-neutral-active text-text-secondary flex items-center justify-center font-caption text-[11px]">
+              -
+            </div>
+</div>
+<!-- Fri -->
+<div class="flex flex-col items-center gap-1 opacity-45">
+<span class="font-caption text-text-muted text-[10px]">T6</span>
+<div class="w-6 h-6 rounded-full bg-surface-neutral-active text-text-secondary flex items-center justify-center font-caption text-[11px]">
+              -
+            </div>
+</div>
+<!-- Sat -->
+<div class="flex flex-col items-center gap-1 opacity-45">
+<span class="font-caption text-text-muted text-[10px]">T7</span>
+<div class="w-6 h-6 rounded-full bg-surface-neutral-active text-text-secondary flex items-center justify-center font-caption text-[11px]">
+              -
+            </div>
+</div>
+<!-- Sun -->
+<div class="flex flex-col items-center gap-1 opacity-45">
+<span class="font-caption text-text-muted text-[10px]">CN</span>
+<div class="w-6 h-6 rounded-full bg-surface-neutral-active text-text-secondary flex items-center justify-center font-caption text-[11px]">
+              -
+            </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Highlight Hero: Tactile Card (Things 3 / Linear craft) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-stretch">
+<div class="lg:col-span-8 bg-surface-light rounded-xl p-space-xl shadow-md flex flex-col justify-between relative overflow-hidden transition-all duration-200 hover:shadow-lg">
+<!-- Subtle amber top glow bar -->
+<div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-accent-amber via-accent-amber-highlight to-accent-amber"></div>
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between flex-wrap gap-space-sm">
+<div class="flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-accent-amber-highlight text-accent-amber-text">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+<span class="font-caption font-semibold">Ước tính ~6 phút tập trung</span>
+</div>
+<span class="font-caption text-text-muted">Thuật toán FSRS v4.5</span>
+</div>
+<div class="flex flex-col gap-space-xs mt-space-sm">
+<div class="flex items-baseline gap-space-sm">
+<span class="font-display text-[44px] leading-tight font-bold text-text-primary-light">12</span>
+<span class="font-headline-h1 text-headline-h1 text-text-primary-light">thẻ đến hạn ôn tập hôm nay</span>
+</div>
+<p class="font-body-default text-text-secondary max-w-xl">
+              Gồm 4 thẻ mới về <strong class="text-text-primary-light font-body-semibold">Kiến trúc Hexagonal</strong>, 5 thẻ củng cố <strong class="text-text-primary-light font-body-semibold">Mô hình FSRS</strong>, và 3 thẻ thuật ngữ <strong class="text-text-primary-light font-body-semibold">Distributed Systems</strong>.
+            </p>
+</div>
+</div>
+<div class="pt-space-xl mt-space-lg flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-space-base bg-surface-neutral-hover -mx-space-xl -mb-space-xl p-space-xl rounded-b-xl">
+<div class="flex items-center gap-space-md">
+<a class="h-11 px-space-xl rounded-lg bg-accent-amber hover:bg-accent-amber-hover text-text-primary-light font-label-small-semibold transition-all flex items-center justify-center gap-space-sm shadow-sm active:translate-y-0.5" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+<span class="">Bắt đầu phiên ôn tập</span>
+</a>
+<div class="hidden sm:flex items-center gap-1.5 text-text-muted font-caption">
+<kbd class="px-2 py-1 rounded bg-surface-light shadow-sm text-text-secondary font-caption-caps text-[10px]">Space</kbd>
+<span class="">hoặc</span>
+<kbd class="px-2 py-1 rounded bg-surface-light shadow-sm text-text-secondary font-caption-caps text-[10px]">↵ Enter</kbd>
+</div>
+</div>
+<div class="flex items-center gap-space-xs text-text-secondary font-caption">
+<span class="material-symbols-outlined text-[16px] text-success-remember">verified</span>
+<span class="">Đã duy trì 98% trí nhớ tuần này</span>
+</div>
+</div>
+</div>
+<!-- Quick Capture Panel -->
+<div class="lg:col-span-4 bg-surface-light rounded-xl p-space-lg shadow-sm flex flex-col justify-between">
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center gap-space-xs text-text-primary-light">
+<span class="material-symbols-outlined text-accent-amber text-[20px]">bolt</span>
+<h2 class="font-headline-h2 text-headline-h2">Ghi nhận nhanh</h2>
+</div>
+<p class="font-caption text-text-secondary leading-relaxed">
+            Vừa lướt thấy ý tưởng đắt giá hay bài viết hay? Dán link hoặc ghi chú ngay để biến thành thẻ sau.
+          </p>
+<div class="mt-space-sm flex flex-col gap-space-xs">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined text-text-muted absolute left-3 text-[18px]">link</span>
+<input class="w-full h-11 pl-9 pr-3 rounded-lg bg-surface-neutral-hover font-label-small text-text-primary-light placeholder:text-text-muted outline-none focus:bg-surface-light transition-all" placeholder="Dán URL bài viết hoặc highlight..." type="text">
+</div>
+<textarea class="w-full p-space-sm rounded-lg bg-surface-neutral-hover font-label-small text-text-primary-light placeholder:text-text-muted outline-none focus:bg-surface-light transition-all resize-none" placeholder="Ghi vắn tắt câu hỏi hoặc ý niệm cần nhớ..." rows="3"></textarea>
+</div>
+</div>
+<div class="pt-space-md mt-space-sm flex items-center justify-between">
+<button class="text-text-muted hover:text-text-primary-light text-caption flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">attachment</span>
+<span class="">Thêm ảnh minh họa</span>
+</button>
+<button class="h-9 px-space-base rounded-lg bg-surface-neutral-active hover:bg-surface-neutral-hover text-text-primary-light font-label-small-semibold transition-colors flex items-center gap-space-xs" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span class="">Tạo thẻ</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Quick Stats Grid (Utilitarian Metrics) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-base">
+<!-- Stat 1 -->
+<div class="bg-surface-light rounded-xl p-space-lg shadow-sm flex items-center justify-between hover:shadow-md transition-shadow">
+<div class="flex flex-col gap-space-xs">
+<span class="font-caption-caps text-text-secondary">Tổng thẻ đang quản lý</span>
+<div class="flex items-baseline gap-space-xs">
+<span class="font-headline-h1 text-headline-h1 text-text-primary-light">38</span>
+<span class="font-caption text-text-muted">thẻ hoạt động</span>
+</div>
+<span class="font-caption text-text-muted">Chia trên 4 chủ đề cốt lõi</span>
+</div>
+<div class="w-12 h-12 rounded-xl bg-surface-container-low flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[24px]">layers</span>
+</div>
+</div>
+<!-- Stat 2 -->
+<div class="bg-surface-light rounded-xl p-space-lg shadow-sm flex items-center justify-between hover:shadow-md transition-shadow">
+<div class="flex flex-col gap-space-xs">
+<span class="font-caption-caps text-text-secondary">Tỷ lệ lưu giữ FSRS</span>
+<div class="flex items-baseline gap-space-xs">
+<span class="font-display text-[28px] font-bold text-text-primary-light">86%</span>
+<span class="font-caption text-success-remember font-semibold">+4.2%</span>
+</div>
+<span class="font-caption text-text-muted">Mục tiêu cân bằng: 85 - 90%</span>
+</div>
+<div class="w-12 h-12 rounded-xl bg-accent-amber-highlight/30 flex items-center justify-center text-accent-amber">
+<svg class="w-7 h-7 text-accent-amber" viewBox="0 0 36 36">
+<path class="text-surface-neutral-active" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3.8"></path>
+<path class="text-accent-amber" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="86, 100" stroke-linecap="round" stroke-width="3.8"></path>
+</svg>
+</div>
+</div>
+<!-- Stat 3 -->
+<div class="bg-surface-light rounded-xl p-space-lg shadow-sm flex items-center justify-between hover:shadow-md transition-shadow">
+<div class="flex flex-col gap-space-xs">
+<span class="font-caption-caps text-danger-active">Cần củng cố gấp</span>
+<div class="flex items-baseline gap-space-xs">
+<span class="font-headline-h1 text-headline-h1 text-text-primary-light">3</span>
+<span class="font-caption text-text-muted">thẻ dễ quên</span>
+</div>
+<span class="font-caption text-text-muted">Độ khó cao (D &gt; 7.5)</span>
+</div>
+<div class="w-12 h-12 rounded-xl bg-danger-surface flex items-center justify-center text-danger-forgot">
+<span class="material-symbols-outlined text-[24px]">psychology_alt</span>
+</div>
+</div>
+</div>
+<!-- Section: Upcoming Review Schedule Queue -->
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-text-secondary text-[20px]">calendar_view_week</span>
+<h2 class="font-headline-h2 text-headline-h2 text-text-primary-light">Chu kỳ ôn kế tiếp</h2>
+<span class="px-space-xs py-0.5 rounded bg-surface-neutral-active text-text-muted font-caption text-[11px]">Hàng đợi tự động</span>
+</div>
+<a class="font-label-small-medium text-accent-amber-text hover:text-accent-amber-text-hover transition-colors flex items-center gap-1" href="#">
+<span class="">Xem toàn bộ lịch trình</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-space-md">
+<!-- Upcoming Card 1 -->
+<div class="bg-surface-light rounded-xl p-space-base shadow-sm flex flex-col justify-between gap-space-md hover:shadow-md transition-all">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="px-space-xs py-0.5 rounded bg-surface-container-high text-tertiary font-caption-caps text-[11px]">FSRS &amp; Cognitive</span>
+<span class="px-space-xs py-0.5 rounded-full bg-surface-neutral-hover text-text-secondary font-caption text-[11px] font-semibold">+3 ngày</span>
+</div>
+<h3 class="font-body-semibold text-text-primary-light line-clamp-2 mt-space-xs">
+              Mô hình 4 thành phần trong FSRS: Stability, Retrievability, Difficulty là gì?
+            </h3>
+<p class="font-caption text-text-muted line-clamp-2">
+              Khoảng cách giãn cách tính toán theo công thức S(R, G) giúp giảm 40% số lần lặp vô ích...
+            </p>
+</div>
+<div class="pt-space-sm flex items-center justify-between text-text-muted font-caption">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">replay</span>
+<span class="">Lặp lần 3</span>
+</div>
+<span class="text-[11px]">Dự kiến: Thứ sáu, 11/09</span>
+</div>
+</div>
+<!-- Upcoming Card 2 -->
+<div class="bg-surface-light rounded-xl p-space-base shadow-sm flex flex-col justify-between gap-space-md hover:shadow-md transition-all">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="px-space-xs py-0.5 rounded bg-surface-neutral-active text-text-secondary font-caption-caps text-[11px]">System Architecture</span>
+<span class="px-space-xs py-0.5 rounded-full bg-surface-neutral-hover text-text-secondary font-caption text-[11px] font-semibold">+9 ngày</span>
+</div>
+<h3 class="font-body-semibold text-text-primary-light line-clamp-2 mt-space-xs">
+              Hexagonal Architecture: Phân biệt Driving Port và Driven Port trong thiết kế Core
+            </h3>
+<p class="font-caption text-text-muted line-clamp-2">
+              Primary (Driving) adapter khởi tạo gọi vào Port; Secondary (Driven) do Core kích hoạt qua Interfaces...
+            </p>
+</div>
+<div class="pt-space-sm flex items-center justify-between text-text-muted font-caption">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">replay</span>
+<span class="">Lặp lần 5</span>
+</div>
+<span class="text-[11px]">Dự kiến: Thứ năm, 17/09</span>
+</div>
+</div>
+<!-- Upcoming Card 3 -->
+<div class="bg-surface-light rounded-xl p-space-base shadow-sm flex flex-col justify-between gap-space-md hover:shadow-md transition-all">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="px-space-xs py-0.5 rounded bg-accent-amber-highlight/40 text-accent-amber-text font-caption-caps text-[11px]">English Mastery</span>
+<span class="px-space-xs py-0.5 rounded-full bg-surface-neutral-hover text-text-secondary font-caption text-[11px] font-semibold">+14 ngày</span>
+</div>
+<h3 class="font-body-semibold text-text-primary-light line-clamp-2 mt-space-xs">
+              Nuance of "Serendipity" vs "Fortuitous" in academic argumentation
+            </h3>
+<p class="font-caption text-text-muted line-clamp-2">
+              Serendipity mang tính khám phá tình cờ có giá trị; Fortuitous nhấn mạnh tính ngẫu nhiên thuần túy...
+            </p>
+</div>
+<div class="pt-space-sm flex items-center justify-between text-text-muted font-caption">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">replay</span>
+<span class="">Lặp lần 6</span>
+</div>
+<span class="text-[11px]">Dự kiến: Thứ ba, 22/09</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Daily Mindset Footer Card -->
+<div class="bg-surface-light rounded-xl p-space-lg shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-base">
+<div class="flex items-center gap-space-base">
+<div class="w-10 h-10 rounded-full bg-accent-amber-highlight text-accent-amber flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">lightbulb</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-small-semibold text-text-primary-light">Gợi ý thói quen thông minh:</span>
+<p class="font-caption text-text-secondary">
+            Ôn tập cách quãng đạt hiệu quả cao nhất khi bạn kiểm tra lại trước khi đi ngủ hoặc đầu giờ làm việc sáng.
+          </p>
+</div>
+</div>
+<button class="whitespace-nowrap font-label-small-medium text-text-secondary hover:text-text-primary-light transition-colors self-end sm:self-auto" type="button">
+        Đã hiểu ×
+      </button>
+</div>
+</div>
+</div></main></div>
+
+</body></html>

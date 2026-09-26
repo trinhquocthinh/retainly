@@ -1,0 +1,136 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ReviewState {
+  new
+  learning
+  review
+  relearning
+}
+
+enum ReviewOutcomeValue {
+  remembered
+  forgotten
+}
+
+model User {
+  id             String   @id @default(uuid()) @db.Uuid
+  externalAuthId String?  @unique @map("external_auth_id")
+  email          String?  @unique
+  passwordHash   String?  @map("password_hash")
+  displayName    String   @map("display_name")
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  cards    Card[]
+  sources  Source[]
+  topics   KnowledgeTopic[]
+  sessions Session[]
+
+  @@map("users")
+}
+
+/// Cookie giữ token gốc, bảng chỉ giữ sha256 của nó.
+model Session {
+  tokenHash String   @id @map("token_hash")
+  userId    String   @map("user_id") @db.Uuid
+  expiresAt DateTime @map("expires_at") @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Card {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  sourceId  String?  @map("source_id") @db.Uuid
+  topicId   String?  @map("topic_id") @db.Uuid
+  front     String
+  back      String
+  note      String?  @db.VarChar(1000)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  source   Source?         @relation(fields: [sourceId], references: [id], onDelete: SetNull)
+  topic    KnowledgeTopic? @relation(fields: [topicId], references: [id], onDelete: SetNull)
+  schedule ReviewSchedule?
+  outcomes ReviewOutcome[]
+
+  @@index([userId])
+  @@index([sourceId])
+  @@index([topicId])
+  @@index([userId, createdAt, id], map: "cards_user_id_created_at_id_idx")
+  @@index([userId, sourceId, createdAt, id], map: "cards_user_id_source_id_created_at_id_idx")
+  @@map("cards")
+}
+
+model KnowledgeTopic {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  name      String   @db.VarChar(100)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cards Card[]
+
+  @@unique([userId, name])
+  @@map("knowledge_topics")
+}
+
+model Source {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  url       String
+  title     String
+  cleanText String   @map("clean_text")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cards Card[]
+
+  @@index([userId])
+  @@map("sources")
+}
+
+model ReviewSchedule {
+  id             String      @id @default(uuid()) @db.Uuid
+  cardId         String      @unique @map("card_id") @db.Uuid
+  state          ReviewState @default(new)
+  dueDate        DateTime    @map("due_date") @db.Timestamptz(3)
+  intervalDays   Int         @default(0) @map("interval_days")
+  stability      Float       @default(0)
+  difficulty     Float       @default(0)
+  elapsedDays    Int         @default(0) @map("elapsed_days")
+  scheduledDays  Int         @default(0) @map("scheduled_days")
+  reps           Int         @default(0)
+  lapses         Int         @default(0)
+  lastReviewedAt DateTime?   @map("last_reviewed_at") @db.Timestamptz(3)
+  updatedAt      DateTime    @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  card Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@index([dueDate])
+  @@map("review_schedules")
+}
+
+model ReviewOutcome {
+  id               String             @id @default(uuid()) @db.Uuid
+  cardId           String             @map("card_id") @db.Uuid
+  outcome          ReviewOutcomeValue
+  reviewedAt       DateTime           @default(now()) @map("reviewed_at") @db.Timestamptz(3)
+  /// Ảnh chụp lịch ôn ngay trước lượt này, để hoàn tác (BR-024). Null ở outcome ghi trước E8.
+  previousSchedule Json?              @map("previous_schedule")
+
+  card Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@index([cardId, reviewedAt])
+  @@map("review_outcomes")
+}

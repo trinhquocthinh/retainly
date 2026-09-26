@@ -1,0 +1,113 @@
+name: Deploy Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: 'SHA đầy đủ 40 ký tự của commit đã chạy SIT'
+        required: true
+        type: string
+
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    runs-on: [self-hosted, retainly-deploy]
+    environment: production
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: read
+    env:
+      STACK: prod
+      DEPLOY_DIR: /home/toni/homelab/project/retainly/retainly-prod
+      SHA: ${{ inputs.sha }}
+
+    steps:
+      - name: Kiểm dạng SHA và thư mục triển khai
+        run: |
+          if ! printf '%s' "$SHA" | grep -Eq '^[0-9a-f]{40}$'; then
+            echo "::error::SHA phai la 40 ky tu hex thuong, nhan duoc '$SHA'"
+            exit 1
+          fi
+          if [ ! -f "$DEPLOY_DIR/.env" ]; then
+            echo "::error::thieu $DEPLOY_DIR/.env — tao file secrets cua prod truoc khi deploy"
+            exit 1
+          fi
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.sha }}
+
+      - name: Đăng nhập registry bằng token của chính lần chạy
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Phân giải tag <sha> sang digest
+        run: |
+          : > env.images.new
+          for n in api migrate web; do
+            repo="ghcr.io/trinhquocthinh/retainly-$n"
+            if ! docker pull -q "$repo:$SHA" > /dev/null; then
+              echo "::error::khong keo duoc $repo:$SHA — SHA nay da chay build-push tren nhanh sit chua?"
+              exit 1
+            fi
+            d=$(docker inspect --format '{{range .RepoDigests}}{{println .}}{{end}}' "$repo:$SHA" | grep "^$repo@sha256:" | head -1)
+            if [ -z "$d" ]; then
+              echo "::error::khong phan giai duoc digest cho $repo:$SHA"
+              exit 1
+            fi
+            var=$(printf '%s' "$n" | tr '[:lower:]' '[:upper:]')
+            echo "${var}_IMAGE=$d" >> env.images.new
+          done
+          echo "Digest se chay tren production:"
+          cat env.images.new
+
+      - name: Đặt compose file và danh sách image vào thư mục triển khai
+        run: |
+          mkdir -p "$DEPLOY_DIR"
+          cp docker/docker-compose.yml "$DEPLOY_DIR/docker-compose.yml"
+          if [ -f "$DEPLOY_DIR/.env.images" ]; then
+            cp "$DEPLOY_DIR/.env.images" "$DEPLOY_DIR/.env.images.prev"
+          fi
+          cp env.images.new "$DEPLOY_DIR/.env.images"
+
+      - name: Khởi động stack
+        run: |
+          cd "$DEPLOY_DIR"
+          docker compose -p "retainly-$STACK" \
+            --env-file .env --env-file .env.images \
+            -f docker-compose.yml up -d --remove-orphans
+
+      - name: Đăng xuất
+        if: always()
+        run: docker logout ghcr.io
+
+      - name: Kiểm tra health
+        run: |
+          for i in $(seq 1 20); do
+            if docker exec "retainly-$STACK-api" node -e "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"; then
+              echo "health OK"; exit 0
+            fi
+            sleep 3
+          done
+          echo "::error::health FAIL — rollback: sua .env.images ve ban trong .env.images.prev roi up -d"
+          cd "$DEPLOY_DIR" && docker compose -p "retainly-$STACK" \
+            --env-file .env --env-file .env.images \
+            -f docker-compose.yml logs --tail=50
+          exit 1
+
+      - name: Ghi digest đang chạy ra tóm tắt job
+        if: always()
+        run: |
+          {
+            echo "## Production dang chay"
+            echo
+            echo "Thang hang tu SHA \`$SHA\`"
+            echo
+            for c in api migrate web; do
+              id=$(docker inspect "retainly-$STACK-$c" --format '{{.Image}}' 2>/dev/null) || continue
+              echo "- \`$c\` → \`$(docker inspect "$id" --format '{{index .RepoDigests 0}}')\`"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"

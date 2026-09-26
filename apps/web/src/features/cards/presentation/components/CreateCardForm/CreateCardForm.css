@@ -1,0 +1,262 @@
+.create-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Dải lệnh trên cùng (design 0.1.2): tiêu đề bên trái, chế độ tạo + Làm mới bên phải. */
+.create-card__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.create-card__heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.create-card__breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-text-secondary);
+}
+
+.create-card__breadcrumb a {
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--duration-fast);
+}
+
+.create-card__breadcrumb a:hover {
+  color: var(--color-text);
+}
+
+.create-card__breadcrumb-current {
+  color: var(--color-accent-active);
+  font-weight: 600;
+}
+
+.create-card__title {
+  margin: 0;
+}
+
+.create-card__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.create-card__controls .mode-tabs {
+  flex: 1;
+}
+
+.create-card__reset {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0 var(--space-3);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition:
+    background var(--duration-fast),
+    color var(--duration-fast);
+}
+
+.create-card__reset:hover:not(:disabled) {
+  background: var(--color-secondary-hover-bg);
+  color: var(--color-text);
+}
+
+.create-card__reset:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Dưới desktop xếp một cột: quy tắc xuống cuối, còn nguồn bài viết thì giữ
+   trên cùng vì là thứ người dùng đọc trước khi soạn. */
+.create-card__workspace {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  min-height: 0;
+}
+
+.create-card__aside--rules {
+  order: 1;
+}
+
+/* Trên điện thoại gõ trước, xem trước sau: khung xem trước không đẩy ô nhập khỏi màn hình. */
+.create-card__main .card-preview {
+  order: 1;
+}
+
+.create-card__main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  min-width: 0;
+}
+
+/* Panel — Flat 2.0 level 1: viền 1px, bóng sm, bo 12px */
+.create-card__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.create-card__note {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.create-card__note-toggle {
+  align-self: flex-start;
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: color var(--duration-fast);
+}
+
+.create-card__note-toggle:hover {
+  color: var(--color-text);
+}
+
+.create-card__note-chevron {
+  display: flex;
+  color: var(--color-placeholder);
+  transition: transform var(--duration-fast);
+}
+
+.create-card__note-toggle--open .create-card__note-chevron {
+  transform: rotate(180deg);
+}
+
+.create-card__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-border);
+}
+
+.create-card__shortcut {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-text-secondary);
+  order: 2;
+}
+
+.create-card__buttons {
+  display: flex;
+  gap: var(--space-3);
+  order: 1;
+}
+
+.create-card__buttons .btn--primary {
+  flex: 1;
+}
+
+.create-card__rules {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.create-card__rules-title {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+
+  svg {
+    color: var(--color-accent);
+  }
+}
+
+.create-card__rules-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.create-card__rule {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  color: var(--color-text-secondary);
+}
+
+.create-card__rule svg {
+  flex: 0 0 auto;
+  margin-top: 2px;
+  color: var(--color-success);
+}
+
+@media (min-width: 768px) {
+  .create-card__header {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+
+  .create-card__controls .mode-tabs {
+    flex: 0 0 240px;
+  }
+}
+
+@media (min-width: 1024px) {
+  /* Design 0.1.2 — cột trái 5/12 (nguồn hoặc quy tắc), cột phải 7/12 (xem trước + form). */
+  .create-card__workspace {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--space-6);
+    align-items: start;
+  }
+
+  .create-card__aside--rules,
+  .create-card__main .card-preview {
+    order: 0;
+  }
+
+  .create-card__actions {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .create-card__shortcut {
+    order: 1;
+  }
+
+  .create-card__buttons {
+    order: 2;
+  }
+
+  .create-card__buttons .btn--primary {
+    flex: 0 0 auto;
+    min-width: 180px;
+  }
+}

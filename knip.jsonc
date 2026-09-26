@@ -1,0 +1,20 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema-jsonc.json",
+  "ignore": ["designs/**"],
+  // Hằng/hàm chỉ file tự dùng nhưng export thêm để test (vd. ngưỡng vuốt, trần rate limit):
+  // chế độ --production bỏ qua file test nên sẽ báo "unused export" oan.
+  "ignoreExportsUsedInFile": true,
+  "workspaces": {
+    "apps/api": {
+      // Chế độ thường đã truy được hai file này qua script `dev` / `reset-password`
+      // (nên knip gợi ý "redundant entry"); chế độ --production thì không, vì
+      // `start` chạy dist/ và CLI reset-password chạy qua `docker exec` (nợ #30).
+      "entry": ["src/server.ts!", "src/features/auth/cli/reset-password.ts!"],
+      "project": ["src/**/*.{ts,prisma}!", "!src/shared/test/**!"],
+      "ignoreDependencies": ["@prisma/client"],
+    },
+    "apps/web": {
+      "project": ["src/**/*.{ts,tsx}!", "!src/shared/test/**!", "!src/test-setup.ts!"],
+    },
+  },
+}

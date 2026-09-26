@@ -1,0 +1,77 @@
+.week-activity {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+
+  & h2,
+  & p {
+    margin: 0;
+  }
+}
+
+.week-activity__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+
+  & h2 {
+    font-weight: 600;
+  }
+}
+
+.week-activity__total,
+.week-activity__summary,
+.week-activity__label {
+  color: var(--color-text-secondary);
+}
+
+.week-activity__bars {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.week-activity__day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.week-activity__track {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  max-width: 28px;
+  height: 96px;
+  border-radius: var(--radius-sm);
+  background: var(--color-secondary-hover-bg);
+  overflow: hidden;
+}
+
+.week-activity__fill {
+  display: block;
+  width: 100%;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  background: var(--color-accent-highlight);
+}
+
+.week-activity__day[data-peak] .week-activity__fill {
+  background: var(--color-accent);
+}
+
+/* Ngày chưa tới: nét đứt thay vì cột rỗng, để không đọc nhầm thành "không ôn". */
+.week-activity__day[data-future] .week-activity__track {
+  background: none;
+  border: 1px dashed var(--color-border);
+}
+
+.week-activity__day[data-today] .week-activity__label {
+  color: var(--color-accent-strong);
+  font-weight: 700;
+}

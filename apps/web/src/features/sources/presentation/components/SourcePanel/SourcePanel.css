@@ -1,0 +1,66 @@
+.source-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-height: 0;
+}
+
+.source-panel__label {
+  margin: 0;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.source-panel__title {
+  margin: 0;
+}
+
+/* Bài viết dài thì panel tự cuộn, không kéo cả trang dài ra. */
+.source-panel__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.source-panel__paragraph {
+  margin: 0;
+  max-width: 60ch;
+  text-wrap: pretty;
+}
+
+.source-panel__body ::selection {
+  background: var(--color-accent-highlight);
+}
+
+/* Bôi đen chỉ chạy từ desktop, nên dưới ngưỡng đó không hứa suông. */
+.source-panel__hint {
+  display: none;
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.source-panel__skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.source-panel__bar {
+  height: 16px;
+  border-radius: var(--radius-sm);
+  background: var(--color-border);
+}
+
+@media (min-width: 1024px) {
+  .source-panel__body {
+    max-height: none;
+    flex: 1;
+  }
+
+  .source-panel__hint {
+    display: block;
+  }
+}

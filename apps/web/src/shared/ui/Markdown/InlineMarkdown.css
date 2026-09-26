@@ -1,0 +1,24 @@
+.inline-markdown-code {
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-sm);
+  background: var(--color-secondary-active-bg);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9em;
+}
+
+/* Đoạn đục lỗ đã điền (BR-025): nền nhấn để thấy ngay phần cần nhớ. */
+.inline-markdown-cloze {
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-sm);
+  background: var(--color-accent-highlight);
+  color: var(--color-accent-strong);
+  font-weight: 600;
+}
+
+.inline-markdown-blank {
+  display: inline-block;
+  padding: 0 var(--space-2);
+  border-bottom: 2px solid var(--color-accent-strong);
+  color: var(--color-accent-strong);
+  white-space: nowrap;
+}

@@ -1,0 +1,302 @@
+:root {
+  color-scheme: light;
+
+  /* Màu — design-criteria §3 */
+  --color-bg: #fafaf8;
+  --color-surface: #ffffff;
+  --color-text: #1a1d23;
+  /* Đậm hơn #6b7280 của design gốc để đạt WCAG AA 4,5:1 cả trên nền xám #f3f4f6 (E12-S1-T2). */
+  --color-text-secondary: #636a78;
+  --color-placeholder: #9ca3af;
+  --color-border: #e5e7eb;
+
+  --color-accent: #f59e0b;
+  --color-accent-hover: #d97706;
+  --color-accent-active: #b45309;
+  --color-accent-soft: #fef3c7;
+  --color-accent-strong: #92400e;
+
+  --color-danger: #dc2626;
+  --color-success: #16a34a;
+  --color-success-surface: #f0fdf4;
+  --color-success-strong: #15803d;
+  --color-success-border: #86efac;
+  --color-accent-highlight: #fde68a;
+
+  --color-danger-surface: #fef2f2;
+  --color-danger-border: #fca5a5;
+  --color-danger-active: #991b1b;
+
+  --color-scrim: rgb(26 29 35 / 40%);
+
+  /* Màu phân loại cho biểu đồ — lấy từ bảng màu design statistical, quay vòng
+     khi số nhánh kiến thức vượt quá 4. Không mang ý nghĩa tốt/xấu. */
+  --color-chart-1: #855300;
+  --color-chart-2: #f59e0b;
+  --color-chart-3: #00658b;
+  --color-chart-4: #5c5e65;
+
+  --color-secondary-hover-bg: #f9fafb;
+  --color-secondary-hover-border: #d1d5db;
+  --color-secondary-active-bg: #f3f4f6;
+
+  /* Bo góc */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* Bóng — đúng 2 mức, dùng để phân tầng chứ không trang trí (§2) */
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 5%);
+  --shadow-md: 0 4px 6px rgb(0 0 0 / 7%);
+
+  /* Khoảng cách — bội số của 4 */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Kích thước bố cục */
+  --sidebar-width: 240px;
+  --content-max: 720px;
+  --control-height: 44px;
+  --header-height: 64px;
+
+  /* Chuyển động — design-criteria §2: 150–250ms, không hơn */
+  --duration-fast: 150ms;
+  --duration-base: 200ms;
+
+  font-family:
+    'Inter Variable',
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+}
+
+/* Vòng focus dùng chung — style guide §7: outline mực 2px, offset 2px */
+:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}
+
+/* Thang chữ §4 */
+.text-display {
+  font-size: 36px;
+  line-height: 44px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.text-h1 {
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.text-h2 {
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: 600;
+}
+
+.text-small {
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.text-caption {
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.text-caption-caps {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Primitive bề mặt Flat 2.0 level 1 — dùng cho panel nội dung độc lập. */
+.surface-panel {
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.surface-panel--flush {
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Bề mặt nổi dùng cho dialog và nội dung tương tác có chiều sâu. */
+.surface-raised {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+}
+
+/* Phản hồi lỗi cấp khối, có thể chứa cả text lẫn nút thử lại. */
+.feedback-danger {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-danger-border);
+  border-radius: var(--radius-md);
+  background: var(--color-danger-surface);
+  color: var(--color-danger-active);
+}
+
+/* Link mang dáng nút. Component `Button` chỉ phục vụ <button>; mọi CTA là
+   <Link>/<a> dùng primitive này thay vì mỗi màn tự chép lại một bản. */
+.link-button {
+  min-height: var(--control-height);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    background var(--duration-fast),
+    border-color var(--duration-fast),
+    color var(--duration-fast);
+}
+
+.link-button--accent {
+  padding: 0 var(--space-6);
+  background: var(--color-accent);
+  color: var(--color-text);
+}
+
+.link-button--accent:hover,
+.link-button--accent:active {
+  color: #fff;
+}
+
+.link-button--accent:hover {
+  background: var(--color-accent-hover);
+}
+
+.link-button--accent:active {
+  background: var(--color-accent-active);
+}
+
+.link-button--outline {
+  padding: 0 var(--space-4);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.link-button--outline:hover {
+  border-color: var(--color-secondary-hover-border);
+  background: var(--color-secondary-hover-bg);
+}
+
+/* Chip nhỏ dùng cho phím tắt và nhãn trạng thái gọn. */
+.compact-chip {
+  padding: 2px var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-secondary-active-bg);
+  color: var(--color-text-secondary);
+}
+
+.compact-chip--subtle {
+  background: var(--color-secondary-hover-bg);
+}
+
+.key-hint {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+}
+
+/* Đĩa icon 32px; màu nền và màu icon do component sở hữu. */
+.icon-disc {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+}
+
+/* Nút vuông chỉ có icon (sửa, xoá, đóng hộp thoại); `--danger` đỏ lên khi hover. */
+.icon-button {
+  width: var(--control-height);
+  height: var(--control-height);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition:
+    background var(--duration-fast),
+    border-color var(--duration-fast),
+    color var(--duration-fast);
+}
+
+.icon-button:hover {
+  background: var(--color-secondary-active-bg);
+  border-color: var(--color-secondary-hover-border);
+  color: var(--color-text);
+}
+
+.icon-button--danger:hover {
+  background: var(--color-danger-surface);
+  border-color: var(--color-danger-border);
+  color: var(--color-danger);
+}
+
+@media (min-width: 1024px) {
+  .surface-panel {
+    padding: var(--space-6);
+  }
+
+  .surface-panel--flush {
+    padding: 0;
+  }
+}
+
+/* Tôn trọng thiết lập giảm chuyển động của hệ điều hành */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

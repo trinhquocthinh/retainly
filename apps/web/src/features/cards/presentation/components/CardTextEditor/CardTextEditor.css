@@ -1,0 +1,117 @@
+/* Chấm màu trước nhãn — vàng: mặt hỏi, xanh: mặt trả lời (design 0.1.2). */
+.card-text-editor--front .field__label::before,
+.card-text-editor--back .field__label::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: var(--space-2);
+  border-radius: 999px;
+  vertical-align: 1px;
+}
+
+.card-text-editor--front .field__label::before {
+  background: var(--color-accent);
+}
+
+.card-text-editor--back .field__label::before {
+  background: var(--color-success);
+}
+
+.card-text-editor .field__label {
+  font-weight: 600;
+}
+
+.card-text-editor__count {
+  flex-shrink: 0;
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.card-text-editor__count--near {
+  color: var(--color-accent-active);
+  font-weight: 600;
+}
+
+/* Thanh công cụ dính liền mép trên ô nhập, thành một khối soạn thảo. */
+.card-text-editor__box {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-text-editor__toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  border: 1px solid var(--color-border);
+  border-bottom: 0;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  background: var(--color-secondary-active-bg);
+}
+
+.card-text-editor__toolbar + textarea {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.card-text-editor__tool {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 var(--space-2);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  font: inherit;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background var(--duration-fast);
+}
+
+.card-text-editor__tool:hover {
+  background: var(--color-surface);
+}
+
+.card-text-editor__tool--bold {
+  font-weight: 700;
+}
+
+.card-text-editor__tool--italic {
+  font-style: italic;
+}
+
+.card-text-editor__tool--code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* Cloze là thao tác nghiệp vụ, không phải định dạng: tách bằng vạch và nổi hơn. */
+.card-text-editor__tool--cloze {
+  position: relative;
+  margin-left: var(--space-3);
+  background: var(--color-surface);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: calc(-1 * var(--space-2));
+    top: 8px;
+    bottom: 8px;
+    width: 1px;
+    background: var(--color-border);
+  }
+
+  &:hover {
+    background: var(--color-accent-soft);
+  }
+}
+
+.card-text-editor__toolbar-hint {
+  margin-left: auto;
+  padding: 0 var(--space-2);
+  color: var(--color-text-secondary);
+}

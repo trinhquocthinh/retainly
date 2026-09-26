@@ -1,0 +1,111 @@
+.topic-selector {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.topic-selector__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.topic-selector__heading label {
+  font-weight: 500;
+}
+
+.topic-selector__add {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-accent-strong);
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.topic-selector__add:hover {
+  text-decoration: underline;
+}
+
+.topic-selector__description,
+.topic-selector__error {
+  margin: 0;
+}
+
+.topic-selector__description {
+  color: var(--color-text-secondary);
+}
+
+.topic-selector select,
+.topic-selector input {
+  width: 100%;
+  height: var(--control-height);
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+}
+
+/* Ẩn mũi tên gốc của trình duyệt vì nó không nhận padding, rồi vẽ chevron
+   riêng cách lề phải 12px, thẳng hàng với padding trái của chữ. */
+.topic-selector select {
+  appearance: none;
+  padding-right: calc(var(--space-3) * 2 + 16px);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--space-3) center;
+  background-size: 16px;
+  cursor: pointer;
+}
+
+.topic-selector select:focus,
+.topic-selector input:focus {
+  border-color: var(--color-accent);
+}
+
+.topic-selector__creation {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-secondary-hover-bg);
+}
+
+.topic-selector__creation-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-2);
+}
+
+.topic-selector__error {
+  color: var(--color-danger);
+}
+
+.topic-selector__load-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.topic-selector__load-error button {
+  flex: 0 0 auto;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+@media (min-width: 640px) {
+  .topic-selector__creation-row {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+  }
+}

@@ -1,0 +1,90 @@
+.review {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.review__retry {
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Nút lật — lối đi bằng bàn phím/chuột song song với chạm vào thẻ và vuốt */
+.review__flip {
+  align-self: center;
+  width: 100%;
+  max-width: 280px;
+  height: var(--control-height);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  font: inherit;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--color-text);
+  cursor: pointer;
+  transition:
+    background var(--duration-fast),
+    border-color var(--duration-fast);
+}
+
+.review__flip:hover {
+  background: var(--color-secondary-hover-bg);
+  border-color: var(--color-secondary-hover-border);
+}
+
+.review__flip:active {
+  background: var(--color-secondary-active-bg);
+}
+
+.review__flip svg {
+  color: var(--color-accent);
+}
+
+.review__flip kbd {
+  font-weight: 400;
+}
+
+.review__actions {
+  display: flex;
+  gap: var(--space-3);
+
+  & .btn {
+    flex: 1;
+    height: auto;
+    min-height: var(--control-height);
+    padding-block: var(--space-2);
+  }
+}
+
+.review__rate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.review__forecast {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+@media (max-width: 1023px) {
+  .review__flip kbd {
+    display: none;
+  }
+}

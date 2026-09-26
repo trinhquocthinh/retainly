@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Retainly — Thư viện thẻ</title>
+  <!-- Google Fonts Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              amber: '#F59E0B',
+              amberHover: '#D97706',
+              amberLight: '#FEF3C7',
+              amberDark: '#92400E',
+              amberText: '#B45309',
+              bg: '#FAFAF8',
+              surface: '#FFFFFF',
+              darkText: '#1A1D23',
+              subText: '#6B7280',
+              border: '#E5E7EB',
+              danger: '#DC2626',
+              dangerLight: '#FEF2F2',
+              dangerBorder: '#FCA5A5',
+              success: '#16A34A',
+              successLight: '#F0FDF4',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+          boxShadow: {
+            'card-sm': '0 1px 2px rgba(0,0,0,0.05)',
+            'card-md': '0 4px 6px rgba(0,0,0,0.07)',
+            'modal': '0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.08)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #FAFAF8;
+      color: #1A1D23;
+      font-family: 'Inter', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    ::selection {
+      background: #FDE68A;
+      color: #1A1D23;
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #FAFAF8;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #E5E7EB;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #D1D5DB;
+    }
+    .modal-backdrop {
+      background: rgba(26, 29, 35, 0.48);
+      backdrop-filter: blur(2px);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-[#FAFAF8] text-[#1A1D23]">
+
+  <div class="flex flex-1 min-h-screen">
+    <!-- ================= SIDEBAR (240px) ================= -->
+    <aside class="w-[240px] flex-shrink-0 bg-white border-r border-[#E5E7EB] flex flex-col justify-between py-6 px-4 select-none">
+      <div class="space-y-6">
+        <!-- Brand Logo Lockup (Design-criteria §11: R mark inside amber rounded square + Inter 600) -->
+        <a href="#" class="flex items-center gap-3 px-2 focus:outline-none focus:ring-2 focus:ring-[#1A1D23] rounded-lg">
+          <div class="w-8 h-8 rounded-lg bg-[#F59E0B] flex items-center justify-center text-white shadow-sm flex-shrink-0">
+            <svg class="w-5 h-5 text-white" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 23 V9.5 H17 A3.75 3.75 0 0 1 17 17 H11 M14.75 17 L20.75 23"></path>
+            </svg>
+          </div>
+          <span class="text-lg font-semibold tracking-tight text-[#1A1D23]">Retainly</span>
+        </a>
+
+        <!-- Main Navigation Links -->
+        <nav class="space-y-1">
+          <!-- Hôm nay -->
+          <a href="#" class="flex items-center justify-between px-3 py-2.5 rounded-lg text-[15px] font-medium text-[#1A1D23] hover:bg-[#F3F4F6] transition-colors group">
+            <div class="flex items-center gap-3">
+              <svg class="w-4 h-4 text-[#6B7280] group-hover:text-[#1A1D23]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              <span>Hôm nay</span>
+            </div>
+            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#F3F4F6] text-[#6B7280]">12</span>
+          </a>
+
+          <!-- Thư viện (Active State: Amber Light + Amber Dark Text) -->
+          <a href="#" class="flex items-center justify-between px-3 py-2.5 rounded-lg text-[15px] font-semibold bg-[#FEF3C7] text-[#92400E] transition-colors">
+            <div class="flex items-center gap-3">
+              <svg class="w-4 h-4 text-[#B45309]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+              </svg>
+              <span>Thư viện</span>
+            </div>
+            <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-white/70 text-[#92400E]" id="sidebar-total-badge">38</span>
+          </a>
+
+          <!-- Thống kê -->
+          <a href="#" class="flex items-center justify-between px-3 py-2.5 rounded-lg text-[15px] font-medium text-[#1A1D23] hover:bg-[#F3F4F6] transition-colors group">
+            <div class="flex items-center gap-3">
+              <svg class="w-4 h-4 text-[#6B7280] group-hover:text-[#1A1D23]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+              <span>Thống kê</span>
+            </div>
+          </a>
+        </nav>
+
+        <!-- CTA Tạo thẻ mới button (Primary Amber, height 44px) -->
+        <button id="btn-open-create-toast" class="w-full h-11 px-4 rounded-lg bg-[#F59E0B] hover:bg-[#D97706] active:bg-[#B45309] text-[#1A1D23] font-semibold text-[15px] flex items-center justify-center gap-2 shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#1A1D23] focus:ring-offset-2">
+          <svg class="w-4 h-4 stroke-[2.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
+          </svg>
+          <span>Tạo thẻ mới</span>
+        </button>
+
+        <!-- Nhánh kiến thức (Filter by Category) -->
+        <div class="pt-2 border-t border-[#E5E7EB]">
+          <div class="flex items-center justify-between px-2 mb-2">
+            <span class="text-xs font-semibold uppercase tracking-wider text-[#6B7280]">Nhánh kiến thức</span>
+            <span class="text-[11px] text-[#6B7280]">Lọc nhanh</span>
+          </div>
+          <div class="space-y-0.5 text-sm" id="category-filter-list">
+            <button onclick="filterCategory('all')" class="cat-filter-btn active w-full flex items-center justify-between px-2.5 py-1.5 rounded-md font-medium text-[#1A1D23] bg-[#F3F4F6] text-left transition-colors">
+              <span class="truncate">Tất cả</span>
+              <span class="text-xs text-[#6B7280] font-normal" id="cat-count-all">38</span>
+            </button>
+            <button onclick="filterCategory('memory')" class="cat-filter-btn w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-[#4B5563] hover:bg-[#F9FAFB] hover:text-[#1A1D23] text-left transition-colors">
+              <span class="truncate">Trí nhớ & học tập</span>
+              <span class="text-xs text-[#6B7280] font-normal" id="cat-count-memory">14</span>
+            </button>
+            <button onclick="filterCategory('architecture')" class="cat-filter-btn w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-[#4B5563] hover:bg-[#F9FAFB] hover:text-[#1A1D23] text-left transition-colors">
+              <span class="truncate">Kiến trúc phần mềm</span>
+              <span class="text-xs text-[#6B7280] font-normal" id="cat-count-architecture">11</span>
+            </button>
+            <button onclick="filterCategory('learning')" class="cat-filter-btn w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-[#4B5563] hover:bg-[#F9FAFB] hover:text-[#1A1D23] text-left transition-colors">
+              <span class="truncate">Phương pháp học</span>
+              <span class="text-xs text-[#6B7280] font-normal" id="cat-count-learning">8</span>
+            </button>
+            <button onclick="filterCategory('unassigned')" class="cat-filter-btn w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-[#6B7280] hover:bg-[#F9FAFB] hover:text-[#1A1D23] text-left transition-colors">
+              <span class="truncate italic">Chưa gán nhánh</span>
+              <span class="text-xs text-[#6B7280] font-normal" id="cat-count-unassigned">5</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- User Profile Box -->
+      <div class="pt-4 border-t border-[#E5E7EB] flex items-center gap-3 px-2">
+        <div class="w-8 h-8 rounded-full bg-[#E5E7EB] text-[#4B5563] flex items-center justify-center font-semibold text-xs flex-shrink-0">
+          T
+        </div>
+        <div class="flex flex-col min-w-0">
+          <span class="text-sm font-semibold text-[#1A1D23] truncate">Toni</span>
+          <span class="text-xs text-[#6B7280] truncate">ban@vidu.com</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ================= MAIN CONTENT WORKSPACE ================= -->
+    <main class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+      <!-- Top header bar / breadcrumbs -->
+      <header class="h-16 px-8 border-b border-[#E5E7EB] bg-white flex items-center justify-between flex-shrink-0 sticky top-0 z-10">
+        <div class="flex items-center gap-2 text-sm text-[#6B7280]">
+          <a href="#" class="hover:text-[#1A1D23] transition-colors">Trang chủ</a>
+          <span class="text-[#9CA3AF]">/</span>
+          <span class="font-semibold text-[#1A1D23]">Thư viện thẻ</span>
+        </div>
+        <!-- Quick stats in header -->
+        <div class="flex items-center gap-6 text-sm">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-[#F59E0B]"></span>
+            <span class="text-[#6B7280]">Đến hạn hôm nay:</span>
+            <span class="font-semibold text-[#1A1D23]">12 thẻ</span>
+          </div>
+          <div class="h-4 w-px bg-[#E5E7EB]"></div>
+          <div class="flex items-center gap-2">
+            <span class="text-[#6B7280]">Tổng cộng:</span>
+            <span class="font-semibold text-[#1A1D23]" id="header-total-count">38 thẻ</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Workspace Body -->
+      <div class="p-8 max-w-6xl w-full mx-auto space-y-6">
+
+        <!-- Title & Search / Filter Controls Row -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-3">
+              <h1 class="text-2xl font-bold text-[#1A1D23] tracking-tight">Thư viện thẻ</h1>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#F3F4F6] text-[#4B5563]" id="active-filter-badge">Tất cả (38)</span>
+            </div>
+            <p class="text-sm text-[#6B7280] mt-1">Quản lý, tìm kiếm, chỉnh sửa và theo dõi chu kỳ lặp lại ngắt quãng (FSRS) của từng thẻ.</p>
+          </div>
+
+          <!-- Controls: Search Input + Sort Dropdown -->
+          <div class="flex items-center gap-3">
+            <!-- Search bar -->
+            <div class="relative w-72">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#9CA3AF]">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+              </div>
+              <input 
+                type="text" 
+                id="search-input" 
+                oninput="handleSearch(this.value)"
+                placeholder="Tìm câu hỏi, đáp án, nhánh..." 
+                class="w-full h-11 pl-9 pr-4 text-sm bg-white border border-[#E5E7EB] rounded-lg text-[#1A1D23] placeholder-[#9CA3AF] focus:outline-none focus:border-[#F59E0B] focus:ring-2 focus:ring-[#1A1D23] transition-all"
+              >
+              <button id="clear-search-btn" onclick="clearSearch()" class="hidden absolute inset-y-0 right-0 pr-3 flex items-center text-[#9CA3AF] hover:text-[#1A1D23]">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+              </button>
+            </div>
+
+            <!-- Sort By Select -->
+            <div class="relative">
+              <select id="sort-select" onchange="handleSort(this.value)" class="h-11 pl-3 pr-8 text-sm bg-white border border-[#E5E7EB] rounded-lg text-[#1A1D23] font-medium focus:outline-none focus:border-[#F59E0B] focus:ring-2 focus:ring-[#1A1D23] cursor-pointer appearance-none">
+                <option value="due-asc">Lần ôn tới (Gần nhất)</option>
+                <option value="due-desc">Lần ôn tới (Xa nhất)</option>
+                <option value="name-asc">Tên mặt hỏi (A → Z)</option>
+                <option value="created-desc">Mới tạo gần đây</option>
+              </select>
+              <div class="absolute inset-y-0 right-0 pr-2.5 flex items-center pointer-events-none text-[#6B7280]">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= CARD TABLE / LIST CONTAINER ================= -->
+        <div class="bg-white border border-[#E5E7EB] rounded-xl shadow-card-sm overflow-hidden">
+          
+          <!-- Table Header -->
+          <div class="grid grid-cols-12 gap-4 px-6 py-3.5 bg-[#FAFAF8] border-b border-[#E5E7EB] text-xs font-semibold uppercase tracking-wider text-[#6B7280] select-none">
+            <div class="col-span-6 flex items-center gap-2">Mặt hỏi & Đáp án tóm lược</div>
+            <div class="col-span-2">Nhánh kiến thức</div>
+            <div class="col-span-2">Lần ôn tới (FSRS)</div>
+            <div class="col-span-2 text-right">Thao tác</div>
+          </div>
+
+          <!-- Table Items Body -->
+          <div id="cards-container" class="divide-y divide-[#E5E7EB]">
+            <!-- Items rendered dynamically via JavaScript below -->
+          </div>
+
+          <!-- Empty State (Hidden when items exist) -->
+          <div id="empty-state" class="hidden py-16 px-6 text-center">
+            <div class="w-16 h-16 rounded-2xl border-2 border-dashed border-[#E5E7EB] bg-[#FAFAF8] flex items-center justify-center mx-auto mb-4 text-[#9CA3AF]">
+              <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-[#1A1D23]">Không tìm thấy thẻ nào</h3>
+            <p class="text-sm text-[#6B7280] max-w-sm mx-auto mt-1">Không có kết quả phù hợp với từ khoá hoặc danh mục bạn đã chọn. Hãy thử tìm từ khác hoặc tạo thẻ mới.</p>
+            <button onclick="resetFilters()" class="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-[#E5E7EB] bg-white hover:bg-[#F9FAFB] text-sm font-medium text-[#1A1D23] transition-colors">
+              Xoá bộ lọc tìm kiếm
+            </button>
+          </div>
+
+          <!-- Table Footer Status / Count -->
+          <div class="px-6 py-3.5 bg-[#FAFAF8] border-t border-[#E5E7EB] flex items-center justify-between text-xs text-[#6B7280]">
+            <div class="flex items-center gap-2">
+              <span>Đang hiển thị <strong class="text-[#1A1D23] font-semibold" id="showing-count">5</strong> thẻ</span>
+              <span>·</span>
+              <span class="italic">Cập nhật theo thuật toán FSRS v4</span>
+            </div>
+            <div class="flex items-center gap-4">
+              <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#F59E0B]"></span> Đến hạn hôm nay</span>
+              <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#16A34A]"></span> Đang ghi nhớ tốt</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- FSRS Recommendation Banner -->
+        <div class="bg-white border border-[#E5E7EB] rounded-xl p-5 shadow-card-sm flex items-center justify-between gap-6">
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 rounded-lg bg-[#FEF3C7] text-[#B45309] flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <div>
+              <h4 class="text-sm font-semibold text-[#1A1D23]">Mẹo ôn tập hiệu quả theo chu kỳ ngắt quãng</h4>
+              <p class="text-xs text-[#6B7280] mt-0.5 max-w-2xl">
+                Chỉnh sửa nội dung mặt hỏi/trả lời không làm đặt lại chu kỳ ôn FSRS của thẻ. Hãy giữ câu trả lời ngắn gọn trong 1 ý chính duy nhất để tối ưu khả năng truy hồi.
+              </p>
+            </div>
+          </div>
+          <a href="#" class="px-4 py-2 rounded-lg bg-[#F3F4F6] hover:bg-[#E5E7EB] text-xs font-semibold text-[#1A1D23] whitespace-nowrap transition-colors">
+            Xem tài liệu FSRS
+          </a>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ================================================================= -->
+  <!-- ======================== 1. EDIT MODAL ========================== -->
+  <!-- ================================================================= -->
+  <div id="edit-modal" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-xl rounded-2xl shadow-modal border border-[#E5E7EB] overflow-hidden flex flex-col max-h-[90vh] transition-all transform scale-95 opacity-0 duration-200" id="edit-modal-dialog">
+      
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-[#E5E7EB] flex items-center justify-between bg-white sticky top-0 z-10">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-[#FEF3C7] text-[#B45309] flex items-center justify-center">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-lg font-semibold text-[#1A1D23] leading-tight">Chỉnh sửa thẻ</h2>
+            <p class="text-xs text-[#6B7280]">Cập nhật câu hỏi hoặc đáp án mà không làm mất tiến độ ôn tập</p>
+          </div>
+        </div>
+        <button onclick="closeEditModal()" class="w-8 h-8 rounded-lg text-[#6B7280] hover:text-[#1A1D23] hover:bg-[#F3F4F6] flex items-center justify-center transition-colors focus:outline-none">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <!-- Modal Body (Scrollable form) -->
+      <form id="edit-form" onsubmit="saveCardEdit(event)" class="p-6 space-y-5 overflow-y-auto flex-1">
+        <input type="hidden" id="edit-card-id">
+
+        <!-- Mặt hỏi (Prompt) -->
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between">
+            <label for="edit-prompt" class="text-sm font-semibold text-[#1A1D23] flex items-center gap-1">
+              Mặt hỏi (Prompt) <span class="text-[#DC2626]">*</span>
+            </label>
+            <span class="text-xs text-[#6B7280]" id="edit-prompt-count">0/240</span>
+          </div>
+          <textarea 
+            id="edit-prompt" 
+            required 
+            rows="3" 
+            maxlength="240"
+            oninput="document.getElementById('edit-prompt-count').textContent = this.value.length + '/240'"
+            class="w-full p-3 text-[15px] leading-relaxed bg-white border border-[#E5E7EB] rounded-lg text-[#1A1D23] focus:outline-none focus:border-[#F59E0B] focus:ring-2 focus:ring-[#1A1D23] transition-all resize-none placeholder-[#9CA3AF]"
+            placeholder="Nhập câu hỏi bạn muốn ghi nhớ..."
+          ></textarea>
+        </div>
+
+        <!-- Mặt trả lời (Answer) -->
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between">
+            <label for="edit-answer" class="text-sm font-semibold text-[#1A1D23] flex items-center gap-1">
+              Mặt trả lời (Answer) <span class="text-[#DC2626]">*</span>
+            </label>
+            <span class="text-xs text-[#6B7280]">Khuyên dùng &lt; 3 dòng</span>
+          </div>
+          <textarea 
+            id="edit-answer" 
+            required 
+            rows="4" 
+            class="w-full p-3 text-[15px] leading-relaxed bg-white border border-[#E5E7EB] rounded-lg text-[#1A1D23] focus:outline-none focus:border-[#F59E0B] focus:ring-2 focus:ring-[#1A1D23] transition-all resize-none placeholder-[#9CA3AF]"
+            placeholder="Nhập câu trả lời ngắn gọn, cô đọng..."
+          ></textarea>
+        </div>
+
+        <!-- Nhánh kiến thức (Category Selection) -->
+        <div class="space-y-1.5">
+          <label for="edit-category" class="text-sm font-semibold text-[#1A1D23]">
+            Nhánh kiến thức
+          </label>
+          <div class="relative">
+            <select id="edit-category" class="w-full h-11 pl-3 pr-10 text-sm bg-white border border-[#E5E7EB] rounded-lg text-[#1A1D23] focus:outline-none focus:border-[#F59E0B] focus:ring-2 focus:ring-[#1A1D23] appearance-none cursor-pointer">
+              <option value="Trí nhớ & học tập">Trí nhớ & học tập</option>
+              <option value="Kiến trúc phần mềm">Kiến trúc phần mềm</option>
+              <option value="Phương pháp học">Phương pháp học</option>
+              <option value="Kinh tế học hành vi">Kinh tế học hành vi</option>
+              <option value="Chưa gán">Chưa gán nhánh</option>
+            </select>
+            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#6B7280]">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- FSRS Cycle Status Notice (US-009) -->
+        <div class="p-3.5 rounded-lg bg-[#FAFAF8] border border-[#E5E7EB] flex items-start gap-3 text-xs text-[#6B7280]">
+          <svg class="w-4 h-4 text-[#F59E0B] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <div>
+            <span class="font-medium text-[#1A1D23]">Lịch ôn hiện tại:</span> 
+            <span id="edit-modal-due-text">Đến hạn hôm nay (Độ bền S=3.2 ngày, D=4.5)</span>. Việc sửa từ ngữ giữ nguyên các chỉ số thống kê này.
+          </div>
+        </div>
+
+        <!-- Shortcut info -->
+        <div class="text-xs text-[#6B7280] flex items-center justify-between pt-1">
+          <span>Nhấn <kbd class="px-1.5 py-0.5 bg-[#F3F4F6] border border-[#E5E7EB] rounded text-[11px] font-mono">Esc</kbd> để huỷ</span>
+          <span>Nhấn <kbd class="px-1.5 py-0.5 bg-[#F3F4F6] border border-[#E5E7EB] rounded text-[11px] font-mono">Ctrl + Enter</kbd> để lưu nhanh</span>
+        </div>
+      </form>
+
+      <!-- Modal Footer (Actions) -->
+      <div class="px-6 py-4 bg-[#FAFAF8] border-t border-[#E5E7EB] flex items-center justify-between sticky bottom-0">
+        <!-- Danger button isolated on left for quick deletion option (Design Criteria §8) -->
+        <button type="button" onclick="triggerDeleteFromEditModal()" class="h-11 px-4 rounded-lg border border-[#DC2626] text-[#DC2626] hover:bg-[#FEF2F2] active:bg-[#FEE2E2] text-sm font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-[#DC2626] flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+          </svg>
+          <span>Xoá thẻ này</span>
+        </button>
+
+        <!-- Right actions -->
+        <div class="flex items-center gap-3">
+          <button type="button" onclick="closeEditModal()" class="h-11 px-5 rounded-lg border border-[#E5E7EB] bg-white hover:bg-[#F9FAFB] active:bg-[#F3F4F6] text-sm font-medium text-[#1A1D23] transition-colors focus:outline-none focus:ring-2 focus:ring-[#1A1D23]">
+            Huỷ
+          </button>
+          <button type="submit" form="edit-form" class="h-11 px-6 rounded-lg bg-[#F59E0B] hover:bg-[#D97706] active:bg-[#B45309] text-sm font-semibold text-[#1A1D23] shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#1A1D23] flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span>Lưu thay đổi</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================================================================= -->
+  <!-- ================= 2. DELETE CONFIRMATION DIALOG ================= -->
+  <!-- ================================================================= -->
+  <!-- Strictly adheres to Design-Criteria §5, §6, §8, §10: Mandatory confirmation dialog for delete -->
+  <div id="delete-dialog" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-modal border border-[#E5E7EB] overflow-hidden p-6 transition-all transform scale-95 opacity-0 duration-200" id="delete-dialog-content">
+      
+      <!-- Icon + Title -->
+      <div class="flex items-start gap-4">
+        <div class="w-12 h-12 rounded-xl bg-[#FEF2F2] border border-[#FCA5A5] text-[#DC2626] flex items-center justify-center flex-shrink-0">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+        </div>
+        <div class="space-y-1">
+          <h3 class="text-lg font-bold text-[#1A1D23] leading-tight">Xoá thẻ này vĩnh viễn?</h3>
+          <p class="text-xs font-semibold uppercase tracking-wider text-[#DC2626]">Hành động không thể hoàn tác</p>
+        </div>
+      </div>
+
+      <!-- Warning description & Selected Card summary -->
+      <div class="mt-4 space-y-3">
+        <p class="text-sm text-[#4B5563] leading-relaxed">
+          Toàn bộ lịch sử ôn tập, thuật toán FSRS và chu kỳ trí nhớ của thẻ sau đây sẽ bị xoá khỏi cơ sở dữ liệu:
+        </p>
+        
+        <!-- Card Snippet Preview Box -->
+        <div class="p-3.5 rounded-lg bg-[#FAFAF8] border border-[#E5E7EB] space-y-1.5">
+          <div class="flex items-center gap-2">
+            <span class="text-[11px] font-semibold px-2 py-0.5 rounded bg-[#FEF3C7] text-[#92400E]" id="delete-preview-cat">Trí nhớ & học tập</span>
+            <span class="text-xs text-[#6B7280]" id="delete-preview-due">Đến hạn hôm nay</span>
+          </div>
+          <div class="text-sm font-semibold text-[#1A1D23] line-clamp-2" id="delete-preview-prompt">
+            “Đường cong quên do ai mô tả?”
+          </div>
+        </div>
+
+        <p class="text-xs text-[#6B7280]">
+          Nếu bạn chỉ muốn tạm ngưng ôn, bạn có thể chuyển thẻ sang một nhánh lưu trữ thay vì xoá hoàn toàn.
+        </p>
+      </div>
+
+      <!-- Dialog Action Buttons (Clear spacing, distinct Danger Red vs Neutral Cancel) -->
+      <div class="mt-6 flex items-center justify-end gap-3 pt-4 border-t border-[#E5E7EB]">
+        <button type="button" onclick="closeDeleteDialog()" class="h-11 px-5 rounded-lg border border-[#E5E7EB] bg-white hover:bg-[#F9FAFB] active:bg-[#F3F4F6] text-sm font-semibold text-[#1A1D23] transition-colors focus:outline-none focus:ring-2 focus:ring-[#1A1D23]">
+          Giữ lại thẻ
+        </button>
+        <button type="button" id="confirm-delete-btn" onclick="executeDeleteCard()" class="h-11 px-6 rounded-lg bg-[#DC2626] hover:bg-[#B91C1C] active:bg-[#991B1B] text-sm font-semibold text-white shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#DC2626] flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+          </svg>
+          <span>Xác nhận xoá</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-msg" class="fixed bottom-6 right-6 z-50 transform translate-y-16 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-3 px-4 py-3 bg-[#1A1D23] text-white text-sm font-medium rounded-xl shadow-modal">
+    <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+    <span id="toast-text">Đã lưu thay đổi thẻ thành công</span>
+  </div>
+
+  <!-- ================= SCRIPT INTERACTION LOGIC ================= -->
+  <script>
+    // Initial Dataset (Synchronized with Retainly Spec & Screens)
+    let cardsData = [
+      {
+        id: 1,
+        prompt: "FSRS tính lại khoảng cách ôn tập dựa trên ba đại lượng cốt lõi nào?",
+        answer: "Độ khó (Difficulty), độ bền trí nhớ (Stability) và khả năng truy hồi tại thời điểm ôn (Retrievability).",
+        category: "Trí nhớ & học tập",
+        catKey: "memory",
+        dueText: "Đến hạn hôm nay",
+        dueState: "due-today",
+        dueDays: 0,
+        stability: "S=3.2 ngày",
+        difficulty: "D=4.5"
+      },
+      {
+        id: 2,
+        prompt: "Đường cong quên (Forgetting Curve) do nhà tâm lý học nào mô tả đầu tiên?",
+        answer: "Hermann Ebbinghaus mô tả qua các thực nghiệm ghi nhớ âm tiết vô nghĩa năm 1885.",
+        category: "Trí nhớ & học tập",
+        catKey: "memory",
+        dueText: "Còn 3 ngày",
+        dueState: "future",
+        dueDays: 3,
+        stability: "S=7.5 ngày",
+        difficulty: "D=3.1"
+      },
+      {
+        id: 3,
+        prompt: "Kỹ thuật Pomodoro chia chu kỳ làm việc và nghỉ ngơi như thế nào?",
+        answer: "25 phút tập trung cao độ không xao nhãng, sau đó nghỉ ngắn 5 phút; sau 4 chu kỳ thì nghỉ dài 15–30 phút.",
+        category: "Chưa gán",
+        catKey: "unassigned",
+        dueText: "Còn 9 ngày",
+        dueState: "future",
+        dueDays: 9,
+        stability: "S=14.2 ngày",
+        difficulty: "D=2.0"
+      },
+      {
+        id: 4,
+        prompt: "Interleaving practice khác với Blocked practice ở điểm mấu chốt nào?",
+        answer: "Interleaving đan xen các dạng bài hoặc chủ đề khác nhau trong một buổi học giúp não phân biệt dạng tốt hơn thay vì luyện lặp lại 1 kiểu liên tục.",
+        category: "Phương pháp học",
+        catKey: "learning",
+        dueText: "Còn 14 ngày",
+        dueState: "future",
+        dueDays: 14,
+        stability: "S=24.0 ngày",
+        difficulty: "D=3.8"
+      },
+      {
+        id: 5,
+        prompt: "Ba tầng chính của kiến trúc Hexagonal (Ports & Adapters) là gì?",
+        answer: "Domain (Entity/Business Logic) ở trung tâm, Application (Use Cases/Ports), và Infrastructure (Adapters: DB, Web, Queue).",
+        category: "Kiến trúc phần mềm",
+        catKey: "architecture",
+        dueText: "Còn 21 ngày",
+        dueState: "future",
+        dueDays: 21,
+        stability: "S=35.0 ngày",
+        difficulty: "D=4.9"
+      }
+    ];
+
+    let currentFilter = 'all';
+    let currentSearchTerm = '';
+    let currentSort = 'due-asc';
+    let cardPendingDeleteId = null;
+
+    // Render Cards in DOM
+    function renderCards() {
+      const container = document.getElementById('cards-container');
+      const emptyState = document.getElementById('empty-state');
+      const showingCount = document.getElementById('showing-count');
+
+      // Filter by category
+      let filtered = cardsData.filter(card => {
+        if (currentFilter === 'all') return true;
+        return card.catKey === currentFilter;
+      });
+
+      // Filter by search query
+      if (currentSearchTerm.trim() !== '') {
+        const query = currentSearchTerm.toLowerCase();
+        filtered = filtered.filter(card => 
+          card.prompt.toLowerCase().includes(query) || 
+          card.answer.toLowerCase().includes(query) ||
+          card.category.toLowerCase().includes(query)
+        );
+      }
+
+      // Sort
+      filtered.sort((a, b) => {
+        if (currentSort === 'due-asc') return a.dueDays - b.dueDays;
+        if (currentSort === 'due-desc') return b.dueDays - a.dueDays;
+        if (currentSort === 'name-asc') return a.prompt.localeCompare(b.prompt, 'vi');
+        if (currentSort === 'created-desc') return b.id - a.id;
+        return 0;
+      });
+
+      showingCount.textContent = filtered.length;
+
+      if (filtered.length === 0) {
+        container.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+
+      container.innerHTML = filtered.map(card => {
+        const isDueToday = card.dueState === 'due-today';
+        const dueBadgeClass = isDueToday 
+          ? 'bg-[#FEF3C7] text-[#92400E] font-semibold' 
+          : 'bg-[#F3F4F6] text-[#4B5563]';
+        
+        const catBadgeClass = card.catKey === 'unassigned'
+          ? 'bg-[#F3F4F6] text-[#6B7280] italic'
+          : 'bg-[#FEF3C7] text-[#92400E] font-medium';
+
+        return `
+          <div class="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-[#FAFAF8] transition-colors group" id="card-row-${card.id}">
+            
+            <!-- Prompt & Short Answer (col 6) -->
+            <div class="col-span-6 pr-4 space-y-1">
+              <div class="text-[15px] font-semibold text-[#1A1D23] leading-snug group-hover:text-[#B45309] transition-colors cursor-pointer" onclick="openEditModal(${card.id})">
+                ${escapeHtml(card.prompt)}
+              </div>
+              <div class="text-xs text-[#6B7280] line-clamp-1">
+                ${escapeHtml(card.answer)}
+              </div>
+            </div>
+
+            <!-- Category Badge (col 2) -->
+            <div class="col-span-2">
+              <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs ${catBadgeClass}">
+                ${escapeHtml(card.category)}
+              </span>
+            </div>
+
+            <!-- FSRS Due Date (col 2) -->
+            <div class="col-span-2 flex flex-col">
+              <div class="inline-flex items-center gap-1.5 text-xs">
+                <span class="w-1.5 h-1.5 rounded-full ${isDueToday ? 'bg-[#F59E0B]' : 'bg-[#10B981]'}"></span>
+                <span class="font-medium ${isDueToday ? 'text-[#B45309] font-semibold' : 'text-[#4B5563]'}">${escapeHtml(card.dueText)}</span>
+              </div>
+              <span class="text-[11px] text-[#9CA3AF] mt-0.5">${card.stability}</span>
+            </div>
+
+            <!-- Actions: Edit & Delete (col 2) min target 44x44px for accessibility -->
+            <div class="col-span-2 flex items-center justify-end gap-1.5">
+              <!-- Edit Button -->
+              <button 
+                onclick="openEditModal(${card.id})" 
+                title="Chỉnh sửa thẻ"
+                class="w-10 h-10 rounded-lg border border-[#E5E7EB] bg-white hover:bg-[#F3F4F6] hover:border-[#D1D5DB] text-[#4B5563] hover:text-[#1A1D23] flex items-center justify-center transition-all focus:outline-none focus:ring-2 focus:ring-[#1A1D23]"
+              >
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+              </button>
+
+              <!-- Delete Button (Red on hover/border) -->
+              <button 
+                onclick="openDeleteDialog(${card.id})" 
+                title="Xoá thẻ"
+                class="w-10 h-10 rounded-lg border border-[#E5E7EB] bg-white hover:bg-[#FEF2F2] hover:border-[#FCA5A5] text-[#6B7280] hover:text-[#DC2626] flex items-center justify-center transition-all focus:outline-none focus:ring-2 focus:ring-[#DC2626]"
+              >
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+              </button>
+            </div>
+
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Escape helper
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Category Filter Handler
+    function filterCategory(catKey) {
+      currentFilter = catKey;
+      document.querySelectorAll('.cat-filter-btn').forEach(btn => {
+        btn.classList.remove('active', 'bg-[#F3F4F6]', 'font-semibold', 'text-[#1A1D23]');
+        btn.classList.add('text-[#4B5563]');
+      });
+      event.currentTarget.classList.add('active', 'bg-[#F3F4F6]', 'font-semibold', 'text-[#1A1D23]');
+      event.currentTarget.classList.remove('text-[#4B5563]');
+
+      const badge = document.getElementById('active-filter-badge');
+      const catLabels = {
+        'all': 'Tất cả (' + cardsData.length + ')',
+        'memory': 'Trí nhớ & học tập',
+        'architecture': 'Kiến trúc phần mềm',
+        'learning': 'Phương pháp học',
+        'unassigned': 'Chưa gán nhánh'
+      };
+      badge.textContent = catLabels[catKey] || 'Bộ lọc';
+      renderCards();
+    }
+
+    // Search Handler
+    function handleSearch(val) {
+      currentSearchTerm = val;
+      const clearBtn = document.getElementById('clear-search-btn');
+      if (val.trim() !== '') {
+        clearBtn.classList.remove('hidden');
+      } else {
+        clearBtn.classList.add('hidden');
+      }
+      renderCards();
+    }
+
+    function clearSearch() {
+      const input = document.getElementById('search-input');
+      input.value = '';
+      currentSearchTerm = '';
+      document.getElementById('clear-search-btn').classList.add('hidden');
+      renderCards();
+    }
+
+    function handleSort(val) {
+      currentSort = val;
+      renderCards();
+    }
+
+    function resetFilters() {
+      clearSearch();
+      filterCategory('all');
+      document.querySelector('#category-filter-list button:first-child').click();
+    }
+
+    // ================= EDIT MODAL LOGIC =================
+    function openEditModal(cardId) {
+      const card = cardsData.find(c => c.id === cardId);
+      if (!card) return;
+
+      document.getElementById('edit-card-id').value = card.id;
+      document.getElementById('edit-prompt').value = card.prompt;
+      document.getElementById('edit-answer').value = card.answer;
+      document.getElementById('edit-prompt-count').textContent = card.prompt.length + '/240';
+      
+      const select = document.getElementById('edit-category');
+      select.value = card.category;
+
+      document.getElementById('edit-modal-due-text').textContent = `${card.dueText} (Độ bền ${card.stability}, ${card.difficulty})`;
+
+      const modal = document.getElementById('edit-modal');
+      const dialog = document.getElementById('edit-modal-dialog');
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        dialog.classList.remove('scale-95', 'opacity-0');
+        dialog.classList.add('scale-100', 'opacity-100');
+        document.getElementById('edit-prompt').focus();
+      }, 10);
+    }
+
+    function closeEditModal() {
+      const modal = document.getElementById('edit-modal');
+      const dialog = document.getElementById('edit-modal-dialog');
+      dialog.classList.remove('scale-100', 'opacity-100');
+      dialog.classList.add('scale-95', 'opacity-0');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 200);
+    }
+
+    function saveCardEdit(e) {
+      e.preventDefault();
+      const id = parseInt(document.getElementById('edit-card-id').value, 10);
+      const prompt = document.getElementById('edit-prompt').value.trim();
+      const answer = document.getElementById('edit-answer').value.trim();
+      const category = document.getElementById('edit-category').value;
+
+      const card = cardsData.find(c => c.id === id);
+      if (card) {
+        card.prompt = prompt;
+        card.answer = answer;
+        card.category = category;
+        if (category === 'Trí nhớ & học tập') card.catKey = 'memory';
+        else if (category === 'Kiến trúc phần mềm') card.catKey = 'architecture';
+        else if (category === 'Phương pháp học') card.catKey = 'learning';
+        else if (category === 'Chưa gán') card.catKey = 'unassigned';
+        else card.catKey = 'other';
+      }
+
+      closeEditModal();
+      renderCards();
+      showToast('✓ Đã lưu thay đổi thẻ thành công!');
+    }
+
+    function triggerDeleteFromEditModal() {
+      const id = parseInt(document.getElementById('edit-card-id').value, 10);
+      closeEditModal();
+      setTimeout(() => {
+        openDeleteDialog(id);
+      }, 220);
+    }
+
+    // ================= DELETE DIALOG LOGIC =================
+    function openDeleteDialog(cardId) {
+      cardPendingDeleteId = cardId;
+      const card = cardsData.find(c => c.id === cardId);
+      if (!card) return;
+
+      document.getElementById('delete-preview-cat').textContent = card.category;
+      document.getElementById('delete-preview-due').textContent = card.dueText;
+      document.getElementById('delete-preview-prompt').textContent = `“${card.prompt}”`;
+
+      const dialogWrap = document.getElementById('delete-dialog');
+      const dialogBox = document.getElementById('delete-dialog-content');
+      dialogWrap.classList.remove('hidden');
+      setTimeout(() => {
+        dialogBox.classList.remove('scale-95', 'opacity-0');
+        dialogBox.classList.add('scale-100', 'opacity-100');
+      }, 10);
+    }
+
+    function closeDeleteDialog() {
+      const dialogWrap = document.getElementById('delete-dialog');
+      const dialogBox = document.getElementById('delete-dialog-content');
+      dialogBox.classList.remove('scale-100', 'opacity-100');
+      dialogBox.classList.add('scale-95', 'opacity-0');
+      setTimeout(() => {
+        dialogWrap.classList.add('hidden');
+        cardPendingDeleteId = null;
+      }, 200);
+    }
+
+    function executeDeleteCard() {
+      if (cardPendingDeleteId === null) return;
+      
+      const idToDelete = cardPendingDeleteId;
+      const cardToDelete = cardsData.find(c => c.id === idToDelete);
+      const cardPrompt = cardToDelete ? cardToDelete.prompt : '';
+
+      // Remove from array
+      cardsData = cardsData.filter(c => c.id !== idToDelete);
+
+      // Update badge counts in UI
+      const totalCount = cardsData.length;
+      document.getElementById('header-total-count').textContent = totalCount + ' thẻ';
+      document.getElementById('sidebar-total-badge').textContent = totalCount;
+      document.getElementById('cat-count-all').textContent = totalCount;
+
+      closeDeleteDialog();
+      renderCards();
+      showToast(`Đã xoá thẻ “${cardPrompt.slice(0, 24)}...” khỏi thư viện`);
+    }
+
+    // ================= TOAST NOTIFICATION HELPER =================
+    let toastTimeout;
+    function showToast(message) {
+      const toast = document.getElementById('toast-msg');
+      const text = document.getElementById('toast-text');
+      text.textContent = message;
+      clearTimeout(toastTimeout);
+
+      toast.classList.remove('translate-y-16', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-16', 'opacity-0');
+      }, 3200);
+    }
+
+    // Demo button "Tạo thẻ mới"
+    document.getElementById('btn-open-create-toast').addEventListener('click', () => {
+      showToast('Đang chuyển tới màn hình Tạo thẻ mới (/cards/new)...');
+    });
+
+    // Keyboard Shortcuts
+    document.addEventListener('keydown', (e) => {
+      // Esc closes modal or dialog
+      if (e.key === 'Escape') {
+        const editModal = document.getElementById('edit-modal');
+        const deleteDialog = document.getElementById('delete-dialog');
+        if (!editModal.classList.contains('hidden')) {
+          closeEditModal();
+        } else if (!deleteDialog.classList.contains('hidden')) {
+          closeDeleteDialog();
+        }
+      }
+
+      // Ctrl + Enter saves edit form if modal open
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        const editModal = document.getElementById('edit-modal');
+        if (!editModal.classList.contains('hidden')) {
+          document.getElementById('edit-form').requestSubmit();
+        }
+      }
+    });
+
+    // Close on backdrop click
+    document.getElementById('edit-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'edit-modal') closeEditModal();
+    });
+    document.getElementById('delete-dialog').addEventListener('click', (e) => {
+      if (e.target.id === 'delete-dialog') closeDeleteDialog();
+    });
+
+    // Initial render
+    renderCards();
+  </script>
+</body>
+</html>

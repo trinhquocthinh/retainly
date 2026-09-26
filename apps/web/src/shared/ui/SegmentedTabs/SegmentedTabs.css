@@ -1,0 +1,51 @@
+.segmented-tabs {
+  --tab-gap: var(--space-1);
+
+  position: relative;
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
+  gap: var(--tab-gap);
+  padding: var(--space-1);
+  background: var(--color-secondary-active-bg);
+  border-radius: var(--radius-md);
+}
+
+/* Rộng đúng một tab; trượt bằng transform nên không kéo layout theo. */
+.segmented-tabs__indicator {
+  position: absolute;
+  top: var(--space-1);
+  bottom: var(--space-1);
+  left: var(--space-1);
+  width: calc(
+    (100% - 2 * var(--space-1) - (var(--tab-count) - 1) * var(--tab-gap)) / var(--tab-count)
+  );
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  transform: translateX(calc(var(--tab-index) * (100% + var(--tab-gap))));
+  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.segmented-tabs__tab {
+  position: relative;
+  height: 36px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  transition: color var(--duration-fast);
+
+  &:hover {
+    color: var(--color-text);
+  }
+}
+
+.segmented-tabs__tab--active {
+  color: var(--color-text);
+  font-weight: 600;
+}

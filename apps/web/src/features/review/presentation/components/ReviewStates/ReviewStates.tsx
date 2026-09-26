@@ -1,0 +1,44 @@
+import type { ReactNode } from 'react';
+
+import { Button } from '@src/shared/ui/Button/Button';
+
+import './ReviewStates.css';
+
+export function ReviewSkeleton() {
+  return <div className="review-skeleton" role="status" aria-label="Đang chuẩn bị thẻ ôn" />;
+}
+
+type ReviewMessageProps = {
+  title: string;
+  note: string;
+  actionLabel: string;
+  onAction: () => void;
+  /** Nút đứng cạnh hành động chính, ví dụ mời Ôn thêm ở màn hoàn thành phiên. */
+  extraAction?: ReactNode;
+  children?: ReactNode;
+  /** Khối nằm giữa lời nhắn và các nút, ví dụ tổng kết phiên. */
+  details?: ReactNode;
+};
+
+export function ReviewMessage({
+  title,
+  note,
+  actionLabel,
+  onAction,
+  extraAction,
+  details,
+  children,
+}: ReviewMessageProps) {
+  return (
+    <div className="review-message">
+      <p className="text-h2">{title}</p>
+      <p className="review-message__note text-small">{note}</p>
+      {details}
+      <div className="review-message__actions">
+        <Button onClick={onAction}>{actionLabel}</Button>
+        {extraAction}
+      </div>
+      {children}
+    </div>
+  );
+}

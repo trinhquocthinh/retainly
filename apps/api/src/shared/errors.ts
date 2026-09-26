@@ -1,0 +1,48 @@
+export const errorCatalog = {
+  // SDD — bảng mã lỗi chung
+  ERR_INVALID_URL: { status: 400, message: 'Liên kết chưa đúng. Hãy kiểm tra rồi thử lại.' },
+  ERR_FETCH_FAILED: { status: 502, message: 'Chưa đọc được nội dung từ liên kết này' },
+  ERR_FETCH_TIMEOUT: {
+    status: 504,
+    message: 'Bài viết mất nhiều thời gian để tải. Vui lòng thử lại.',
+  },
+  ERR_EMPTY_FRONT: { status: 400, message: 'Mặt hỏi của thẻ không được để trống' },
+  ERR_EMPTY_BACK: { status: 400, message: 'Mặt trả lời của thẻ không được để trống' },
+  ERR_TOPIC_NOT_FOUND: { status: 404, message: 'Không tìm thấy chủ đề này' },
+  ERR_TOPIC_NAME_TAKEN: { status: 409, message: 'Tên chủ đề này đã được sử dụng' },
+  ERR_SOURCE_NOT_FOUND: { status: 404, message: 'Không tìm thấy nguồn bài viết này' },
+  ERR_CARD_NOT_FOUND: { status: 404, message: 'Không tìm thấy thẻ này' },
+  ERR_UNAUTHORIZED: { status: 401, message: 'Vui lòng đăng nhập lại' },
+  ERR_INVALID_OUTCOME: { status: 400, message: 'Lựa chọn cho lượt ôn chưa hợp lệ' },
+  ERR_OUTCOME_NOT_FOUND: { status: 404, message: 'Không tìm thấy lượt ôn này' },
+  ERR_UNDO_NOT_ALLOWED: {
+    status: 409,
+    message: 'Bạn chỉ có thể hoàn tác lựa chọn gần nhất trong vòng 10 phút',
+  },
+  ERR_FORBIDDEN: { status: 403, message: 'Bạn không có quyền truy cập nội dung này' },
+  ERR_USER_LIMIT_REACHED: { status: 403, message: 'Đã đạt giới hạn số tài khoản cho phép' },
+  ERR_EMAIL_TAKEN: { status: 409, message: 'Email này đã được đăng ký' },
+  ERR_WEAK_PASSWORD: {
+    status: 400,
+    message: 'Mật khẩu cần ít nhất 8 ký tự, gồm chữ hoa, chữ thường, số và ký hiệu',
+  },
+  ERR_INVALID_CREDENTIALS: { status: 401, message: 'Email hoặc mật khẩu không đúng' },
+  ERR_TOO_MANY_REQUESTS: {
+    status: 429,
+    message: 'Bạn đã thử quá nhiều lần, vui lòng đợi 15 phút rồi thử lại',
+  },
+
+  // Hạ tầng — chưa có trong SDD, xem ghi chú cuối bài
+  ERR_BAD_REQUEST: { status: 400, message: 'Yêu cầu chưa hợp lệ' },
+  ERR_NOT_FOUND: { status: 404, message: 'Không tìm thấy nội dung này' },
+  ERR_INTERNAL: { status: 500, message: 'Có lỗi xảy ra. Vui lòng thử lại.' },
+} as const satisfies Record<string, { status: number; message: string }>;
+
+export type ErrorCode = keyof typeof errorCatalog;
+
+export class AppError extends Error {
+  constructor(readonly code: ErrorCode) {
+    super(code);
+    this.name = 'AppError';
+  }
+}

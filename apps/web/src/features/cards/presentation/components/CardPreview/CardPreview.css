@@ -1,0 +1,63 @@
+.card-preview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.card-preview__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.card-preview__title {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+
+  svg {
+    color: var(--color-accent);
+  }
+}
+
+.card-preview__caption {
+  display: none;
+  color: var(--color-text-secondary);
+}
+
+.card-preview__header .btn {
+  flex-shrink: 0;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+/* Thẻ ôn cao 340px cho màn ôn; khung xem trước chỉ cần thấp hơn. */
+.card-preview .review-card {
+  min-height: 260px;
+}
+
+.card-preview__empty {
+  margin: 0;
+  min-height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-xl);
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+@media (min-width: 640px) {
+  .card-preview__caption {
+    display: inline;
+  }
+}
+
+@media (min-width: 1024px) {
+  .card-preview__empty {
+    min-height: 260px;
+  }
+}

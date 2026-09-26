@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Retainly — Tạo thẻ mới</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+    }
+    ::-webkit-scrollbar { display: none; }
+
+    /* Focus ring chuẩn DESIGN.md: 2px solid #1A1D23, offset 2px — chỉ hiện với bàn phím */
+    :focus-visible {
+      outline: 2px solid #1A1D23;
+      outline-offset: 2px;
+    }
+
+    /* Perspective cho mô phỏng lật thẻ */
+    .perspective-1000 { perspective: 1000px; }
+    .transform-style-3d { transform-style: preserve-3d; }
+    .backface-hidden {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .rotate-y-180 { transform: rotateY(180deg); }
+
+    /* Entrance duy nhất — 200ms, nằm trong ngân sách 150–250ms của DESIGN.md */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .animate-entrance {
+      animation: fadeInUp 200ms cubic-bezier(0.2, 0, 0, 1) forwards;
+      opacity: 0;
+    }
+    .delay-0   { animation-delay: 0ms; }
+    .delay-60  { animation-delay: 60ms; }
+    .delay-120 { animation-delay: 120ms; }
+
+    /* Badge nhánh kiến thức: fade 150ms, không spring */
+    @keyframes badgeFade {
+      from { opacity: 0.35; }
+      to   { opacity: 1; }
+    }
+    .badge-fade { animation: badgeFade 150ms linear; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, ::before, ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#855300",
+            "accent-amber": "#F59E0B",
+            "accent-amber-hover": "#D97706",
+            "accent-amber-text": "#B45309",
+            "accent-amber-text-hover": "#92400E",
+            "accent-amber-highlight": "#FDE68A",
+            "bg-light": "#FAFAF8",
+            "surface-light": "#FFFFFF",
+            "surface-neutral-hover": "#F9FAFB",
+            "surface-neutral-active": "#F3F4F6",
+            "surface-container-high": "#e2e8f8",
+            "border-light": "#E5E7EB",
+            "border-hover": "#D1D5DB",
+            "text-primary-light": "#1A1D23",
+            "text-secondary": "#6B7280",
+            "text-muted": "#9CA3AF",
+            "danger-forgot": "#DC2626",
+            "danger-active": "#991B1B",
+            "danger-surface": "#FEF2F2",
+            "danger-border": "#FCA5A5",
+            "success-remember": "#16A34A",
+            "scrim-backdrop": "rgba(26, 29, 35, 0.4)"
+          },
+          /* Flat 2.0: đúng 2 cấp elevation, không hơn */
+          boxShadow: {
+            "sm": "0 1px 2px rgba(0, 0, 0, 0.05)",
+            "md": "0 4px 6px rgba(0, 0, 0, 0.07)",
+            "none": "none"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "1rem",
+            "full": "9999px"
+          },
+          spacing: {
+            "space-xs": "0.25rem",
+            "space-sm": "0.5rem",
+            "space-md": "0.75rem",
+            "space-base": "1rem",
+            "space-lg": "1.5rem",
+            "space-xl": "2rem",
+            "space-2xl": "3rem"
+          },
+          fontFamily: {
+            "body-default": ["Inter", "sans-serif"],
+            "body-medium": ["Inter", "sans-serif"],
+            "body-semibold": ["Inter", "sans-serif"],
+            "headline-h1": ["Inter", "sans-serif"],
+            "headline-h2": ["Inter", "sans-serif"],
+            "label-small": ["Inter", "sans-serif"],
+            "label-small-medium": ["Inter", "sans-serif"],
+            "label-small-semibold": ["Inter", "sans-serif"],
+            "caption": ["Inter", "sans-serif"],
+            "caption-caps": ["Inter", "sans-serif"]
+          },
+          fontSize: {
+            "headline-h1": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "600" }],
+            "headline-h2": ["18px", { lineHeight: "26px", letterSpacing: "0em", fontWeight: "600" }],
+            "body-default": ["16px", { lineHeight: "24px", letterSpacing: "0em", fontWeight: "400" }],
+            "body-medium": ["16px", { lineHeight: "24px", letterSpacing: "0em", fontWeight: "500" }],
+            "body-semibold": ["16px", { lineHeight: "24px", letterSpacing: "0em", fontWeight: "600" }],
+            "label-small": ["14px", { lineHeight: "20px", letterSpacing: "0em", fontWeight: "400" }],
+            "label-small-medium": ["14px", { lineHeight: "20px", letterSpacing: "0em", fontWeight: "500" }],
+            "label-small-semibold": ["14px", { lineHeight: "20px", letterSpacing: "0em", fontWeight: "600" }],
+            "caption": ["12px", { lineHeight: "16px", letterSpacing: "0em", fontWeight: "400" }],
+            "caption-caps": ["12px", { lineHeight: "16px", letterSpacing: "0.08em", fontWeight: "600" }]
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-bg-light font-body-default text-text-primary-light min-h-screen antialiased selection:bg-accent-amber/20">
+
+<!-- SCRIM cho sidebar off-canvas (<1024px). Không blur — DESIGN.md cấm backdrop-filter. -->
+<div class="fixed inset-0 bg-scrim-backdrop z-40 opacity-0 pointer-events-none transition-opacity duration-200 lg:hidden" id="sidebar-scrim" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside aria-label="Điều hướng chính" class="fixed left-0 top-0 h-full w-[240px] bg-surface-light border-r border-border-light z-50 flex flex-col justify-between transition-transform duration-200 ease-out -translate-x-full lg:translate-x-0" id="sidebar">
+<div class="flex flex-col p-space-base">
+<!-- Logo Retainly — SVG path bắt buộc theo 09-design-criteria §8 -->
+<div class="flex items-center gap-space-md pb-space-lg border-b border-border-light mb-space-lg">
+<svg aria-hidden="true" class="w-7 h-7 shrink-0" fill="none" viewbox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+<rect fill="#F59E0B" height="32" rx="8" width="32"></rect>
+<path d="M11 23 V9.5 H17 A3.75 3.75 0 0 1 17 17 H11 M14.75 17 L20.75 23" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5"></path>
+</svg>
+<span class="font-headline-h2 text-headline-h2 text-text-primary-light">Retainly</span>
+<button aria-label="Đóng menu" class="ml-auto w-11 h-11 -mr-2 flex items-center justify-center rounded-lg text-text-secondary hover:bg-surface-neutral-hover transition-colors duration-150 lg:hidden" onclick="closeSidebar()" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Action Button -->
+<button class="w-full h-11 bg-accent-amber hover:bg-accent-amber-hover active:bg-accent-amber-text text-text-primary-light font-label-small-semibold text-label-small-semibold rounded-lg flex items-center justify-center gap-space-xs transition-colors duration-150 mb-space-lg" type="button">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>Tạo thẻ mới</span>
+</button>
+<!-- Navigation -->
+<nav class="flex flex-col gap-space-xs">
+<a aria-current="page" class="relative h-11 flex items-center justify-between pl-space-md pr-space-md rounded-lg transition-colors duration-150 bg-accent-amber-highlight text-accent-amber-text-hover" href="#">
+<span aria-hidden="true" class="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-full bg-accent-amber"></span>
+<span class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px]">view_day</span>
+<span class="font-label-small-semibold text-label-small-semibold">Hôm nay</span>
+</span>
+<!-- Badge số thẻ đến hạn: GET /api/cards/due → dueCount -->
+<span class="px-space-xs py-0.5 rounded text-[11px] font-semibold bg-accent-amber/20 text-accent-amber-text-hover" data-api="GET /api/cards/due → dueCount">12</span>
+</a>
+<a class="relative h-11 flex items-center pl-space-md pr-space-md rounded-lg text-text-secondary hover:bg-surface-neutral-hover hover:text-text-primary-light transition-colors duration-150" href="#">
+<span class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px]">folder</span>
+<span class="font-label-small text-label-small">Thư viện</span>
+</span>
+</a>
+<a class="relative h-11 flex items-center pl-space-md pr-space-md rounded-lg text-text-secondary hover:bg-surface-neutral-hover hover:text-text-primary-light transition-colors duration-150" href="#">
+<span class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px]">bar_chart</span>
+<span class="font-label-small text-label-small">Thống kê</span>
+</span>
+</a>
+</nav>
+</div>
+<!-- User profile -->
+<button class="w-full p-space-base border-t border-border-light flex items-center gap-space-sm text-left hover:bg-surface-neutral-hover active:bg-surface-neutral-active transition-colors duration-150" type="button">
+<span class="w-10 h-10 rounded-full bg-primary flex items-center justify-center shrink-0">
+<span aria-hidden="true" class="material-symbols-outlined text-white text-[20px]">person</span>
+</span>
+<span class="flex flex-col min-w-0 flex-1">
+<span class="font-label-small-semibold text-label-small-semibold text-text-primary-light truncate">Toni</span>
+<span class="font-caption text-caption text-text-muted truncate">ban@vidu.com</span>
+</span>
+</button>
+</aside>
+
+<!-- MAIN VIEWPORT -->
+<div class="lg:pl-[240px] flex flex-col min-h-screen">
+<!-- Header Topbar — nền đặc, không backdrop-filter -->
+<header class="fixed top-0 left-0 right-0 lg:left-[240px] h-16 bg-surface-light border-b border-border-light z-30 flex items-center justify-between px-space-base sm:px-space-xl gap-space-base">
+<div class="flex items-center gap-space-sm min-w-0">
+<button aria-controls="sidebar" aria-expanded="false" aria-label="Mở menu điều hướng" class="w-11 h-11 -ml-2 flex items-center justify-center rounded-lg text-text-secondary hover:bg-surface-neutral-hover hover:text-text-primary-light transition-colors duration-150 lg:hidden" id="btn-menu" onclick="openSidebar()" type="button">
+<span class="material-symbols-outlined text-[22px]">menu</span>
+</button>
+<span class="font-label-small-semibold text-label-small-semibold text-text-primary-light truncate">Tạo thẻ mới</span>
+</div>
+<button aria-label="Tài khoản của bạn" class="w-11 h-11 -mr-2 flex items-center justify-center rounded-full hover:bg-surface-neutral-hover transition-colors duration-150" type="button">
+<span class="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+<span aria-hidden="true" class="material-symbols-outlined text-white text-[20px]">person</span>
+</span>
+</button>
+</header>
+
+<main class="w-full pt-16 bg-bg-light flex-1">
+<div class="max-w-[1120px] mx-auto px-space-base sm:px-space-lg lg:px-space-xl py-space-xl w-full">
+<div class="flex flex-col w-full">
+
+<!-- 1. TIÊU ĐỀ & TAB CHUYỂN CHẾ ĐỘ -->
+<div class="animate-entrance delay-0 flex flex-col md:flex-row md:items-center justify-between gap-space-base mb-space-xl">
+<div>
+<div class="flex items-center gap-space-xs text-text-secondary font-caption text-caption mb-space-xs">
+<a class="hover:text-text-primary-light transition-colors duration-150" href="#">Thư viện</a>
+<span aria-hidden="true" class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-text-primary-light font-label-small-medium text-label-small-medium">Thẻ mới</span>
+</div>
+<h1 class="font-headline-h1 text-headline-h1 text-text-primary-light">Tạo thẻ mới</h1>
+</div>
+<!-- Segmented control: pill đo bằng offsetLeft/offsetWidth, không hardcode px -->
+<div class="relative inline-flex p-1 bg-surface-container-high rounded-xl self-start md:self-auto select-none" id="tab-container" onkeydown="onTabKeydown(event)" role="tablist">
+<span aria-hidden="true" class="absolute top-1 bottom-1 left-0 bg-surface-light rounded-lg shadow-sm transition-[transform,width] duration-200 ease-out pointer-events-none" id="tab-pill"></span>
+<button aria-controls="panel-manual" aria-selected="true" class="relative z-10 h-9 px-space-md rounded-lg font-label-small-semibold text-label-small-semibold text-text-primary-light transition-colors duration-150 flex items-center gap-1.5" id="tab-manual" onclick="switchMode('manual')" role="tab" type="button">
+<span aria-hidden="true" class="material-symbols-outlined text-[18px]">edit_note</span>
+<span>Gõ tay</span>
+</button>
+<button aria-controls="panel-url" aria-selected="false" class="relative z-10 h-9 px-space-md rounded-lg font-label-small text-label-small text-text-secondary hover:text-text-primary-light transition-colors duration-150 flex items-center gap-1.5" id="tab-url" onclick="switchMode('url')" role="tab" tabindex="-1" type="button">
+<span aria-hidden="true" class="material-symbols-outlined text-[18px]">link</span>
+<span>Từ URL</span>
+</button>
+</div>
+</div>
+
+<!-- THANH NHẬP URL — POST /api/sources chỉ trả về văn bản sạch (BR-011) -->
+<div class="hidden mb-space-lg animate-entrance delay-0" id="url-ingest-panel">
+<div class="p-space-base bg-surface-light rounded-xl border border-border-light shadow-sm flex flex-col gap-space-sm">
+<div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-space-sm">
+<div class="relative flex-1 w-full group">
+<span aria-hidden="true" class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-accent-amber transition-colors text-[20px]">public</span>
+<input aria-describedby="url-hint" aria-label="URL bài viết nguồn" class="w-full h-11 pl-10 pr-space-md bg-surface-light border border-border-light rounded-lg font-body-default text-body-default text-text-primary-light placeholder:text-text-muted focus:border-accent-amber transition-colors duration-150" id="article-url-input" placeholder="Dán link bài viết để bóc tách văn bản sạch" type="url"/>
+</div>
+<button class="h-11 px-space-base bg-accent-amber hover:bg-accent-amber-hover active:bg-accent-amber-text text-text-primary-light font-label-small-semibold text-label-small-semibold rounded-lg flex items-center justify-center gap-space-xs transition-colors duration-150 shrink-0 disabled:opacity-40 disabled:pointer-events-none" id="btn-extract" onclick="extractFromUrl()" type="button">
+<span aria-hidden="true" class="material-symbols-outlined text-[18px]" id="extract-icon">article</span>
+<span id="extract-label">Bóc tách văn bản</span>
+</button>
+</div>
+<p class="font-caption text-caption text-text-secondary" id="url-hint">
+              Hệ thống chỉ loại bỏ quảng cáo và boilerplate để trả về văn bản sạch — bạn tự biên soạn câu hỏi và đáp án từ nội dung đó.
+            </p>
+<!-- Trạng thái lỗi inline, dùng đúng mã lỗi của POST /api/sources -->
+<div class="hidden items-start gap-space-sm px-space-base py-space-md bg-danger-surface border border-danger-border rounded-lg" id="url-error" role="alert">
+<span aria-hidden="true" class="material-symbols-outlined text-[18px] text-danger-forgot shrink-0">error</span>
+<div class="flex flex-col gap-0.5 min-w-0">
+<span class="font-label-small-medium text-label-small-medium text-danger-active" id="url-error-message">Không tải được nội dung từ URL này.</span>
+<span class="font-caption text-caption text-danger-active/80" id="url-error-code">ERR_FETCH_FAILED</span>
+</div>
+</div>
+</div>
+</div>
+
+<!-- KHÔNG GIAN LÀM VIỆC 2 CỘT -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-start">
+
+<!-- CỘT TRÁI: FORM TẠO THẺ -->
+<div aria-labelledby="tab-manual" class="animate-entrance delay-60 lg:col-span-7 flex flex-col gap-space-lg" id="panel-manual" role="tabpanel">
+<form class="bg-surface-light p-space-base sm:p-space-lg rounded-xl border border-border-light shadow-sm flex flex-col gap-space-lg" id="card-creation-form" onsubmit="event.preventDefault(); handleSave(false);">
+
+<!-- Trường 1: Mặt hỏi -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-small-semibold text-label-small-semibold text-text-primary-light flex items-center gap-1" for="input-question">
+                      Mặt hỏi (Prompt)
+                      <span aria-hidden="true" class="text-danger-forgot">*</span>
+</label>
+<p class="font-caption text-caption text-text-secondary" id="hint-question">Khái niệm hoặc câu hỏi trọng tâm cần kiểm tra trí nhớ chủ động.</p>
+<textarea aria-describedby="hint-question" class="w-full p-space-md bg-surface-light border border-border-light rounded-lg font-body-default text-body-default text-text-primary-light placeholder:text-text-muted focus:border-accent-amber transition-colors duration-150 resize-y min-h-[92px]" id="input-question" oninput="updateLivePreview()" placeholder="Ví dụ: FSRS tính toán khoảng cách lặp lại ngắt quãng dựa trên ba đại lượng cốt lõi nào?" required="" rows="3"></textarea>
+<p class="hidden font-caption text-caption text-danger-forgot" id="error-question" role="alert">Mặt hỏi không được để trống. (ERR_EMPTY_FRONT)</p>
+</div>
+
+<!-- Trường 2: Mặt trả lời -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-small-semibold text-label-small-semibold text-text-primary-light flex items-center gap-1" for="input-answer">
+                      Mặt trả lời (Answer)
+                      <span aria-hidden="true" class="text-danger-forgot">*</span>
+</label>
+<p class="font-caption text-caption text-text-secondary" id="hint-answer">Ngắn gọn, súc tích — tối ưu để bạn nhận thức đáp án trong vòng 3–5 giây.</p>
+<textarea aria-describedby="hint-answer" class="w-full p-space-md bg-surface-light border border-border-light rounded-lg font-body-default text-body-default text-text-primary-light placeholder:text-text-muted focus:border-accent-amber transition-colors duration-150 resize-y min-h-[136px]" id="input-answer" oninput="updateLivePreview()" placeholder="Ví dụ: Ba đại lượng gồm:
+1. Độ khó (Difficulty)
+2. Độ bền trí nhớ (Stability)
+3. Khả năng truy hồi (Retrievability)" required="" rows="5"></textarea>
+<p class="hidden font-caption text-caption text-danger-forgot" id="error-answer" role="alert">Mặt trả lời không được để trống. (ERR_EMPTY_BACK)</p>
+</div>
+
+<!-- Trường 3: Nhánh kiến thức -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between gap-space-sm">
+<label class="font-label-small-semibold text-label-small-semibold text-text-primary-light" for="select-deck">
+                      Nhánh kiến thức
+                      <span class="font-caption text-caption text-text-secondary font-normal ml-1">(không bắt buộc)</span>
+</label>
+<button class="h-11 -my-2 px-2 font-caption text-caption text-accent-amber-text hover:text-accent-amber-text-hover font-medium flex items-center gap-1 rounded-lg hover:bg-surface-neutral-hover transition-colors duration-150" id="btn-add-deck" onclick="openQuickAddDeck()" type="button">
+<span aria-hidden="true" class="material-symbols-outlined text-[15px]">add</span>
+<span>Thêm nhánh</span>
+</button>
+</div>
+<div class="relative">
+<!-- data-api: chưa có endpoint liệt kê topic trong 05 §4 — cần bổ sung GET /api/topics -->
+<select class="w-full h-11 px-space-md bg-surface-light border border-border-light rounded-lg font-body-default text-body-default text-text-primary-light focus:border-accent-amber transition-colors duration-150 appearance-none cursor-pointer pr-10" data-api="MISSING: GET /api/topics" id="select-deck" onchange="onDeckChange()">
+<option value="">Chưa phân nhánh</option>
+<option selected="" value="t-1">Trí nhớ &amp; học tập</option>
+<option value="t-2">Kiến trúc phần mềm</option>
+<option value="t-3">Phương pháp học</option>
+<option value="t-4">Kinh tế học hành vi</option>
+<option value="t-5">Tiếng Anh chuyên ngành</option>
+</select>
+<span aria-hidden="true" class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-text-secondary text-[20px]">expand_more</span>
+</div>
+<!-- Inline add thay cho prompt() của trình duyệt -->
+<div class="hidden flex-col sm:flex-row gap-space-sm pt-space-xs" data-api="MISSING: POST /api/topics" id="quick-add-deck">
+<input aria-label="Tên nhánh kiến thức mới" class="flex-1 h-11 px-space-md bg-surface-light border border-border-light rounded-lg font-body-default text-body-default text-text-primary-light placeholder:text-text-muted focus:border-accent-amber transition-colors duration-150" id="new-deck-name" onkeydown="if(event.key==='Enter'){event.preventDefault();confirmQuickAddDeck();}if(event.key==='Escape'){cancelQuickAddDeck();}" placeholder="Tên nhánh mới" type="text"/>
+<div class="flex items-center gap-space-sm">
+<button class="h-11 px-space-base rounded-lg border border-border-light bg-surface-light text-text-primary-light font-label-small-medium text-label-small-medium hover:bg-surface-neutral-hover hover:border-border-hover active:bg-surface-neutral-active transition-colors duration-150" onclick="cancelQuickAddDeck()" type="button">Huỷ</button>
+<button class="h-11 px-space-base rounded-lg bg-accent-amber hover:bg-accent-amber-hover active:bg-accent-amber-text text-text-primary-light font-label-small-semibold text-label-small-semibold transition-colors duration-150" onclick="confirmQuickAddDeck()" type="button">Thêm</button>
+</div>
+</div>
+</div>
+
+<!-- Thanh hành động -->
+<div class="justify-between items-center pt-space-lg border-t border-border-light flex flex-col sm:flex-row gap-space-base">
+<div class="flex items-center gap-space-xs font-caption text-caption text-text-muted select-none order-2 sm:order-1">
+<kbd class="px-2 py-1 bg-surface-neutral-active text-text-secondary rounded border border-border-light font-mono">Ctrl</kbd>
+<span>+</span>
+<kbd class="px-2 py-1 bg-surface-neutral-active text-text-secondary rounded border border-border-light font-mono">Enter</kbd>
+<span class="ml-1">để lưu nhanh</span>
+</div>
+<div class="flex items-center gap-space-md w-full sm:w-auto justify-end order-1 sm:order-2">
+<button class="h-11 px-space-base rounded-lg border border-border-light bg-surface-light text-text-primary-light font-label-small-medium text-label-small-medium hover:bg-surface-neutral-hover hover:border-border-hover active:bg-surface-neutral-active transition-colors duration-150" onclick="resetForm()" type="button">Huỷ</button>
+<button class="h-11 px-space-lg rounded-lg bg-accent-amber hover:bg-accent-amber-hover active:bg-accent-amber-text text-text-primary-light font-label-small-semibold text-label-small-semibold flex items-center gap-space-sm transition-colors duration-150 disabled:opacity-40 disabled:pointer-events-none" disabled="" id="btn-save" onclick="handleSave(true)" type="button">
+<span aria-hidden="true" class="material-symbols-outlined text-[18px]">check</span>
+<span>Lưu &amp; tạo tiếp</span>
+</button>
+</div>
+</div>
+</form>
+</div>
+
+<!-- CỘT PHẢI -->
+<div class="animate-entrance delay-120 lg:col-span-5 flex flex-col gap-space-lg">
+
+<!-- PANEL VĂN BẢN NGUỒN (chỉ hiện ở chế độ Từ URL) -->
+<section aria-labelledby="tab-url" class="hidden bg-surface-light rounded-xl border border-border-light shadow-sm flex-col" id="panel-url" role="tabpanel">
+<div class="flex items-center justify-between gap-space-sm p-space-base border-b border-border-light">
+<div class="flex items-center gap-1.5 min-w-0">
+<span aria-hidden="true" class="material-symbols-outlined text-[18px] text-accent-amber shrink-0">article</span>
+<span class="font-label-small-semibold text-label-small-semibold text-text-primary-light truncate">Văn bản nguồn</span>
+</div>
+<span class="font-caption text-caption text-text-muted shrink-0" id="source-meta">Markdown sạch</span>
+</div>
+<!-- Trạng thái rỗng -->
+<div class="flex flex-col items-center justify-center text-center gap-space-sm p-space-xl min-h-[220px]" id="source-empty">
+<span aria-hidden="true" class="material-symbols-outlined text-[28px] text-text-muted">link</span>
+<p class="font-caption text-caption text-text-secondary max-w-[260px]">Dán URL bài viết phía trên rồi bấm "Bóc tách văn bản" để đọc nội dung sạch tại đây.</p>
+</div>
+<!-- Trạng thái tải: skeleton -->
+<div class="hidden flex-col gap-space-md p-space-base min-h-[220px]" id="source-loading">
+<div class="h-4 w-3/4 rounded bg-surface-neutral-active animate-pulse"></div>
+<div class="h-3 w-full rounded bg-surface-neutral-active animate-pulse"></div>
+<div class="h-3 w-full rounded bg-surface-neutral-active animate-pulse"></div>
+<div class="h-3 w-5/6 rounded bg-surface-neutral-active animate-pulse"></div>
+<div class="h-3 w-full rounded bg-surface-neutral-active animate-pulse"></div>
+<div class="h-3 w-2/3 rounded bg-surface-neutral-active animate-pulse"></div>
+</div>
+<!-- Trạng thái đầy đủ -->
+<div class="hidden flex-col" id="source-populated">
+<article class="p-space-base max-h-[380px] overflow-y-auto font-body-default text-body-default text-text-primary-light whitespace-pre-line leading-relaxed" id="source-text" tabindex="0"></article>
+<p class="px-space-base pb-space-base pt-0 font-caption text-caption text-text-secondary">
+                        Bôi đen đoạn cần dùng rồi tự biên soạn câu hỏi/đáp án ở cột bên trái — v0.1 không tự sinh nội dung thẻ (BR-011).
+                      </p>
+</div>
+</section>
+
+<!-- MÔ PHỎNG HIỂN THỊ THẺ -->
+<div class="bg-surface-light p-space-base sm:p-space-lg rounded-xl border border-border-light shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between pb-space-sm border-b border-border-light">
+<div class="flex items-center gap-1.5">
+<span aria-hidden="true" class="material-symbols-outlined text-[18px] text-accent-amber">visibility</span>
+<span class="font-label-small-semibold text-label-small-semibold text-text-primary-light">Mô phỏng hiển thị</span>
+</div>
+<span class="font-caption text-caption text-text-muted">Chế độ ôn tập</span>
+</div>
+<!-- Khối lật 3D -->
+<div class="perspective-1000 w-full min-h-[270px]">
+<div aria-label="Thẻ mô phỏng, bấm để lật" class="relative w-full h-full min-h-[270px] transform-style-3d transition-transform duration-[220ms] ease-out cursor-pointer rounded-2xl border border-border-light shadow-md" id="preview-card-flipper" onclick="handleCardClick(event)" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();togglePreviewSide(null);}" role="button" tabindex="0">
+<!-- MẶT TRƯỚC -->
+<div class="absolute inset-0 w-full h-full bg-surface-light rounded-2xl p-space-base sm:p-space-lg flex flex-col justify-between backface-hidden z-20" id="preview-card-front">
+<div class="flex items-center justify-between gap-space-sm">
+<span class="px-2.5 py-1 rounded-lg text-[12px] font-label-small-medium bg-accent-amber-highlight text-accent-amber-text truncate max-w-[180px] badge-fade" id="preview-deck-badge-front">Trí nhớ &amp; học tập</span>
+<button class="h-9 px-2.5 bg-surface-light border border-border-light hover:border-border-hover hover:bg-surface-neutral-hover active:bg-surface-neutral-active rounded-lg font-caption text-caption text-text-primary-light flex items-center gap-1 transition-colors duration-150" onclick="togglePreviewSide(event)" type="button">
+<span aria-hidden="true" class="material-symbols-outlined text-[15px]">flip</span>
+<span>Xem mặt sau</span>
+</button>
+</div>
+<div class="my-space-base flex flex-col justify-center min-h-[110px]">
+<div class="font-caption-caps text-caption-caps text-text-muted mb-1 uppercase">Mặt hỏi (Câu hỏi)</div>
+<div class="font-headline-h2 text-headline-h2 leading-snug break-words text-text-muted italic" id="preview-text-front">Nội dung câu hỏi của bạn sẽ hiển thị tại đây...</div>
+</div>
+<div class="pt-space-sm border-t border-border-light flex items-center justify-between opacity-80 pointer-events-none select-none">
+<div class="flex items-center gap-1.5">
+<span aria-hidden="true" class="w-2 h-2 rounded-full bg-danger-forgot"></span>
+<span class="font-caption text-caption text-text-secondary">Quên</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span aria-hidden="true" class="w-2 h-2 rounded-full bg-success-remember"></span>
+<span class="font-caption text-caption text-text-secondary">Nhớ</span>
+</div>
+</div>
+</div>
+<!-- MẶT SAU -->
+<div class="absolute inset-0 w-full h-full bg-surface-light rounded-2xl p-space-base sm:p-space-lg flex flex-col justify-between backface-hidden rotate-y-180 z-10" id="preview-card-back">
+<div class="flex items-center justify-between gap-space-sm">
+<span class="px-2.5 py-1 rounded-lg text-[12px] font-label-small-medium bg-accent-amber-highlight text-accent-amber-text truncate max-w-[180px] badge-fade" id="preview-deck-badge-back">Trí nhớ &amp; học tập</span>
+<button class="h-9 px-2.5 bg-surface-light border border-border-light hover:border-border-hover hover:bg-surface-neutral-hover active:bg-surface-neutral-active rounded-lg font-caption text-caption text-text-primary-light flex items-center gap-1 transition-colors duration-150" onclick="togglePreviewSide(event)" type="button">
+<span aria-hidden="true" class="material-symbols-outlined text-[15px]">flip</span>
+<span>Xem mặt trước</span>
+</button>
+</div>
+<div class="my-space-base flex flex-col justify-center min-h-[110px]">
+<div class="font-caption-caps text-caption-caps text-accent-amber-text mb-1 uppercase">Mặt trả lời (Đáp án)</div>
+<div class="font-body-medium text-body-medium whitespace-pre-line leading-relaxed break-words text-text-muted italic" id="preview-text-back">Nội dung câu trả lời súc tích sẽ xuất hiện tại đây...</div>
+</div>
+<div class="pt-space-sm border-t border-border-light flex items-center justify-between select-none">
+<div class="flex items-center gap-1.5 text-danger-forgot font-caption text-caption font-medium">
+<span aria-hidden="true" class="material-symbols-outlined text-[15px]">replay</span>
+<span>Ôn lại sớm</span>
+</div>
+<div class="flex items-center gap-1.5 text-success-remember font-caption text-caption font-medium">
+<span aria-hidden="true" class="material-symbols-outlined text-[15px]">check_circle</span>
+<span>Đã ghi nhớ</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-center gap-1 text-center font-caption text-caption text-text-muted pt-1">
+<span aria-hidden="true" class="material-symbols-outlined text-[14px]">touch_app</span>
+<span>Bấm vào thẻ hoặc nhấn Space để lật</span>
+</div>
+</div>
+
+<!-- Quy tắc thẻ nguyên tử -->
+<div class="bg-surface-neutral-hover p-space-base rounded-xl border border-border-light flex flex-col gap-space-sm">
+<div class="flex items-center gap-1.5">
+<span aria-hidden="true" class="material-symbols-outlined text-[18px] text-accent-amber-text">verified</span>
+<span class="font-label-small-semibold text-label-small-semibold text-text-primary-light">Quy tắc thẻ ghi nhớ nguyên tử</span>
+</div>
+<ul class="flex flex-col gap-space-sm font-caption text-caption text-text-secondary leading-relaxed">
+<li class="flex items-start gap-space-sm">
+<span aria-hidden="true" class="material-symbols-outlined text-[16px] text-accent-amber shrink-0 mt-0.5">check_circle</span>
+<span><strong class="text-text-primary-light">Một ý chính trên mỗi thẻ:</strong> Nếu câu hỏi có hơn 3 ý con, hãy chia nhỏ thành nhiều thẻ độc lập.</span>
+</li>
+<li class="flex items-start gap-space-sm">
+<span aria-hidden="true" class="material-symbols-outlined text-[16px] text-accent-amber shrink-0 mt-0.5">check_circle</span>
+<span><strong class="text-text-primary-light">Hỏi trực diện, tránh mơ hồ:</strong> Tập trung vào "Tại sao" hoặc "Cái gì" thay vì câu trả lời Có/Không.</span>
+</li>
+<li class="flex items-start gap-space-sm">
+<span aria-hidden="true" class="material-symbols-outlined text-[16px] text-accent-amber shrink-0 mt-0.5">check_circle</span>
+<span><strong class="text-text-primary-light">Đọc lướt nhanh:</strong> Tránh các đoạn văn giải thích dài dòng ở mặt đáp án.</span>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+<!-- TOAST -->
+<div aria-live="polite" class="fixed bottom-6 right-6 left-6 sm:left-auto z-50 translate-y-4 opacity-0 pointer-events-none transition-all duration-200 ease-out flex items-center gap-space-md bg-surface-light border border-border-light px-space-base py-space-md rounded-lg shadow-md" id="save-toast" role="status">
+<span class="w-8 h-8 rounded-full bg-accent-amber-highlight flex items-center justify-center text-accent-amber-text shrink-0">
+<span aria-hidden="true" class="material-symbols-outlined text-[18px]">done_all</span>
+</span>
+<div class="flex flex-col min-w-0">
+<span class="font-label-small-semibold text-label-small-semibold text-text-primary-light" id="toast-title">Đã lưu thẻ vào hàng đợi ôn tập</span>
+<span class="font-caption text-caption text-text-secondary" id="toast-subtitle">Nhánh: Trí nhớ &amp; học tập</span>
+</div>
+</div>
+
+<script>
+    let isFlipped = false;
+    let toastTimeout = null;
+    let currentMode = 'manual';
+
+    /* ---------- Sidebar off-canvas (<1024px) ---------- */
+    function openSidebar() {
+      const scrim = document.getElementById('sidebar-scrim');
+      document.getElementById('sidebar').classList.remove('-translate-x-full');
+      scrim.classList.remove('opacity-0', 'pointer-events-none');
+      document.getElementById('btn-menu').setAttribute('aria-expanded', 'true');
+    }
+
+    function closeSidebar() {
+      const scrim = document.getElementById('sidebar-scrim');
+      document.getElementById('sidebar').classList.add('-translate-x-full');
+      scrim.classList.add('opacity-0', 'pointer-events-none');
+      document.getElementById('btn-menu').setAttribute('aria-expanded', 'false');
+    }
+
+    /* ---------- Đồng bộ form ↔ mô phỏng thẻ ---------- */
+    function updateLivePreview() {
+      const qInput = document.getElementById('input-question');
+      const aInput = document.getElementById('input-answer');
+      const qText = qInput.value.trim();
+      const aText = aInput.value.trim();
+
+      setPreviewText('preview-text-front', qText, 'Nội dung câu hỏi của bạn sẽ hiển thị tại đây...');
+      setPreviewText('preview-text-back', aText, 'Nội dung câu trả lời súc tích sẽ xuất hiện tại đây...');
+
+      // Trạng thái rỗng: nút lưu disabled (09 §5)
+      document.getElementById('btn-save').disabled = !(qText && aText);
+
+      if (qText) hideFieldError('question');
+      if (aText) hideFieldError('answer');
+    }
+
+    function setPreviewText(id, value, placeholder) {
+      const el = document.getElementById(id);
+      if (value) {
+        el.innerText = value;
+        el.classList.remove('text-text-muted', 'italic');
+        el.classList.add('text-text-primary-light');
+      } else {
+        el.innerText = placeholder;
+        el.classList.add('text-text-muted', 'italic');
+        el.classList.remove('text-text-primary-light');
+      }
+    }
+
+    /* ---------- Lỗi inline theo mã lỗi của POST /api/cards ---------- */
+    function showFieldError(field) {
+      document.getElementById(`error-${field}`).classList.remove('hidden');
+      const input = document.getElementById(`input-${field}`);
+      input.classList.add('border-danger-forgot');
+      input.classList.remove('border-border-light');
+      input.setAttribute('aria-invalid', 'true');
+    }
+
+    function hideFieldError(field) {
+      document.getElementById(`error-${field}`).classList.add('hidden');
+      const input = document.getElementById(`input-${field}`);
+      input.classList.remove('border-danger-forgot');
+      input.classList.add('border-border-light');
+      input.removeAttribute('aria-invalid');
+    }
+
+    /* ---------- Nhánh kiến thức ---------- */
+    function onDeckChange() {
+      const select = document.getElementById('select-deck');
+      const label = select.value ? select.options[select.selectedIndex].text : 'Chưa phân nhánh';
+
+      ['preview-deck-badge-front', 'preview-deck-badge-back'].forEach(id => {
+        const badge = document.getElementById(id);
+        badge.innerText = label;
+        badge.classList.remove('badge-fade');
+        void badge.offsetWidth; // ép reflow để chạy lại animation
+        badge.classList.add('badge-fade');
+      });
+    }
+
+    function openQuickAddDeck() {
+      const panel = document.getElementById('quick-add-deck');
+      panel.classList.remove('hidden');
+      panel.classList.add('flex');
+      document.getElementById('new-deck-name').focus();
+    }
+
+    function cancelQuickAddDeck() {
+      const panel = document.getElementById('quick-add-deck');
+      panel.classList.add('hidden');
+      panel.classList.remove('flex');
+      document.getElementById('new-deck-name').value = '';
+      document.getElementById('btn-add-deck').focus();
+    }
+
+    function confirmQuickAddDeck() {
+      const input = document.getElementById('new-deck-name');
+      const name = input.value.trim();
+      if (!name) { input.focus(); return; }
+
+      // Mockup: id tạm. Thực tế cần POST /api/topics trả về { id, name }.
+      const select = document.getElementById('select-deck');
+      const opt = document.createElement('option');
+      opt.value = `t-new-${Date.now()}`;
+      opt.innerText = name;
+      opt.selected = true;
+      select.appendChild(opt);
+
+      cancelQuickAddDeck();
+      onDeckChange();
+    }
+
+    /* ---------- Lật thẻ 3D (220ms) ---------- */
+    function togglePreviewSide(e) {
+      if (e) e.stopPropagation();
+      isFlipped = !isFlipped;
+      document.getElementById('preview-card-flipper').classList.toggle('rotate-y-180', isFlipped);
+    }
+
+    function handleCardClick(e) {
+      if (e.target.closest('button')) return;
+      togglePreviewSide(null);
+    }
+
+    /* ---------- Tab: pill đo theo kích thước thật ---------- */
+    function movePill() {
+      const active = document.getElementById(currentMode === 'url' ? 'tab-url' : 'tab-manual');
+      const pill = document.getElementById('tab-pill');
+      pill.style.width = `${active.offsetWidth}px`;
+      pill.style.transform = `translateX(${active.offsetLeft}px)`;
+    }
+
+    function switchMode(mode) {
+      currentMode = mode;
+      const tabManual = document.getElementById('tab-manual');
+      const tabUrl = document.getElementById('tab-url');
+      const isUrl = mode === 'url';
+
+      [[tabManual, !isUrl], [tabUrl, isUrl]].forEach(([tab, active]) => {
+        tab.setAttribute('aria-selected', String(active));
+        tab.tabIndex = active ? 0 : -1;
+        tab.classList.toggle('font-label-small-semibold', active);
+        tab.classList.toggle('text-label-small-semibold', active);
+        tab.classList.toggle('text-text-primary-light', active);
+        tab.classList.toggle('font-label-small', !active);
+        tab.classList.toggle('text-label-small', !active);
+        tab.classList.toggle('text-text-secondary', !active);
+      });
+
+      document.getElementById('url-ingest-panel').classList.toggle('hidden', !isUrl);
+      const sourcePanel = document.getElementById('panel-url');
+      sourcePanel.classList.toggle('hidden', !isUrl);
+      sourcePanel.classList.toggle('flex', isUrl);
+
+      movePill();
+      if (isUrl) document.getElementById('article-url-input').focus();
+    }
+
+    function onTabKeydown(e) {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      e.preventDefault();
+      const next = currentMode === 'manual' ? 'url' : 'manual';
+      switchMode(next);
+      document.getElementById(next === 'url' ? 'tab-url' : 'tab-manual').focus();
+    }
+
+    /* ---------- POST /api/sources (mô phỏng) ---------- */
+    // Quy ước demo để xem đủ các trạng thái lỗi trong 05 §4:
+    //   URL không bắt đầu bằng http  → ERR_INVALID_URL
+    //   URL chứa "timeout"           → ERR_FETCH_TIMEOUT
+    //   URL chứa "fail"              → ERR_FETCH_FAILED
+    //   còn lại                      → 201 Source
+    const SOURCE_ERRORS = {
+      ERR_INVALID_URL:   'URL không hợp lệ. Hãy dán một đường dẫn bài viết công khai.',
+      ERR_FETCH_FAILED:  'Không tải được nội dung từ URL này.',
+      ERR_FETCH_TIMEOUT: 'Quá thời gian chờ khi tải bài viết. Thử lại sau ít phút.'
+    };
+
+    const SAMPLE_SOURCE = `## Vì sao FSRS vượt trội so với SM-2
+
+SM-2 sử dụng một hệ số nhân cố định (ease factor) để giãn khoảng cách ôn tập sau mỗi lần trả lời đúng. Cách làm này giả định trí nhớ suy giảm theo một tốc độ đồng nhất cho mọi thẻ và mọi người học.
+
+FSRS thay thế giả định đó bằng ba đại lượng tách biệt:
+
+- **Difficulty** — độ khó nội tại của thẻ.
+- **Stability** — khoảng thời gian trí nhớ giữ được trước khi rơi xuống ngưỡng truy hồi.
+- **Retrievability** — xác suất nhớ lại tại một thời điểm bất kỳ.
+
+Nhờ tách bạch ba đại lượng này, mô hình ước tính đường cong quên theo hàm mũ thay vì nhân hệ số tuyến tính, nên lịch ôn tập bám sát trạng thái trí nhớ thực tế hơn.`;
+
+    function setSourceState(state) {
+      const map = {
+        empty: 'source-empty',
+        loading: 'source-loading',
+        populated: 'source-populated'
+      };
+      Object.entries(map).forEach(([key, id]) => {
+        const el = document.getElementById(id);
+        el.classList.toggle('hidden', key !== state);
+        el.classList.toggle('flex', key === state);
+      });
+    }
+
+    function showUrlError(code) {
+      const box = document.getElementById('url-error');
+      document.getElementById('url-error-message').innerText = SOURCE_ERRORS[code];
+      document.getElementById('url-error-code').innerText = code;
+      box.classList.remove('hidden');
+      box.classList.add('flex');
+    }
+
+    function hideUrlError() {
+      const box = document.getElementById('url-error');
+      box.classList.add('hidden');
+      box.classList.remove('flex');
+    }
+
+    function extractFromUrl() {
+      const urlInput = document.getElementById('article-url-input');
+      const btn = document.getElementById('btn-extract');
+      const icon = document.getElementById('extract-icon');
+      const label = document.getElementById('extract-label');
+      const value = urlInput.value.trim();
+
+      hideUrlError();
+
+      if (!value.startsWith('http')) {
+        showUrlError('ERR_INVALID_URL');
+        urlInput.focus();
+        return;
+      }
+
+      btn.disabled = true;
+      icon.innerText = 'progress_activity';
+      icon.classList.add('animate-spin');
+      label.innerText = 'Đang bóc tách...';
+      setSourceState('loading');
+
+      setTimeout(() => {
+        btn.disabled = false;
+        icon.innerText = 'article';
+        icon.classList.remove('animate-spin');
+        label.innerText = 'Bóc tách văn bản';
+
+        if (value.includes('timeout')) {
+          setSourceState('empty');
+          showUrlError('ERR_FETCH_TIMEOUT');
+          return;
+        }
+        if (value.includes('fail')) {
+          setSourceState('empty');
+          showUrlError('ERR_FETCH_FAILED');
+          return;
+        }
+
+        document.getElementById('source-text').innerText = SAMPLE_SOURCE;
+        try {
+          document.getElementById('source-meta').innerText = new URL(value).hostname;
+        } catch (_) { /* giữ nhãn mặc định */ }
+        setSourceState('populated');
+        document.getElementById('input-question').focus();
+      }, 700);
+    }
+
+    /* ---------- Lưu thẻ ---------- */
+    function handleSave(continueCreating) {
+      const qInput = document.getElementById('input-question');
+      const aInput = document.getElementById('input-answer');
+      const q = qInput.value.trim();
+      const a = aInput.value.trim();
+
+      if (!q) { showFieldError('question'); qInput.focus(); return; }
+      if (!a) { showFieldError('answer'); aInput.focus(); return; }
+
+      const select = document.getElementById('select-deck');
+      const deckLabel = select.value ? select.options[select.selectedIndex].text : 'Chưa phân nhánh';
+      showToast('Đã lưu thẻ vào hàng đợi ôn tập', `Nhánh: ${deckLabel}`);
+
+      if (continueCreating) {
+        qInput.value = '';
+        aInput.value = '';
+        qInput.focus();
+        if (isFlipped) togglePreviewSide(null);
+        updateLivePreview();
+      }
+    }
+
+    function showToast(title, subtitle) {
+      const toast = document.getElementById('save-toast');
+      document.getElementById('toast-title').innerText = title;
+      if (subtitle) document.getElementById('toast-subtitle').innerText = subtitle;
+
+      toast.classList.remove('translate-y-4', 'opacity-0', 'pointer-events-none');
+
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.add('translate-y-4', 'opacity-0', 'pointer-events-none');
+      }, 3200);
+    }
+
+    function resetForm() {
+      document.getElementById('input-question').value = '';
+      document.getElementById('input-answer').value = '';
+      hideFieldError('question');
+      hideFieldError('answer');
+      if (isFlipped) togglePreviewSide(null);
+      updateLivePreview();
+    }
+
+    /* ---------- Phím tắt & khởi tạo ---------- */
+    document.addEventListener('keydown', function (e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        handleSave(false);
+      }
+      if (e.key === 'Escape') closeSidebar();
+    });
+
+    window.addEventListener('resize', movePill);
+
+    document.addEventListener('DOMContentLoaded', () => {
+      onDeckChange();
+      updateLivePreview();
+      setSourceState('empty');
+      movePill();
+    });
+  </script>
+</body></html>

@@ -1,0 +1,152 @@
+.review-card {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-height: 340px;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  perspective: 1000px;
+}
+
+.review-card__inner {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transition: transform var(--duration-base) ease-out;
+}
+
+.review-card--flipped .review-card__inner {
+  transform: rotateY(180deg);
+}
+
+.review-card__face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  backface-visibility: hidden;
+}
+
+.review-card__face--back {
+  transform: rotateY(180deg);
+}
+
+.review-card__tag {
+  align-self: flex-start;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--color-accent-highlight);
+  color: var(--color-accent-strong);
+}
+
+.review-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+/* Số liệu, không phải nội dung thẻ: nền trung tính, chữ phụ, số thẳng cột. */
+.review-card__memory {
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--color-secondary-hover-bg);
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.review-card__tag--answer {
+  background: var(--color-success-surface);
+  color: var(--color-success-strong);
+}
+
+.review-card__body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+}
+
+.review-card__body--start {
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: var(--space-4);
+}
+
+.review-card__prompt {
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: 600;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.review-card__answer {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 500;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.review-card__foot {
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+.review-card__answer strong {
+  color: var(--color-success-strong);
+}
+
+/* Mặt sau của thẻ đục lỗ là thông tin bổ sung, nhẹ hơn câu đáp án. */
+.review-card__extra {
+  color: var(--color-text-secondary);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+/* Ghi chú tách khỏi đáp án (US-011): nền nhấn nhẹ để mắt phân biệt ngay
+   phần phải nhớ với phần giải thích thêm. */
+.review-card__note {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-accent-soft);
+  border-radius: var(--radius-md);
+  background: var(--color-accent-highlight);
+}
+
+.review-card__note-icon {
+  display: flex;
+  flex-shrink: 0;
+  color: var(--color-accent-strong);
+}
+
+.review-card__note-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.review-card__note-label {
+  color: var(--color-accent-strong);
+}
+
+.review-card__note-text {
+  color: var(--color-text-secondary);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}

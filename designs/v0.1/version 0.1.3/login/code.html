@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Retainly - Cổng Xác Thực Khoa Học Trí Nhớ FSRS v4.5</title>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+          },
+          colors: {
+            "primary": "#855300",
+            "accent-amber": "#F59E0B",
+            "accent-amber-hover": "#D97706",
+            "accent-amber-text": "#B45309",
+            "accent-amber-highlight": "#FDE68A",
+            "bg-light": "#FAFAF8",
+            "bg-warm-tint": "#F5F5F0",
+            "surface-light": "#FFFFFF",
+            "border-light": "#E5E7EB",
+            "text-secondary": "#6B7280",
+            "text-primary-light": "#1A1D23",
+            "danger-surface": "#FEF2F2",
+            "danger-border": "#FCA5A5",
+            "danger-active": "#991B1B",
+            "success-remember": "#16A34A",
+          },
+          boxShadow: {
+            'flat-card': '0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02)',
+            'flat-subcard': '0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02)',
+            'tactile-btn': '0 2px 0 #D97706, 0 4px 12px rgba(245, 158, 11, 0.25)',
+            'tactile-btn-pressed': '0 0 0 #D97706, 0 1px 4px rgba(245, 158, 11, 0.2)',
+            'tactile-white': '0 2px 0 #E5E7EB, 0 2px 6px rgba(0, 0, 0, 0.04)',
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* 3D Modern Flat 2.0 Tactile Depth Styles */
+    .tactile-primary-button {
+      box-shadow: 0 3px 0 #D97706, 0 6px 14px rgba(245, 158, 11, 0.22);
+      transition: all 0.15s ease-out;
+    }
+    .tactile-primary-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 0 #D97706, 0 8px 18px rgba(245, 158, 11, 0.28);
+    }
+    .tactile-primary-button:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #D97706, 0 2px 6px rgba(245, 158, 11, 0.2);
+    }
+
+    .tactile-secondary-button {
+      box-shadow: 0 2px 0 #E5E7EB, 0 3px 6px rgba(0, 0, 0, 0.03);
+      transition: all 0.15s ease-out;
+    }
+    .tactile-secondary-button:hover {
+      transform: translateY(-1px);
+      border-color: #D1D5DB;
+      box-shadow: 0 3px 0 #E5E7EB, 0 5px 10px rgba(0, 0, 0, 0.05);
+    }
+    .tactile-secondary-button:active {
+      transform: translateY(1px);
+      box-shadow: 0 1px 0 #E5E7EB, 0 1px 3px rgba(0, 0, 0, 0.03);
+    }
+
+    @keyframes dashCycle {
+      to { stroke-dashoffset: -32; }
+    }
+    .animated-fsrs-line {
+      stroke-dasharray: 6 3;
+      animation: dashCycle 2.8s linear infinite;
+    }
+
+    @keyframes shakeCard {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+    .shake-error {
+      animation: shakeCard 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    }
+  </style>
+<meta content="web_dashboard" name="shell-type"/>
+</head>
+<body class="min-h-full bg-gradient-to-b from-[#FAFAF8] via-[#FAF9F5] to-[#F3F4EE] text-text-primary-light font-sans antialiased flex flex-col justify-between selection:bg-accent-amber/20 selection:text-accent-amber-text relative">
+<!-- BEGIN: Interactive Scenario Controller Bar (Flat 2.0) -->
+<header class="w-full relative z-30 pt-3.5 px-4">
+<div class="max-w-5xl mx-auto bg-surface-light border border-border-light rounded-2xl p-2.5 shadow-sm">
+<div class="flex flex-col sm:flex-row items-center justify-between gap-2.5">
+<div class="flex items-center gap-2 text-xs font-medium text-text-secondary">
+<span class="w-2.5 h-2.5 rounded-full bg-accent-amber"></span>
+<span class="text-text-primary-light font-bold">Chế độ tương tác (Spec Demo):</span>
+<span class="hidden md:inline text-text-secondary">Nhấp để kiểm thử trạng thái màn hình:</span>
+</div>
+<div class="flex flex-wrap items-center gap-1.5" id="scenario-nav" role="tablist">
+<button class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-text-primary-light text-white shadow-xs transition-all duration-150 active:scale-95 border border-stone-800" id="btn-scn-login" onclick="setScenario('login')" type="button">
+            1. Mặc định Đăng nhập
+          </button>
+<button class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-stone-50 hover:bg-stone-100 text-stone-700 border border-border-light transition-all duration-150 active:scale-95 shadow-2xs" id="btn-scn-register" onclick="setScenario('register')" type="button">
+            2. Form Đăng ký + Tiêu chuẩn mật khẩu
+          </button>
+<button class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-stone-50 hover:bg-stone-100 text-stone-700 border border-border-light transition-all duration-150 active:scale-95 shadow-2xs" id="btn-scn-sso" onclick="setScenario('sso')" type="button">
+            3. Chuyển Authentik SSO
+          </button>
+<button class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-stone-50 hover:bg-stone-100 text-stone-700 border border-border-light transition-all duration-150 active:scale-95 shadow-2xs" id="btn-scn-error" onclick="setScenario('error')" type="button">
+            4. Lỗi sai mật khẩu
+          </button>
+<button class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-stone-50 hover:bg-stone-100 text-stone-700 border border-border-light transition-all duration-150 active:scale-95 shadow-2xs" id="btn-scn-limit" onclick="setScenario('limit')" type="button">
+            5. Đầy giới hạn 6 user
+          </button>
+<button class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 transition-all duration-150 active:scale-95 shadow-2xs" id="btn-scn-success" onclick="setScenario('success')" type="button">
+            6. Thành công
+          </button>
+</div>
+</div>
+</div>
+</header>
+<!-- END: Interactive Scenario Controller Bar -->
+<!-- BEGIN: Toast Notification -->
+<div class="fixed top-20 right-6 z-50 transform transition-all duration-200 pointer-events-none -translate-y-4 opacity-0" id="toast-notification">
+<div class="bg-surface-light border border-border-light shadow-lg rounded-xl px-4 py-3 flex items-center gap-3 text-xs sm:text-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-accent-amber"></span>
+<span class="text-text-primary-light font-semibold" id="toast-text">Đã chuyển trạng thái</span>
+</div>
+</div>
+<!-- END: Toast Notification -->
+<!-- BEGIN: Main Balanced Flat 2.0 Hero Card Container (Split 2 Columns) -->
+<main class="flex-grow flex items-center justify-center px-4 py-6 sm:py-10 relative z-20">
+<div class="w-full max-w-[1080px] min-h-[640px] rounded-3xl bg-surface-light border border-border-light shadow-flat-card overflow-hidden flex flex-col lg:flex-row transition-all duration-300" id="main-auth-card">
+<!-- LEFT COLUMN: The Neural Memory Experience (Flat 2.0 Warm Ivory Panel) -->
+<div class="lg:w-[48%] bg-[#FFFDF9] p-8 sm:p-10 lg:p-11 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-[#F1F3F5] relative">
+<div class="flex flex-col">
+<!-- Retainly Brand Logo Header with 3D White Porcelain Logo -->
+<div class="flex items-center gap-4">
+<div class="w-16 h-16 rounded-2xl overflow-hidden bg-accent-amber p-1 shadow-sm border border-amber-400 flex-shrink-0">
+<img alt="Retainly 3D Neural Ribbon" class="w-full h-full object-cover rounded-xl" src="https://lh3.googleusercontent.com/aida/AEtjO1XJzxGPX2KPmCiH6wtZGTsTvecEtrtI63XKu6L8v4M_s5pUc5yrbjQqHM9uvtC77ygQTyLOus84_I7RnTtHTIWz5n5O7zvgiKYmnMJa2agBYCD972vA-3NgXNI9-tkucY1cI_-ljPCHJucFnZ1XoZEQPumzT6Hz1iC-QUHEGiy4a3wPpNc34aB_C-3vmvA3rTJL03UzTM0kBBZYBCaXJAuB28r__RQuBiLWLJolzuu3pg6SFA1jnFqPGRos"/>
+</div>
+<div>
+<div class="flex items-center gap-2 flex-wrap">
+<span class="text-2xl sm:text-3xl font-extrabold tracking-tight text-text-primary-light">Retainly</span>
+<span class="inline-flex items-center gap-1 text-[11px] font-bold text-accent-amber-text bg-amber-50 border border-amber-200 px-2.5 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[13px]" style="font-variation-settings: 'FILL' 1;">neurology</span>
+                  Khoa học Trí nhớ FSRS v4.5
+                </span>
+</div>
+<p class="text-xs text-stone-500 mt-1 font-medium">Hệ thống lặp lại ngắt quãng tự thích ứng thế hệ mới</p>
+</div>
+</div>
+<!-- Hero Headline & Core Philosophy -->
+<div class="mt-8">
+<span class="text-[11px] font-bold tracking-wider uppercase text-accent-amber-text bg-amber-100/70 border border-amber-200 px-2.5 py-1 rounded-md inline-block mb-3">
+              CƠ CHẾ ACTIVE RECALL CHÍNH XÁC
+            </span>
+<h1 class="text-2xl sm:text-3xl font-extrabold text-text-primary-light leading-snug tracking-tight">
+              Đọc rồi nhớ.<br/>
+<span class="text-accent-amber-hover">Ôn đúng lúc sắp quên.</span>
+</h1>
+<p class="text-xs sm:text-sm text-stone-600 mt-3 leading-relaxed font-normal">
+              Biến kiến thức rời rạc thành trí nhớ dài hạn bền vững. Giải quyết triệt để Hội chứng Ảo tưởng Tích luỹ (Collector's Fallacy) bằng thuật toán FSRS v4.5 chuẩn xác theo từng thẻ tri thức.
+            </p>
+</div>
+<!-- Flat 2.0 Card: Ebbinghaus vs FSRS Memory Curve -->
+<div class="mt-6 bg-surface-light rounded-2xl p-4 sm:p-5 border border-border-light shadow-flat-subcard">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-accent-amber"></span>
+<span class="text-xs font-bold text-text-primary-light tracking-tight">Đường cong quên Ebbinghaus vs FSRS</span>
+</div>
+<span class="text-[11px] font-bold text-amber-800 bg-amber-100/80 border border-amber-200 px-2.5 py-0.5 rounded-md">
+                Gấp 3x độ bền trí nhớ
+              </span>
+</div>
+<!-- Crisp Clean SVG Graphic -->
+<div class="w-full h-24 my-2 relative">
+<svg class="w-full h-full overflow-visible" fill="none" viewbox="0 0 340 85">
+<!-- Reference Grid Lines -->
+<line stroke="#F3F4F6" stroke-dasharray="2 3" stroke-width="1" x1="0" x2="340" y1="20" y2="20"></line>
+<line stroke="#F3F4F6" stroke-dasharray="2 3" stroke-width="1" x1="0" x2="340" y1="55" y2="55"></line>
+<!-- Traditional Ebbinghaus Forgetting Curve (Gray, rapid drop) -->
+<path d="M 10 20 Q 30 70 70 78" stroke="#9CA3AF" stroke-dasharray="3 3" stroke-linecap="round" stroke-width="2"></path>
+<!-- FSRS Review Spike 1 -->
+<path d="M 70 78 L 70 24" stroke="#F59E0B" stroke-dasharray="2 2" stroke-width="1.8"></path>
+<!-- FSRS Curve 2 (Flatter fall) -->
+<path class="animated-fsrs-line" d="M 70 24 Q 115 54 165 62" stroke="#F59E0B" stroke-linecap="round" stroke-width="2.4"></path>
+<!-- FSRS Review Spike 2 -->
+<path d="M 165 62 L 165 20" stroke="#16A34A" stroke-dasharray="2 2" stroke-width="1.8"></path>
+<!-- FSRS Long-term Consolidation Plateau Curve -->
+<path d="M 165 20 Q 250 24 330 27" stroke="#16A34A" stroke-linecap="round" stroke-width="2.8"></path>
+<!-- Crisp Synaptic Node Dots -->
+<circle cx="10" cy="20" fill="#9CA3AF" r="3.5"></circle>
+<circle cx="70" cy="78" fill="#CBD5E1" r="3"></circle>
+<circle cx="70" cy="24" fill="#F59E0B" r="4.5" stroke="#FFFFFF" stroke-width="2"></circle>
+<circle cx="165" cy="20" fill="#16A34A" r="4.5" stroke="#FFFFFF" stroke-width="2"></circle>
+<circle cx="330" cy="27" fill="#16A34A" r="5" stroke="#FFFFFF" stroke-width="2"></circle>
+</svg>
+</div>
+<!-- Milestone Indicators -->
+<div class="flex items-center justify-between text-[11px] text-stone-500 pt-2 border-t border-stone-100 font-medium">
+<span class="text-stone-400">Không ôn: Quên 75%</span>
+<span class="text-accent-amber-text font-semibold">Ôn nhịp 1: +5 ngày</span>
+<span class="text-emerald-700 font-bold">Trí nhớ dài hạn (&gt;95%)</span>
+</div>
+</div>
+</div>
+<!-- Left Column Footer: Social Proof & Academic Security -->
+<div class="pt-5 mt-6 border-t border-stone-200/70 flex flex-col gap-3">
+<div class="flex items-center gap-3">
+<div class="flex -space-x-2 overflow-hidden p-0.5 bg-stone-100 rounded-full border border-stone-200">
+<span class="inline-flex h-7 w-7 rounded-full bg-amber-500 text-white font-bold text-[10px] items-center justify-center ring-2 ring-white">TN</span>
+<span class="inline-flex h-7 w-7 rounded-full bg-sky-500 text-white font-bold text-[10px] items-center justify-center ring-2 ring-white">KD</span>
+<span class="inline-flex h-7 w-7 rounded-full bg-stone-700 text-white font-bold text-[10px] items-center justify-center ring-2 ring-white">LH</span>
+<span class="inline-flex h-7 w-7 rounded-full bg-white text-stone-700 font-bold text-[10px] items-center justify-center ring-2 ring-white border border-stone-200">+3</span>
+</div>
+<p class="text-xs text-stone-600 font-medium">
+              Đồng hành cùng <strong class="text-text-primary-light font-bold">6 học giả &amp; chuyên gia</strong> nghiên cứu.
+            </p>
+</div>
+<div class="flex items-center gap-2 text-[11px] text-stone-600 bg-stone-50 p-2.5 rounded-xl border border-stone-200">
+<span class="material-symbols-outlined text-emerald-600 text-base flex-shrink-0" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<span>Đăng nhập qua <strong>Authentik SSO</strong> hoặc mã hoá <strong>Argon2id</strong> nội bộ. Giới hạn 6 chuyên gia.</span>
+</div>
+</div>
+</div>
+<!-- RIGHT COLUMN: Flat 2.0 Tactile Auth Form -->
+<div class="lg:w-[52%] p-8 sm:p-10 lg:p-12 flex flex-col justify-center bg-surface-light relative">
+<!-- Top Status Alert Banner (Dynamic Scenario Feedback) -->
+<div class="hidden mb-5 p-3.5 rounded-xl text-xs sm:text-sm border transition-all duration-200" id="status-banner">
+<!-- Populated by JavaScript -->
+</div>
+<div class="w-full max-w-[380px] mx-auto">
+<!-- Flat 2.0 Segmented Control (Đăng nhập / Đăng ký) -->
+<div class="w-full mb-6 bg-stone-100 p-1 rounded-xl relative flex items-center border border-stone-200">
+<!-- Animated Sliding Tactile Pill Indicator -->
+<div class="absolute top-1 left-1 bottom-1 w-[calc(50%-4px)] bg-surface-light rounded-lg shadow-sm border border-stone-200/80 transition-transform duration-200 ease-out" id="tab-slider"></div>
+<button class="flex-1 text-center py-2.5 relative z-10 text-xs sm:text-sm font-bold text-text-primary-light transition-colors duration-150 min-h-[44px]" id="tab-btn-login" onclick="setAuthTab('login')" type="button">
+              Đăng nhập
+            </button>
+<button class="flex-1 text-center py-2.5 relative z-10 text-xs sm:text-sm font-medium text-stone-500 hover:text-text-primary-light transition-colors duration-150 min-h-[44px]" id="tab-btn-register" onclick="setAuthTab('register')" type="button">
+              Đăng ký mới
+            </button>
+</div>
+<!-- AUTHENTIK SSO BUTTON (Tactile Flat 2.0) -->
+<button class="w-full min-h-[44px] px-4 py-2.5 rounded-xl bg-surface-light border border-border-light hover:border-stone-300 text-text-primary-light text-xs sm:text-sm font-bold flex items-center justify-center gap-2.5 tactile-secondary-button mb-4" onclick="triggerAuthentikSSO()" type="button">
+<div class="w-6 h-6 rounded-lg bg-amber-50 text-accent-amber flex items-center justify-center">
+<span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">shield_person</span>
+</div>
+<span id="sso-btn-text">Tiếp tục với Authentik SSO</span>
+</button>
+<!-- Flat Divider -->
+<div class="flex items-center gap-3 my-4">
+<div class="h-px flex-1 bg-stone-200"></div>
+<span class="text-[11px] font-bold text-stone-400 uppercase tracking-wider" id="divider-text">hoặc email nội bộ</span>
+<div class="h-px flex-1 bg-stone-200"></div>
+</div>
+<!-- AUTHENTICATION FORM -->
+<form class="space-y-4" id="auth-form" onsubmit="handleFormSubmission(event)">
+<!-- Full Name (Register Mode Only) -->
+<div class="hidden flex-col gap-1" id="group-name">
+<label class="text-xs font-bold text-text-primary-light" for="input-name">Họ và tên của bạn</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-stone-400 text-lg pointer-events-none">badge</span>
+<input class="w-full min-h-[44px] pl-10 pr-3.5 rounded-xl bg-surface-light border border-border-light text-text-primary-light text-xs sm:text-sm placeholder:text-stone-400 focus:outline-none focus:border-accent-amber focus:ring-1 focus:ring-accent-amber transition-all" id="input-name" placeholder="Nguyễn Văn A" type="text"/>
+</div>
+</div>
+<!-- Email Field -->
+<div class="flex flex-col gap-1">
+<label class="text-xs font-bold text-text-primary-light" for="input-email">Địa chỉ Email</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-stone-400 text-lg pointer-events-none">mail</span>
+<input class="w-full min-h-[44px] pl-10 pr-3.5 rounded-xl bg-surface-light border border-border-light text-text-primary-light text-xs sm:text-sm placeholder:text-stone-400 focus:outline-none focus:border-accent-amber focus:ring-1 focus:ring-accent-amber transition-all" id="input-email" placeholder="ban@vidu.com" required="" type="email" value="ban@vidu.com"/>
+</div>
+</div>
+<!-- Password Field -->
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<label class="text-xs font-bold text-text-primary-light" for="input-password">Mật khẩu</label>
+<a class="text-[11px] font-bold text-accent-amber-text hover:text-accent-amber-hover transition-colors" href="#" id="link-forgot" onclick="alert('Vui lòng liên hệ Quản trị viên hệ thống để khôi phục mật khẩu mã hoá Argon2id hoặc khoá Authentik SSO.'); return false;">Quên mật khẩu?</a>
+</div>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-stone-400 text-lg pointer-events-none">lock</span>
+<input class="w-full min-h-[44px] pl-10 pr-10 rounded-xl bg-surface-light border border-border-light text-text-primary-light text-xs sm:text-sm placeholder:text-stone-400 focus:outline-none focus:border-accent-amber focus:ring-1 focus:ring-accent-amber transition-all font-mono" id="input-password" oninput="evaluatePasswordStrength(this.value)" placeholder="••••••••••••" required="" type="password" value="FSRS@Secure2026"/>
+<button aria-label="Toggle password visibility" class="absolute right-2.5 p-1 text-stone-400 hover:text-text-primary-light rounded transition-colors" onclick="togglePasswordVisibility('input-password', 'pwd-toggle-icon')" type="button">
+<span class="material-symbols-outlined text-lg" id="pwd-toggle-icon">visibility</span>
+</button>
+</div>
+</div>
+<!-- REGISTER-ONLY: DYNAMIC CHECKLIST & STRENGTH METER -->
+<div class="hidden flex-col gap-2.5 pt-1" id="group-register-extras">
+<!-- Real-time Strength Meter -->
+<div class="space-y-1">
+<div class="flex items-center justify-between text-[11px]">
+<span class="text-stone-600 font-medium">Độ an toàn mật khẩu:</span>
+<span class="font-bold text-stone-500" id="strength-text">Chưa nhập</span>
+</div>
+<div class="w-full h-1.5 bg-stone-100 rounded-full overflow-hidden flex gap-1 border border-stone-200">
+<div class="h-full flex-1 bg-stone-300 transition-colors duration-150" id="meter-1"></div>
+<div class="h-full flex-1 bg-stone-300 transition-colors duration-150" id="meter-2"></div>
+<div class="h-full flex-1 bg-stone-300 transition-colors duration-150" id="meter-3"></div>
+<div class="h-full flex-1 bg-stone-300 transition-colors duration-150" id="meter-4"></div>
+</div>
+</div>
+<!-- 5 Criteria Checklist Pills (Flat 2.0) -->
+<div class="grid grid-cols-2 gap-1.5 text-[11px] pt-1">
+<div class="flex items-center gap-1.5 p-2 rounded-lg bg-stone-50 text-stone-500 border border-stone-200 transition-all" id="rule-len">
+<span class="material-symbols-outlined text-xs" id="icon-len">radio_button_unchecked</span>
+<span>Tối thiểu 8 ký tự</span>
+</div>
+<div class="flex items-center gap-1.5 p-2 rounded-lg bg-stone-50 text-stone-500 border border-stone-200 transition-all" id="rule-upper">
+<span class="material-symbols-outlined text-xs" id="icon-upper">radio_button_unchecked</span>
+<span>Chữ hoa (A-Z)</span>
+</div>
+<div class="flex items-center gap-1.5 p-2 rounded-lg bg-stone-50 text-stone-500 border border-stone-200 transition-all" id="rule-lower">
+<span class="material-symbols-outlined text-xs" id="icon-lower">radio_button_unchecked</span>
+<span>Chữ thường (a-z)</span>
+</div>
+<div class="flex items-center gap-1.5 p-2 rounded-lg bg-stone-50 text-stone-500 border border-stone-200 transition-all" id="rule-num">
+<span class="material-symbols-outlined text-xs" id="icon-num">radio_button_unchecked</span>
+<span>Chữ số (0-9)</span>
+</div>
+<div class="col-span-2 flex items-center gap-1.5 p-2 rounded-lg bg-stone-50 text-stone-500 border border-stone-200 transition-all" id="rule-sym">
+<span class="material-symbols-outlined text-xs" id="icon-sym">radio_button_unchecked</span>
+<span>Ký hiệu đặc biệt (!@#$%)</span>
+</div>
+</div>
+<!-- 6-User Alpha Quota Warning Banner -->
+<div class="p-2.5 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-2">
+<span class="material-symbols-outlined text-amber-700 text-base mt-0.5" style="font-variation-settings: 'FILL' 1;">info</span>
+<p class="text-[11px] text-amber-900 leading-snug font-medium">
+<strong>Giới hạn 6 chuyên gia:</strong> Bản thử nghiệm Alpha được mã hoá để bảo vệ tài nguyên tính toán FSRS.
+                </p>
+</div>
+</div>
+<!-- Remember Me Checkbox (Login Mode Only) -->
+<div class="flex items-center justify-between pt-0.5" id="group-remember">
+<label class="flex items-center gap-2 cursor-pointer select-none">
+<input checked="" class="w-4 h-4 rounded text-accent-amber border-stone-300 focus:ring-accent-amber focus:ring-offset-0 cursor-pointer" id="check-remember" type="checkbox"/>
+<span class="text-xs text-stone-600 font-medium">Duy trì đăng nhập 30 ngày</span>
+</label>
+</div>
+<!-- Primary Submit CTA with Tactile 3D Press Effect -->
+<button class="w-full min-h-[46px] px-4 py-3 rounded-xl bg-accent-amber hover:bg-accent-amber-hover text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 tactile-primary-button border border-amber-400 group" id="btn-submit" type="submit">
+<span id="btn-submit-text">Đăng nhập vào Retainly</span>
+<span class="material-symbols-outlined text-base group-hover:translate-x-1 transition-transform" id="btn-submit-icon">arrow_forward</span>
+</button>
+</form>
+<!-- Terms & Security Microtext -->
+<p class="text-[11px] text-stone-500 text-center mt-5 leading-relaxed font-normal">
+            Bằng việc tiếp tục, bạn đồng ý với tiêu chuẩn lưu trữ tri thức <a class="underline hover:text-text-primary-light transition-colors font-medium text-stone-600" href="#">Bảo mật FSRS v4.5</a> của Retainly.
+          </p>
+</div>
+</div>
+</div>
+</main>
+<!-- END: Main Balanced Flat 2.0 Hero Card Container -->
+<!-- BEGIN: Site Footer -->
+<footer class="w-full py-4 text-center text-xs text-stone-400 relative z-20 font-medium">
+<p>Retainly v0.1 · Hệ thống lặp lại ngắt quãng thuật toán FSRS v4.5 Pro · Tactile 3D Flat 2.0 Edition</p>
+</footer>
+<!-- END: Site Footer -->
+<!-- BEGIN: Interactive Logic & Scenarios -->
+<script>
+    let currentTab = 'login'; // 'login' | 'register'
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast-notification');
+      const text = document.getElementById('toast-text');
+      text.textContent = msg;
+      toast.classList.remove('-translate-y-4', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      setTimeout(() => {
+        toast.classList.add('-translate-y-4', 'opacity-0');
+        toast.classList.remove('translate-y-0', 'opacity-100');
+      }, 2500);
+    }
+
+    function setAuthTab(mode) {
+      currentTab = mode;
+      const slider = document.getElementById('tab-slider');
+      const btnLogin = document.getElementById('tab-btn-login');
+      const btnRegister = document.getElementById('tab-btn-register');
+      const groupName = document.getElementById('group-name');
+      const groupRemember = document.getElementById('group-remember');
+      const groupExtras = document.getElementById('group-register-extras');
+      const linkForgot = document.getElementById('link-forgot');
+      const submitText = document.getElementById('btn-submit-text');
+      const ssoText = document.getElementById('sso-btn-text');
+      const dividerText = document.getElementById('divider-text');
+      const pwdVal = document.getElementById('input-password').value;
+
+      if (mode === 'register') {
+        slider.style.transform = 'translateX(100%)';
+        btnLogin.className = 'flex-1 text-center py-2.5 relative z-10 text-xs sm:text-sm font-medium text-stone-500 hover:text-text-primary-light transition-colors duration-150 min-h-[44px]';
+        btnRegister.className = 'flex-1 text-center py-2.5 relative z-10 text-xs sm:text-sm font-bold text-text-primary-light transition-colors duration-150 min-h-[44px]';
+
+        groupName.classList.remove('hidden');
+        groupName.classList.add('flex');
+        groupExtras.classList.remove('hidden');
+        groupExtras.classList.add('flex');
+        groupRemember.classList.add('hidden');
+        linkForgot.classList.add('hidden');
+        submitText.textContent = 'Tạo tài khoản học tập';
+        ssoText.textContent = 'Đăng ký nhanh với Authentik SSO';
+        dividerText.textContent = 'hoặc đăng ký bằng email';
+        evaluatePasswordStrength(pwdVal);
+      } else {
+        slider.style.transform = 'translateX(0%)';
+        btnLogin.className = 'flex-1 text-center py-2.5 relative z-10 text-xs sm:text-sm font-bold text-text-primary-light transition-colors duration-150 min-h-[44px]';
+        btnRegister.className = 'flex-1 text-center py-2.5 relative z-10 text-xs sm:text-sm font-medium text-stone-500 hover:text-text-primary-light transition-colors duration-150 min-h-[44px]';
+
+        groupName.classList.add('hidden');
+        groupName.classList.remove('flex');
+        groupExtras.classList.add('hidden');
+        groupExtras.classList.remove('flex');
+        groupRemember.classList.remove('hidden');
+        linkForgot.classList.remove('hidden');
+        submitText.textContent = 'Đăng nhập vào Retainly';
+        ssoText.textContent = 'Tiếp tục với Authentik SSO';
+        dividerText.textContent = 'hoặc email nội bộ';
+      }
+    }
+
+    function togglePasswordVisibility(inputId, iconId) {
+      const input = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.textContent = 'visibility_off';
+      } else {
+        input.type = 'password';
+        icon.textContent = 'visibility';
+      }
+    }
+
+    function evaluatePasswordStrength(val) {
+      if (currentTab !== 'register') return;
+
+      const rules = {
+        len: val.length >= 8,
+        upper: /[A-Z]/.test(val),
+        lower: /[a-z]/.test(val),
+        num: /[0-9]/.test(val),
+        sym: /[^A-Za-z0-9]/.test(val)
+      };
+
+      updateRuleBadge('rule-len', 'icon-len', rules.len);
+      updateRuleBadge('rule-upper', 'icon-upper', rules.upper);
+      updateRuleBadge('rule-lower', 'icon-lower', rules.lower);
+      updateRuleBadge('rule-num', 'icon-num', rules.num);
+      updateRuleBadge('rule-sym', 'icon-sym', rules.sym);
+
+      const score = Object.values(rules).filter(Boolean).length;
+      const strengthText = document.getElementById('strength-text');
+      const m1 = document.getElementById('meter-1');
+      const m2 = document.getElementById('meter-2');
+      const m3 = document.getElementById('meter-3');
+      const m4 = document.getElementById('meter-4');
+
+      [m1, m2, m3, m4].forEach(m => m.className = 'h-full flex-1 bg-stone-300 transition-colors duration-150');
+
+      if (val.length === 0) {
+        strengthText.textContent = 'Chưa nhập';
+        strengthText.className = 'font-bold text-stone-500';
+      } else if (score <= 2) {
+        strengthText.textContent = 'Yếu';
+        strengthText.className = 'font-bold text-red-600';
+        m1.className = 'h-full flex-1 bg-red-500 transition-colors duration-150';
+      } else if (score === 3 || score === 4) {
+        strengthText.textContent = 'Khá';
+        strengthText.className = 'font-bold text-amber-600';
+        m1.className = 'h-full flex-1 bg-amber-500 transition-colors duration-150';
+        m2.className = 'h-full flex-1 bg-amber-500 transition-colors duration-150';
+        m3.className = 'h-full flex-1 bg-amber-500 transition-colors duration-150';
+      } else {
+        strengthText.textContent = 'Rất mạnh (FSRS Ready)';
+        strengthText.className = 'font-bold text-emerald-600';
+        [m1, m2, m3, m4].forEach(m => m.className = 'h-full flex-1 bg-emerald-500 transition-colors duration-150');
+      }
+    }
+
+    function updateRuleBadge(elId, iconId, satisfied) {
+      const el = document.getElementById(elId);
+      const ic = document.getElementById(iconId);
+      if (!el || !ic) return;
+
+      if (satisfied) {
+        el.className = 'flex items-center gap-1.5 p-2 rounded-lg bg-emerald-50 text-emerald-800 font-semibold border border-emerald-300 transition-all';
+        ic.textContent = 'check_circle';
+        ic.style.fontVariationSettings = "'FILL' 1";
+      } else {
+        el.className = 'flex items-center gap-1.5 p-2 rounded-lg bg-stone-50 text-stone-500 border border-stone-200 transition-all';
+        ic.textContent = 'radio_button_unchecked';
+        ic.style.fontVariationSettings = "'FILL' 0";
+      }
+    }
+
+    function triggerAuthentikSSO() {
+      setScenario('sso');
+    }
+
+    function handleFormSubmission(e) {
+      e.preventDefault();
+      if (currentTab === 'register') {
+        setScenario('limit');
+      } else {
+        setScenario('success');
+      }
+    }
+
+    // Interactive Scenario Simulator Bar
+    function setScenario(type) {
+      const banner = document.getElementById('status-banner');
+      const authCard = document.getElementById('main-auth-card');
+      const btns = ['login', 'register', 'sso', 'error', 'limit', 'success'];
+
+      // Update button styling
+      btns.forEach(b => {
+        const el = document.getElementById('btn-scn-' + b);
+        if (el) {
+          if (b === type) {
+            el.className = 'px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-text-primary-light text-white shadow-xs transition-all duration-150 active:scale-95 border border-stone-800';
+          } else {
+            el.className = 'px-2.5 py-1.5 rounded-lg text-xs font-medium bg-stone-50 hover:bg-stone-100 text-stone-700 border border-border-light transition-all duration-150 active:scale-95 shadow-2xs';
+          }
+        }
+      });
+
+      authCard.classList.remove('shake-error');
+
+      if (type === 'login') {
+        setAuthTab('login');
+        banner.classList.add('hidden');
+        showToast('Kịch bản 1: Màn hình Đăng nhập mặc định');
+      } 
+      else if (type === 'register') {
+        setAuthTab('register');
+        banner.classList.add('hidden');
+        showToast('Kịch bản 2: Form Đăng ký + Checklist tiêu chuẩn');
+      } 
+      else if (type === 'sso') {
+        banner.className = 'mb-5 p-3.5 rounded-xl text-xs sm:text-sm bg-amber-50 border border-amber-200 text-amber-950 flex items-center gap-3 shadow-xs';
+        banner.innerHTML = `
+          <span class="material-symbols-outlined text-accent-amber animate-spin text-lg">sync</span>
+          <div><strong>Authentik SSO:</strong> Đang kết nối phiên bảo mật OAuth2/OIDC tới máy chủ Authentik...</div>
+        `;
+        banner.classList.remove('hidden');
+        showToast('Kịch bản 3: Đang kết nối Authentik SSO');
+      } 
+      else if (type === 'error') {
+        setAuthTab('login');
+        banner.className = 'mb-5 p-3.5 rounded-xl text-xs sm:text-sm bg-danger-surface border border-danger-border text-red-900 flex items-center gap-3 shadow-xs';
+        banner.innerHTML = `
+          <span class="material-symbols-outlined text-red-600 text-lg" style="font-variation-settings: 'FILL' 1;">error</span>
+          <div><strong>Lỗi xác thực:</strong> Email hoặc mật khẩu không chính xác trong khoá Argon2id. Vui lòng kiểm tra lại.</div>
+        `;
+        banner.classList.remove('hidden');
+        authCard.classList.add('shake-error');
+        showToast('Kịch bản 4: Báo lỗi thông tin sai');
+      } 
+      else if (type === 'limit') {
+        setAuthTab('register');
+        banner.className = 'mb-5 p-3.5 rounded-xl text-xs sm:text-sm bg-amber-50 border border-amber-300 text-amber-950 flex items-center gap-3 shadow-xs';
+        banner.innerHTML = `
+          <span class="material-symbols-outlined text-amber-800 text-lg" style="font-variation-settings: 'FILL' 1;">group_off</span>
+          <div><strong>ERR_USER_LIMIT_REACHED:</strong> Hệ thống đã đủ 6 chuyên gia thử nghiệm Alpha. Vui lòng liên hệ quản trị viên để mở thêm slot.</div>
+        `;
+        banner.classList.remove('hidden');
+        showToast('Kịch bản 5: Đầy giới hạn 6 user');
+      }
+      else if (type === 'success') {
+        banner.className = 'mb-5 p-3.5 rounded-xl text-xs sm:text-sm bg-emerald-50 border border-emerald-300 text-emerald-950 flex items-center gap-3 shadow-xs';
+        banner.innerHTML = `
+          <span class="material-symbols-outlined text-emerald-600 text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+          <div><strong>Xác thực thành công!</strong> Chào mừng trở lại Retainly. Đang đồng bộ hóa 42 thẻ ôn FSRS hôm nay...</div>
+        `;
+        banner.classList.remove('hidden');
+        showToast('Kịch bản 6: Đăng nhập thành công!');
+      }
+    }
+  </script>
+<!-- END: Interactive Logic & Scenarios -->
+</body></html>

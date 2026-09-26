@@ -1,0 +1,24 @@
+# dependencies
+node_modules/
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# build output
+dist/
+
+# test & tooling output
+/coverage/
+/report/
+apps/api/src/generated/
+
+# env
+.env
+
+# misc
+.DS_Store
+*.log
+.claude

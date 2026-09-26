@@ -1,0 +1,164 @@
+.card-dialog h2,
+.card-dialog p,
+.card-dialog blockquote {
+  margin: 0;
+}
+
+.card-dialog__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: var(--space-4);
+  overflow-y: auto;
+  background: var(--color-scrim);
+}
+
+.card-dialog {
+  width: min(100%, 560px);
+  max-height: calc(100vh - var(--space-8));
+  overflow-y: auto;
+  animation: card-dialog-in var(--duration-base) ease-out;
+}
+
+.card-dialog--delete {
+  width: min(100%, 448px);
+}
+
+.card-dialog__header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.card-dialog__header p {
+  margin-top: 2px;
+  color: var(--color-text-secondary);
+}
+
+.card-dialog__icon {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+}
+
+.card-dialog__icon--edit {
+  background: var(--color-accent-soft);
+  color: var(--color-accent-active);
+}
+
+.card-dialog__icon--danger {
+  background: var(--color-danger-surface);
+  color: var(--color-danger);
+}
+
+.card-dialog__close {
+  width: 36px;
+  height: 36px;
+  margin-left: auto;
+  border-color: transparent;
+}
+
+.card-dialog__form,
+.card-dialog__delete-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4);
+}
+
+.card-dialog__form textarea {
+  width: 100%;
+  resize: vertical;
+}
+
+.card-dialog__danger-label {
+  color: var(--color-danger) !important;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.card-dialog__delete-body > p:first-child {
+  color: var(--color-text-secondary);
+}
+
+.card-dialog__preview {
+  padding: var(--space-3);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+}
+
+.card-dialog__footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--color-bg);
+  border-top: 1px solid var(--color-border);
+}
+
+.card-dialog__shortcut {
+  color: var(--color-text-secondary);
+}
+
+.card-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
+.card-dialog__footer--end {
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.card-dialog__footer--end .btn--danger {
+  background: var(--color-danger);
+  color: #fff;
+}
+
+.card-dialog__footer--end .btn--danger:hover:not(:disabled) {
+  background: var(--color-danger-active);
+}
+
+@keyframes card-dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (min-width: 640px) {
+  .card-dialog__header,
+  .card-dialog__form,
+  .card-dialog__delete-body,
+  .card-dialog__footer {
+    padding: var(--space-6);
+  }
+
+  .card-dialog__footer {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-dialog {
+    animation: none;
+  }
+}

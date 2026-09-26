@@ -1,0 +1,16 @@
+.url-bar__row {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+}
+
+.url-bar__row input {
+  flex: 1;
+  min-width: 0;
+  height: var(--control-height);
+}
+
+.url-bar__row .btn {
+  flex: 0 0 auto;
+  min-width: 96px;
+}
