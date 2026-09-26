@@ -11,7 +11,7 @@ import './LibraryCardParts.css';
 export function TopicBadge({ card }: { card: CardListItem }) {
   return (
     <span className={card.topic ? 'library-topic' : 'library-topic library-topic--none'}>
-      {card.topic?.name ?? 'Chưa gán'}
+      {card.topic?.name ?? 'Chưa có chủ đề'}
     </span>
   );
 }

@@ -29,12 +29,8 @@ function MemorySummary({ card, now }: { card: CardListItem; now: Date }) {
 
   return (
     <p className="library-card__memory text-caption">
-      <span>
-        <abbr title="Độ ổn định">S</abbr> {facts.stability}
-      </span>
-      <span>
-        <abbr title="Độ khó">D</abbr> {facts.difficulty}
-      </span>
+      <span>Nhớ vững {facts.stability}</span>
+      <span>Độ khó {facts.difficulty}/10</span>
       <span>Ôn gần nhất {facts.lastReview}</span>
     </p>
   );

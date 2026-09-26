@@ -9,18 +9,19 @@ import type { ExtractedSource } from '../domain/extractedSource';
 type ExtractSourcePort = (url: string) => Promise<ExtractedSource>;
 
 const MESSAGE_BY_CODE: Record<string, string> = {
-  ERR_INVALID_URL: 'Đường dẫn không hợp lệ, kiểm tra lại URL',
-  ERR_FETCH_FAILED: 'Không tải được nội dung từ URL này',
-  ERR_FETCH_TIMEOUT: 'Trang nguồn phản hồi quá lâu, thử lại sau',
+  ERR_INVALID_URL: 'Liên kết chưa đúng. Hãy kiểm tra rồi thử lại.',
+  ERR_FETCH_FAILED: 'Chưa đọc được nội dung từ liên kết này',
+  ERR_FETCH_TIMEOUT: 'Bài viết mất nhiều thời gian để tải. Vui lòng thử lại.',
 };
 
 /** Mọi lỗi nạp nguồn đều nằm ngay dưới ô URL — không có ô nào khác để gắn. */
 function messageFor(error: unknown): string | null {
   if (!error) return null;
   if (error instanceof ApiError) return MESSAGE_BY_CODE[error.code] ?? error.message;
-  if (error instanceof NetworkError) return 'Không kết nối được máy chủ, kiểm tra mạng rồi thử lại';
-  if (error instanceof TimeoutError) return 'Máy chủ phản hồi quá lâu, thử lại sau';
-  return 'Không nạp được bài viết, thử lại sau';
+  if (error instanceof NetworkError) return 'Chưa thể kết nối. Kiểm tra mạng rồi thử lại.';
+  if (error instanceof TimeoutError)
+    return 'Phản hồi mất nhiều thời gian hơn dự kiến. Vui lòng thử lại.';
+  return 'Chưa mở được bài viết. Vui lòng thử lại.';
 }
 
 export function useSourceLoader(deps: { extractSource: ExtractSourcePort }) {

@@ -73,7 +73,7 @@ export function CreateCardForm({
         value={draft.front}
         maxLength={2000}
         rows={3}
-        placeholder="Câu hỏi bạn muốn nhớ được — bôi đen một cụm rồi bấm Cloze để đục lỗ…"
+        placeholder="Viết câu hỏi giúp bạn tự nhớ lại điều vừa học…"
         formats={FRONT_FORMATS}
         onValueChange={(value) => onFieldChange('front', value)}
       />
@@ -114,12 +114,12 @@ export function CreateCardForm({
         <div id={noteId} hidden={!noteOpen}>
           <CardTextEditor
             label="Ghi chú"
-            hint="tuỳ chọn"
-            description="Giải thích, mẹo ghi nhớ hoặc #nhãn — hiện dưới đáp án khi ôn."
+            hint="không bắt buộc"
+            description="Thêm giải thích hoặc liên tưởng giúp bạn nhớ lâu hơn."
             value={draft.note}
             maxLength={1000}
             rows={2}
-            placeholder="Vì sao đáp án đúng, liên tưởng giúp nhớ lâu…"
+            placeholder="Ví dụ, ngữ cảnh hoặc liên tưởng dễ nhớ…"
             onValueChange={(value) => onFieldChange('note', value)}
           />
         </div>
@@ -131,14 +131,14 @@ export function CreateCardForm({
           <kbd className="compact-chip key-hint">Enter</kbd> để lưu và tạo tiếp
         </p>
         <div className="create-card__buttons">
-          <Button onClick={onCancel}>Huỷ bỏ</Button>
+          <Button onClick={onCancel}>Hủy</Button>
           <Button type="submit" variant="primary" disabled={!canSave}>
             {saving ? (
               'Đang lưu…'
             ) : (
               <>
                 <IconCheck />
-                Lưu &amp; tạo tiếp
+                Lưu và tạo tiếp
               </>
             )}
           </Button>

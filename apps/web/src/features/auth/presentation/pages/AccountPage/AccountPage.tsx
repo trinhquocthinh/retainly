@@ -8,7 +8,7 @@ import './AccountPage.css';
 
 const AUTH_METHOD_LABEL = {
   local: 'Email và mật khẩu',
-  sso: 'Authentik SSO',
+  sso: 'Authentik',
 } as const;
 
 /** Màn Tài khoản: hồ sơ đăng nhập và đổi mật khẩu (BR-027). */
@@ -21,7 +21,7 @@ export function AccountPage() {
     <div className="account">
       <header className="account__heading">
         <h1 className="text-h1">Tài khoản</h1>
-        <p className="account__muted text-small">Thông tin đăng nhập và bảo mật của bạn.</p>
+        <p className="account__muted text-small">Thông tin cá nhân và cách bạn đăng nhập.</p>
       </header>
 
       <section className="account__panel surface-panel" aria-labelledby="account-profile">
@@ -54,15 +54,15 @@ export function AccountPage() {
         {session.authMethod === 'local' ? (
           <>
             <p className="account__muted text-small">
-              Sau khi đổi, mọi thiết bị khác đang đăng nhập tài khoản này sẽ bị đăng xuất. Thiết bị
-              bạn đang dùng vẫn giữ đăng nhập.
+              Sau khi đổi, tài khoản sẽ được đăng xuất khỏi các thiết bị khác. Bạn vẫn tiếp tục dùng
+              Retainly trên thiết bị này.
             </p>
             <ChangePasswordForm />
           </>
         ) : (
           <p className="account__muted text-small">
-            Bạn đăng nhập bằng Authentik SSO nên mật khẩu được quản lý tại Authentik, không đổi ở
-            Retainly. Quên mật khẩu thì liên hệ quản trị viên để nhận đường dẫn khôi phục.
+            Mật khẩu của tài khoản này được quản lý trên Authentik. Nếu quên mật khẩu, hãy liên hệ
+            quản trị viên để nhận đường dẫn khôi phục.
           </p>
         )}
       </section>

@@ -47,7 +47,7 @@ export function SidebarProgress() {
       {todayProgress.total > 0 ? (
         <TodayProgressBar progress={todayProgress} />
       ) : (
-        <p className="sidebar-progress__note text-caption">Không có thẻ đến hạn</p>
+        <p className="sidebar-progress__note text-caption">Không có thẻ cần ôn</p>
       )}
       <p className="sidebar-progress__note text-caption">
         <span aria-hidden="true">🔥</span> Chuỗi {streak.current} ngày · Kỷ lục {streak.longest}

@@ -38,16 +38,16 @@ describe('E10-S1-T5 — TC-074 báo cáo CSV', () => {
         'Tỷ lệ ngày có ôn (%),86.7',
         'Chuỗi hiện tại (ngày),7',
         'Kỷ lục chuỗi (ngày),19',
-        'Thẻ bền vững (S > 30 ngày),38',
+        'Thẻ nhớ vững trên 30 ngày,38',
         'Tổng số thẻ,91',
-        'Tỷ trọng thẻ bền vững (%),41.8',
+        'Tỷ lệ thẻ nhớ vững (%),41.8',
         'Lượt nhớ,942',
         'Tổng lượt ôn,1000',
         'Tỷ lệ nhớ lại (%),94.2',
-        'Mục tiêu nhớ lại (%),90',
+        'Mức tham chiếu (%),90',
         '',
-        'Nhánh kiến thức',
-        'Nhánh,Lượt ôn,Lượt quên,Tỷ lệ quên (%),Tỷ trọng lượt ôn (%),Độ khó D trung bình,Thẻ đến hạn',
+        'Kết quả theo chủ đề',
+        'Chủ đề,Lượt ôn,Lượt quên,Tỷ lệ quên (%),Tỷ trọng lượt ôn (%),Độ khó trung bình,Thẻ cần ôn',
         'Kiến trúc phần mềm,48,20,42,48,6.84,0',
         '',
         'Lượt ôn tuần này (T2–CN)',
@@ -75,7 +75,7 @@ describe('E10-S1-T5 — TC-074 báo cáo CSV', () => {
     );
 
     expect(lines(csv)).toContain('Tỷ lệ nhớ lại (%),');
-    expect(lines(csv)).toContain('Tỷ trọng thẻ bền vững (%),');
+    expect(lines(csv)).toContain('Tỷ lệ thẻ nhớ vững (%),');
     expect(lines(csv)).toContain('Tỷ lệ ngày có ôn (%),0');
     expect(lines(csv)).toContain('Kiến trúc phần mềm,10,3,30,100,,0');
   });

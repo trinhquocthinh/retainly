@@ -28,12 +28,11 @@ function StatsHeading({ children }: { children?: ReactNode }) {
       <div className="stats__title">
         <span className="stats__eyebrow text-caption-caps">
           <IconChart size={14} />
-          Hiệu quả ghi nhớ · FSRS-6
+          Tiến bộ của bạn
         </span>
-        <h1 className="text-h1">Thống kê &amp; Hiệu quả ghi nhớ</h1>
+        <h1 className="text-h1">Thống kê học tập</h1>
         <p className="stats__intro text-small">
-          Kỷ luật, tỷ lệ nhớ lại và bảng nhánh tính theo khoảng đã chọn; chuỗi ôn và vùng bền vững
-          là số liệu hiện tại.
+          Xem nhịp ôn, khả năng nhớ và những chủ đề cần dành thêm thời gian.
         </p>
       </div>
       {children}
@@ -80,9 +79,9 @@ export function StatsPage() {
             <IconChart size={20} />
           </span>
           <div>
-            <h2 className="text-h2">Chưa có đủ dữ liệu ôn tập để tổng hợp</h2>
+            <h2 className="text-h2">Chưa có thống kê để xem</h2>
             <p className="text-small">
-              Thống kê xuất hiện sau khi bạn hoàn tất những lượt ôn đầu tiên.
+              Hãy hoàn thành vài lượt ôn đầu tiên để theo dõi tiến bộ của bạn.
             </p>
           </div>
           <div className="stats__empty-actions">
@@ -113,13 +112,13 @@ export function StatsPage() {
           />
           {/* Đang đổi khoảng thì số trên màn còn là khoảng cũ, chưa cho xuất. */}
           <Button
-            aria-label="Xuất báo cáo CSV"
-            title="Xuất báo cáo CSV"
+            aria-label="Tải báo cáo"
+            title="Tải báo cáo"
             disabled={view.switching}
             onClick={() => downloadCsv(statsReportFileName(stats), buildStatsCsv(stats))}
           >
             <IconExport />
-            <span className="stats__export-label">Xuất báo cáo</span>
+            <span className="stats__export-label">Tải báo cáo</span>
           </Button>
         </div>
       </StatsHeading>
@@ -135,13 +134,11 @@ export function StatsPage() {
       </div>
 
       <section className="stats__note surface-panel">
-        <span className="stats__eyebrow text-caption-caps">Bí quyết củng cố trí nhớ dài hạn</span>
-        <h2 className="text-h2">Đọc lại thụ động không tạo ra nơ-ron mới</h2>
+        <span className="stats__eyebrow text-caption-caps">Mẹo ôn hiệu quả</span>
+        <h2 className="text-h2">Tự nhớ trước khi xem đáp án</h2>
         <p className="text-small">
-          Chính khoảnh khắc não bộ nỗ lực trích xuất ký ức tại thời điểm sắp quên mới kích hoạt quá
-          trình bọc myelin cho các sợi trục thần kinh. FSRS nhắc bạn ôn đúng lúc xác suất nhớ sắp
-          tụt dưới 90% — tỷ lệ quên cao ở một nhánh là tín hiệu nên tăng nhịp ôn, không phải tín
-          hiệu bạn học kém.
+          Mỗi lần tự trả lời, bạn đang kiểm tra điều mình thực sự nhớ. Nếu một chủ đề thường bị quên
+          hơn, hãy ưu tiên chủ đề đó trong những lượt ôn tiếp theo.
         </p>
       </section>
     </div>

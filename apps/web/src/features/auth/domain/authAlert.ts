@@ -11,14 +11,14 @@ export type AuthAlert = {
 /** Hết chỗ không phải lỗi của người dùng nên dùng tông cảnh báo, không phải tông lỗi. */
 const USER_LIMIT_ALERT: AuthAlert = {
   tone: 'warning',
-  title: 'Retainly đã đủ số tài khoản',
-  message: 'Không thể tạo thêm tài khoản mới. Liên hệ chủ dự án nếu bạn cần một chỗ.',
+  title: 'Retainly hiện chưa thể nhận thêm tài khoản',
+  message: 'Hãy liên hệ chủ dự án nếu bạn muốn tham gia.',
 };
 
 const SSO_FAILED_ALERT: AuthAlert = {
   tone: 'danger',
-  title: 'Đăng nhập SSO không thành công',
-  message: 'Không hoàn tất được xác thực với Authentik. Vui lòng thử lại.',
+  title: 'Chưa thể tiếp tục với Authentik',
+  message: 'Vui lòng thử lại hoặc dùng email và mật khẩu.',
 };
 
 /** BR-027: không có tự khôi phục qua Email, chỉ quản trị viên đặt lại được. */
@@ -26,7 +26,7 @@ export const FORGOT_PASSWORD_ALERT: AuthAlert = {
   tone: 'warning',
   title: 'Quên mật khẩu',
   message:
-    'Liên hệ quản trị viên Retainly để được cấp mật khẩu tạm. Tài khoản đăng nhập bằng Authentik SSO sẽ được gửi đường dẫn khôi phục.',
+    'Hãy liên hệ quản trị viên Retainly để nhận mật khẩu tạm hoặc đường dẫn khôi phục trên Authentik.',
 };
 
 /** Đọc `?error=` do callback SSO của API gắn khi chuyển hướng về /login. */

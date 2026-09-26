@@ -18,7 +18,7 @@ export function SourcePanel({ source, loading, contentRef }: SourcePanelProps) {
   if (loading) {
     return (
       <section className="source-panel surface-panel" aria-busy="true">
-        <p className="source-panel__label text-caption">Đang tải nội dung…</p>
+        <p className="source-panel__label text-caption">Đang mở bài viết…</p>
         <div className="source-panel__skeleton">
           {SKELETON_WIDTHS.map((width) => (
             <span key={width} className="source-panel__bar" style={{ width }} />
@@ -31,8 +31,8 @@ export function SourcePanel({ source, loading, contentRef }: SourcePanelProps) {
   if (!source) return null;
 
   return (
-    <section className="source-panel surface-panel" aria-label="Nguồn đã bóc tách">
-      <p className="source-panel__label text-caption">Nguồn đã bóc tách</p>
+    <section className="source-panel surface-panel" aria-label="Nội dung bài viết">
+      <p className="source-panel__label text-caption">Nội dung bài viết</p>
       <h2 className="source-panel__title text-h2">{source.title}</h2>
 
       <div className="source-panel__body" ref={contentRef}>
@@ -44,7 +44,7 @@ export function SourcePanel({ source, loading, contentRef }: SourcePanelProps) {
       </div>
 
       <p className="source-panel__hint text-caption">
-        Bôi đen một đoạn để tự động điền vào mặt trả lời.
+        Bôi đen một đoạn để đưa nhanh vào mặt trả lời.
       </p>
     </section>
   );

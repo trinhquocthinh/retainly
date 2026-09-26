@@ -46,10 +46,10 @@ export const CARD_SORTS = ['recent', 'due', 'stability', 'difficulty'] as const;
 export type CardSort = (typeof CARD_SORTS)[number];
 
 export const SORT_LABELS: Record<CardSort, string> = {
-  recent: 'Vừa mới thêm',
-  due: 'Hạn ôn gần nhất',
-  stability: 'Độ ổn định thấp nhất',
-  difficulty: 'Khó nhất (D cao)',
+  recent: 'Mới thêm gần đây',
+  due: 'Cần ôn sớm nhất',
+  stability: 'Cần củng cố thêm',
+  difficulty: 'Thường trả lời chưa đúng',
 };
 
 /** Giá trị `topic` của API cho "Chưa gán". */
@@ -115,9 +115,9 @@ export function describeDue(schedule: CardScheduleSummary, now: Date): DueStatus
 
   const days = calendarDaysBetween(now, new Date(schedule.dueDate));
 
-  if (days < 0) return { tone: 'due', label: `Quá hạn ${-days} ngày` };
-  if (days === 0) return { tone: 'due', label: 'Đến hạn hôm nay' };
-  return { tone: 'upcoming', label: `Còn ${days} ngày` };
+  if (days < 0) return { tone: 'due', label: `Cần ôn từ ${-days} ngày trước` };
+  if (days === 0) return { tone: 'due', label: 'Cần ôn hôm nay' };
+  return { tone: 'upcoming', label: `Ôn sau ${days} ngày` };
 }
 
 export type MemoryFacts = { stability: string; difficulty: string; lastReview: string };

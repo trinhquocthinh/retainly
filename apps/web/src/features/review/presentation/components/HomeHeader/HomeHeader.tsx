@@ -19,7 +19,7 @@ const DATE_FORMATTER = new Intl.DateTimeFormat(APP_LOCALE, {
 
 const DAY_STATUS: Record<WeekDayState, string> = {
   reviewed: 'đã ôn',
-  missed: 'không ôn',
+  missed: 'chưa ôn',
   today: 'hôm nay, chưa ôn',
   future: 'chưa tới',
 };

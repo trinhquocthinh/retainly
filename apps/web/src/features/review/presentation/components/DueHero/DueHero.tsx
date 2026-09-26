@@ -13,7 +13,7 @@ import './DueHero.css';
 function DueTopicList({ summary }: { summary: DueTopicSummary }) {
   const parts = summary.groups.map((group) => (
     <>
-      {group.count} thẻ {group.name ? <strong>{group.name}</strong> : 'chưa gán Topic'}
+      {group.count} thẻ {group.name ? <strong>{group.name}</strong> : 'chưa có chủ đề'}
     </>
   ));
 
@@ -50,7 +50,8 @@ function FirstCardPrompt() {
       <div className="due-hero__text">
         <h2 className="text-h2">Bắt đầu với thẻ đầu tiên</h2>
         <p className="text-small">
-          Ghi lại điều bạn vừa học thành thẻ hỏi–đáp. Retainly sẽ nhắc bạn ôn đúng lúc sắp quên.
+          Ghi lại điều bạn vừa học thành thẻ hỏi–đáp. Retainly sẽ đưa thẻ trở lại vào những lần ôn
+          phù hợp.
         </p>
       </div>
       <div className="due-hero__actions">
@@ -72,14 +73,13 @@ function CaughtUp({ progress }: { progress: HomeOverview['todayProgress'] }) {
       <div className="due-hero__text">
         <h2 className="text-h2">Bạn đã hoàn thành hôm nay</h2>
         <p className="text-small">
-          Không còn thẻ đến hạn. Ôn thêm vài thẻ sắp quên để giữ chuỗi ngày, hoặc tạo thẻ mới cho
-          lần ôn sau.
+          Bạn đã xong phần cần ôn hôm nay. Nếu còn thời gian, hãy ôn thêm một lượt hoặc tạo thẻ mới.
         </p>
         {progress.total > 0 ? <ProgressSummary progress={progress} /> : null}
       </div>
       <div className="due-hero__actions">
         <Link className="link-button link-button--accent" to="/review/extra">
-          Ôn thêm 5 thẻ sắp quên
+          Ôn thêm một lượt
           <IconArrowRight />
         </Link>
         <Link className="link-button link-button--outline" to="/cards/new">
@@ -106,13 +106,13 @@ export function DueHero({ dueCount, overview }: { dueCount: number; overview: Ho
           <IconClock />
           Ước tính ~{minutes} phút
         </span>
-        <span className="due-hero__engine text-caption">FSRS-6</span>
+        <span className="due-hero__engine text-caption">Nhịp ôn hôm nay</span>
       </div>
 
       <div>
         <h2 id="due-hero-title" className="due-hero__count">
           <strong className="text-display">{dueCount}</strong>
-          <span>thẻ đến hạn ôn tập hôm nay</span>
+          <span>thẻ cần ôn hôm nay</span>
         </h2>
         {summary ? (
           <p className="due-hero__topics text-small">

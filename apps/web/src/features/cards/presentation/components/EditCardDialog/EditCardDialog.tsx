@@ -27,8 +27,9 @@ type EditCardDialogProps = {
 function bannerFor(error: unknown): string | null {
   if (!error) return null;
   if (error instanceof ApiError && fieldForErrorCode(error.code)) return null;
-  if (error instanceof NetworkError) return 'Không kết nối được máy chủ, kiểm tra mạng rồi thử lại';
-  if (error instanceof TimeoutError) return 'Máy chủ phản hồi quá lâu, thử lại sau';
+  if (error instanceof NetworkError) return 'Chưa thể kết nối. Kiểm tra mạng rồi thử lại.';
+  if (error instanceof TimeoutError)
+    return 'Phản hồi mất nhiều thời gian hơn dự kiến. Vui lòng thử lại.';
   return error instanceof Error ? error.message : 'Không lưu được thay đổi, thử lại sau';
 }
 
@@ -103,7 +104,7 @@ export function EditCardDialog({ card, saving, error, onCancel, onSave }: EditCa
             <h2 id="edit-card-title" className="text-h2">
               Chỉnh sửa thẻ
             </h2>
-            <p className="text-caption">Cập nhật nội dung mà không thay đổi lịch ôn hiện có.</p>
+            <p className="text-caption">Nội dung mới sẽ được dùng từ lần ôn tiếp theo.</p>
           </div>
           <button
             type="button"
@@ -148,7 +149,7 @@ export function EditCardDialog({ card, saving, error, onCancel, onSave }: EditCa
             )}
           </Field>
 
-          <Field label="Ghi chú" hint="tuỳ chọn">
+          <Field label="Ghi chú" hint="không bắt buộc">
             {(props) => (
               <textarea
                 {...props}

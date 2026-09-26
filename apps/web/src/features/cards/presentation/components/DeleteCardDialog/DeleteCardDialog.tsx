@@ -19,8 +19,8 @@ type DeleteCardDialogProps = {
 
 function messageFor(error: unknown): string | null {
   if (!error) return null;
-  if (error instanceof NetworkError) return 'Không kết nối được máy chủ, thẻ chưa bị xoá';
-  if (error instanceof TimeoutError) return 'Máy chủ phản hồi quá lâu, chưa xác định được kết quả';
+  if (error instanceof NetworkError) return 'Chưa thể kết nối. Thẻ vẫn được giữ nguyên.';
+  if (error instanceof TimeoutError) return 'Phản hồi mất nhiều thời gian. Hãy kiểm tra lại thẻ.';
   if (error instanceof ApiError && error.code === 'ERR_CARD_NOT_FOUND') {
     return 'Thẻ không còn tồn tại hoặc bạn không có quyền xoá thẻ này';
   }
@@ -71,7 +71,7 @@ export function DeleteCardDialog({
 
         <div className="card-dialog__delete-body">
           <p id="delete-card-description" className="text-small">
-            Thẻ cùng toàn bộ lịch và kết quả ôn tập liên quan sẽ bị xoá khỏi cơ sở dữ liệu.
+            Thẻ cùng toàn bộ lịch sử ôn liên quan sẽ bị xoá.
           </p>
           <blockquote className="card-dialog__preview text-small">
             “{stripMarkdown(card.front)}”
@@ -89,7 +89,7 @@ export function DeleteCardDialog({
             Giữ lại thẻ
           </Button>
           <Button variant="danger" disabled={deleting} onClick={() => void onConfirm()}>
-            {deleting ? 'Đang xoá…' : 'Xác nhận xoá'}
+            {deleting ? 'Đang xoá…' : 'Xoá thẻ'}
           </Button>
         </footer>
       </section>

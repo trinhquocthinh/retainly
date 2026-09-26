@@ -32,11 +32,11 @@ function copyFor(source: ReviewSource, topicName: string | undefined): SessionCo
   if (source === 'topic') {
     return {
       // Tải lại trang thì mất state điều hướng, không còn tên Topic để hiện.
-      queueLabel: topicName ? `Ôn ngay · ${topicName}` : 'Thẻ đến hạn của nhánh',
-      doneTitle: 'Xong nhánh này!',
+      queueLabel: topicName ? `Ôn ngay · ${topicName}` : 'Thẻ cần ôn theo chủ đề',
+      doneTitle: 'Đã ôn xong chủ đề này!',
       doneNote: topicName
-        ? `Không còn thẻ đến hạn trong nhánh ${topicName}.`
-        : 'Không còn thẻ đến hạn trong nhánh này.',
+        ? `Không còn thẻ cần ôn trong chủ đề ${topicName}.`
+        : 'Không còn thẻ cần ôn trong chủ đề này.',
       exitPath: '/stats',
       exitLabel: 'Về Thống kê',
     };
@@ -44,16 +44,16 @@ function copyFor(source: ReviewSource, topicName: string | undefined): SessionCo
 
   if (source === 'extra') {
     return {
-      queueLabel: 'Ôn thêm · thẻ sắp quên',
+      queueLabel: 'Ôn thêm một lượt',
       doneTitle: 'Xong lượt ôn thêm!',
-      doneNote: 'Kết quả đã được tính vào chuỗi ngày ôn tập.',
+      doneNote: 'Mỗi lượt ôn đều giúp kiến thức ở lại lâu hơn.',
       exitPath: '/',
       exitLabel: 'Về trang chủ',
     };
   }
 
   return {
-    queueLabel: 'Thẻ đến hạn hôm nay',
+    queueLabel: 'Thẻ cần ôn hôm nay',
     doneTitle: 'Xong rồi!',
     doneNote: 'Không còn thẻ cần ôn hôm nay.',
     exitPath: '/',
@@ -151,7 +151,7 @@ function ReviewRun({ source, topicId, topicName }: ReviewRunProps) {
         <ReviewScreen onExit={onFinish} queueLabel={queueLabel}>
           <ReviewMessage
             title="Chưa có thẻ nào để ôn thêm"
-            note="Thẻ chưa ôn lần nào hoặc đã ôn hôm nay không thuộc diện ôn thêm. Hẹn bạn ngày mai nhé."
+            note="Hôm nay chưa có thêm thẻ phù hợp để ôn. Hẹn bạn vào lượt tiếp theo nhé."
             actionLabel="Về trang chủ"
             onAction={onFinish}
           />
@@ -173,7 +173,7 @@ function ReviewRun({ source, topicId, topicName }: ReviewRunProps) {
           }
           extraAction={
             <Button variant="primary" onClick={onExtra}>
-              {source === 'extra' ? 'Ôn thêm 5 thẻ nữa' : 'Ôn thêm 5 thẻ sắp quên'}
+              Ôn thêm một lượt
             </Button>
           }
         >

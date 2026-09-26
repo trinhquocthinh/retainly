@@ -2,9 +2,9 @@ import type { ReactNode } from 'react';
 import { Link } from 'react-router';
 
 import type { LibraryStats } from '@src/features/cards/domain/libraryStats';
-import { formatDifficulty, formatPercent } from '@src/shared/utils/format';
+import { formatPercent } from '@src/shared/utils/format';
 
-import { DIFFICULT_CARD_THRESHOLD, type HomeOverview } from '../../../domain/home';
+import type { HomeOverview } from '../../../domain/home';
 
 import './HomeStats.css';
 
@@ -62,27 +62,27 @@ export function HomeStats({ library, retention }: HomeStatsProps) {
   return (
     <div className="home-stats" role="group" aria-label="Tổng quan thư viện">
       <HomeTile label="Tổng thẻ" value={library.totalCards} unit="thẻ">
-        {library.topicCount > 0 ? `Chia trên ${library.topicCount} chủ đề` : 'Chưa chia chủ đề'}
+        {library.topicCount > 0 ? `Thuộc ${library.topicCount} chủ đề` : 'Chưa có chủ đề'}
       </HomeTile>
 
       {retention ? (
         <HomeTile
-          label="Tỷ lệ lưu giữ"
+          label="Khả năng nhớ"
           value={averageR === null ? '—' : formatPercent(averageR)}
           aside={averageR === null ? undefined : <RetentionRing ratio={averageR} />}
         >
           {retention.reviewedCards === 0
             ? 'Chưa ôn thẻ nào'
-            : `Độ nhớ trung bình của ${retention.reviewedCards} thẻ đã ôn`}
+            : `Ước tính từ ${retention.reviewedCards} thẻ đã ôn`}
         </HomeTile>
       ) : null}
 
-      <HomeTile label="Cần củng cố gấp" value={library.difficultCards} unit="thẻ">
-        Độ khó D &gt; {formatDifficulty(DIFFICULT_CARD_THRESHOLD)}
+      <HomeTile label="Cần chú ý thêm" value={library.difficultCards} unit="thẻ">
+        Những thẻ bạn thường trả lời chưa đúng
         {library.difficultCards > 0 ? (
           <>
             {' · '}
-            <Link to="/cards?sort=difficulty">Xem thẻ khó</Link>
+            <Link to="/cards?sort=difficulty">Xem các thẻ này</Link>
           </>
         ) : null}
       </HomeTile>

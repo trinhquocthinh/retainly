@@ -5,8 +5,8 @@ import './ModeTabs.css';
 export type CreateMode = 'manual' | 'url';
 
 const TABS = [
-  { value: 'manual', label: 'Gõ tay' },
-  { value: 'url', label: 'Từ URL' },
+  { value: 'manual', label: 'Tự nhập' },
+  { value: 'url', label: 'Từ bài viết' },
 ] as const;
 
 type ModeTabsProps = {

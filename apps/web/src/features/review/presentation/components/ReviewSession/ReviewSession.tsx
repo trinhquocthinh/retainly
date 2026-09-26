@@ -51,8 +51,8 @@ export function ReviewSession({
       {saveFailed ? (
         <p className="review__error feedback-danger text-small" role="alert">
           {canRetry
-            ? 'Không lưu được kết quả, có thể do mạng. '
-            : 'Không lưu được kết quả cho thẻ này. '}
+            ? 'Chưa lưu được lựa chọn này. Kiểm tra mạng rồi thử lại. '
+            : 'Chưa lưu được lựa chọn cho thẻ này. '}
           <button type="button" className="review__retry" onClick={canRetry ? onRetry : onSkip}>
             {canRetry ? 'Thử lại' : 'Bỏ qua thẻ này'}
           </button>

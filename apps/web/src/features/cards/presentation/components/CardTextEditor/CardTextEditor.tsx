@@ -10,7 +10,7 @@ const TOOLS: Record<CardFormat, { label: string; glyph: string }> = {
   bold: { label: 'In đậm', glyph: 'B' },
   italic: { label: 'In nghiêng', glyph: 'I' },
   code: { label: 'Mã', glyph: '</>' },
-  cloze: { label: 'Cloze — đục lỗ đoạn đã chọn', glyph: 'Cloze [..]' },
+  cloze: { label: 'Tạo chỗ trống từ đoạn đã chọn', glyph: '[…]' },
 };
 
 /** Từ 90% trần trở lên, bộ đếm đổi màu để người dùng kịp rút gọn. */

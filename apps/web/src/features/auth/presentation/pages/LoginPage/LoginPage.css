@@ -1,31 +1,36 @@
 .login {
+  --control-height: 48px;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
+  background: #f7f7f2;
 }
 
 .login__main {
-  flex: 1;
-  width: 100%;
-  max-width: 420px;
-  margin: 0 auto;
-  padding: var(--space-12) var(--space-4) var(--space-8);
+  width: calc(100% - 32px);
+  max-width: 480px;
+  margin: auto;
+  padding: var(--space-8) 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: var(--space-8);
+  gap: var(--space-6);
+}
+
+.login__hero,
+.login__card {
+  min-width: 0;
 }
 
 .login__brand {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: var(--space-2);
-  text-align: center;
+  justify-content: center;
+  gap: var(--space-4);
+}
 
-  & h1 {
-    margin: var(--space-2) 0 0;
-  }
+.login__brand h1 {
+  margin: 0 0 var(--space-1);
+  font-weight: 700;
 }
 
 .login__tagline {
@@ -33,7 +38,6 @@
   color: var(--color-text-secondary);
 }
 
-/* Phần giới thiệu chỉ có chỗ khi màn đủ rộng cho hai cột. */
 .login__pitch,
 .login__trust {
   display: none;
@@ -44,11 +48,118 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
+  border-radius: 24px;
+  box-shadow: 0 12px 28px -12px rgb(26 29 35 / 15%);
+}
 
-  /* Nút SSO và nút gửi form trải hết bề ngang card; nút Huỷ ở màn chờ thì không. */
-  & > .btn,
-  & .login-form .btn {
-    width: 100%;
+.login__card > .btn,
+.login__card .login-form .btn {
+  width: 100%;
+}
+
+.login__intro h2 {
+  margin: 0 0 var(--space-2);
+}
+
+.login__intro p {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.login .segmented-tabs {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.login .segmented-tabs__tab {
+  height: 44px;
+}
+
+.login .segmented-tabs__indicator {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition-duration: 200ms;
+}
+
+.login .btn {
+  height: auto;
+  min-height: var(--control-height);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  transition:
+    transform 150ms,
+    box-shadow 150ms,
+    background 150ms;
+}
+
+.login .btn--primary {
+  box-shadow:
+    0 3px 0 #b45309,
+    0 6px 12px rgb(180 83 9 / 12%);
+}
+
+.login .btn--primary:hover:not(:disabled) {
+  background: var(--color-accent);
+  color: var(--color-text);
+  transform: translateY(-1px);
+}
+
+.login .btn--primary:active:not(:disabled) {
+  background: var(--color-accent-active);
+  color: #fff;
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #92400e;
+}
+
+.login .btn--secondary {
+  box-shadow: 0 2px 0 #e5e7eb;
+}
+
+.login .btn--secondary:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 #e5e7eb;
+}
+
+.login .btn:disabled {
+  box-shadow: none;
+  transform: none;
+}
+
+.login .field input {
+  border-radius: var(--radius-lg);
+}
+
+.login .password-input input {
+  padding-right: var(--control-height);
+}
+
+.login .login-form__forgot {
+  min-height: 44px;
+}
+
+.login .password-meter {
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-secondary-hover-bg);
+}
+
+.login .password-meter[data-strength='good'] {
+  --meter-text: var(--color-success-strong);
+}
+
+.login .password-meter__rules {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 400px) {
+  .login .password-meter__rules {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .login .password-rule:last-child {
+    grid-column: 1 / -1;
   }
 }
 
@@ -60,46 +171,52 @@
 
 @media (min-width: 1024px) {
   .login__main {
-    max-width: 1040px;
+    max-width: 1080px;
+    margin: auto;
+    padding: 0;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-content: center;
-    align-items: stretch;
+    grid-template-columns: minmax(0, 0.48fr) minmax(0, 0.52fr);
     gap: 0;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 24px;
+    box-shadow: 0 12px 28px -12px rgb(26 29 35 / 15%);
+  }
+
+  .login {
+    padding-top: var(--space-8);
   }
 
   .login__hero {
-    padding: var(--space-12);
+    padding: var(--space-8);
     display: flex;
     flex-direction: column;
     gap: var(--space-8);
-    background: var(--color-accent-soft);
-    border: 1px solid var(--color-accent-highlight);
-    border-right: 0;
-    border-radius: var(--radius-xl) 0 0 var(--radius-xl);
+    background: #fffdf9;
+    border-right: 1px solid var(--color-border);
+    border-radius: 24px 0 0 24px;
   }
 
   .login__brand {
-    align-items: flex-start;
-    text-align: left;
+    justify-content: flex-start;
   }
 
   .login__pitch {
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
-
-    & p {
-      margin: 0;
-    }
-
-    /* Không để chữ "quên." rớt một mình xuống dòng. */
-    & .text-display {
-      text-wrap: balance;
-    }
   }
 
-  .login__eyebrow {
+  .login__pitch p {
+    margin: 0;
+  }
+
+  .login__pitch .text-display {
+    text-wrap: balance;
+  }
+
+  .login__eyebrow,
+  .login__pitch .text-display span {
     color: var(--color-accent-active);
   }
 
@@ -107,24 +224,62 @@
     color: var(--color-text-secondary);
   }
 
+  .login__steps {
+    margin: var(--space-2) 0 0;
+    padding: var(--space-6) var(--space-6) var(--space-6) var(--space-12);
+    display: grid;
+    gap: var(--space-4);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 3px 0 #eeeae2;
+  }
+
+  .login__steps li::marker {
+    color: var(--color-accent-active);
+    font-weight: 700;
+  }
+
+  .login__steps strong,
+  .login__steps span {
+    display: block;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .login__steps span {
+    margin-top: var(--space-1);
+    color: var(--color-text-secondary);
+  }
+
   .login__trust {
     margin: auto 0 0;
+    padding-top: var(--space-6);
     display: flex;
     align-items: flex-start;
     gap: var(--space-2);
+    border-top: 1px solid var(--color-border);
     color: var(--color-text-secondary);
-
-    & svg {
-      flex: 0 0 auto;
-      color: var(--color-success);
-    }
   }
 
-  /* Hai cột ghép thành một khung: card bỏ bo góc phía hero. */
+  .login__trust svg {
+    flex: 0 0 auto;
+    color: var(--color-accent-active);
+  }
+
   .login__card {
-    padding: var(--space-12);
+    padding: var(--space-8) var(--space-12);
     justify-content: center;
-    border-radius: 0 var(--radius-xl) var(--radius-xl) 0;
+    border: 0;
+    border-radius: 0 24px 24px 0;
+    box-shadow: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login .btn:hover:not(:disabled),
+  .login .btn:active:not(:disabled) {
+    transform: none;
   }
 }
 

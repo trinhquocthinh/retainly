@@ -19,10 +19,10 @@ export function UpcomingReviews({ cards, now }: { cards: UpcomingCard[]; now: Da
     <section className="upcoming" aria-labelledby="upcoming-title">
       <div className="upcoming__head">
         <h2 id="upcoming-title" className="text-h2">
-          Chu kỳ ôn kế tiếp
+          Sắp tới
         </h2>
         <Link className="upcoming__all text-small" to="/cards?sort=due">
-          Xem toàn bộ lịch
+          Xem lịch ôn
           <IconArrowRight />
         </Link>
       </div>
@@ -35,7 +35,7 @@ export function UpcomingReviews({ cards, now }: { cards: UpcomingCard[]; now: Da
             <li key={card.id} className="upcoming__card surface-panel">
               <div className="upcoming__top">
                 <span className="upcoming__topic" data-empty={card.topic === null}>
-                  {card.topic?.name ?? 'Chưa gán Topic'}
+                  {card.topic?.name ?? 'Chưa có chủ đề'}
                 </span>
                 <span className="upcoming__gap">{formatForecast(due.daysAhead)}</span>
               </div>
@@ -45,9 +45,9 @@ export function UpcomingReviews({ cards, now }: { cards: UpcomingCard[]; now: Da
               <div className="upcoming__foot text-caption">
                 <span className="upcoming__reps">
                   <IconRestart size={14} />
-                  Lặp lần {card.reps + 1}
+                  Lần ôn thứ {card.reps + 1}
                 </span>
-                <span>Dự kiến: {due.dateLabel}</span>
+                <span>Ôn vào {due.dateLabel}</span>
               </div>
             </li>
           );

@@ -27,9 +27,9 @@ export function CardPreview({ draft }: { draft: CardDraft }) {
       <div className="card-preview__header">
         <h2 id={titleId} className="card-preview__title text-h2">
           <IconEye />
-          Mô phỏng thẻ thực tế
+          Xem trước khi ôn
         </h2>
-        <span className="card-preview__caption text-caption">(Bấm thẻ để lật)</span>
+        <span className="card-preview__caption text-caption">Bấm vào thẻ để lật</span>
         <Button onClick={flip} disabled={empty}>
           <IconFlip />
           Lật thẻ
@@ -37,9 +37,7 @@ export function CardPreview({ draft }: { draft: CardDraft }) {
       </div>
 
       {empty ? (
-        <p className="card-preview__empty text-small">
-          Gõ mặt hỏi để xem thẻ sẽ hiện ra thế nào khi ôn.
-        </p>
+        <p className="card-preview__empty text-small">Nhập mặt hỏi để xem thẻ của bạn.</p>
       ) : (
         <ReviewCard
           card={{

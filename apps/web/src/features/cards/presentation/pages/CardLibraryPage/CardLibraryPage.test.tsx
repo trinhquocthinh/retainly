@@ -184,10 +184,12 @@ describe('E3-S1-T3 — Thư viện thẻ', () => {
     expect(deleted()).toBe(false);
 
     await userEvent.click(deleteButton);
-    await userEvent.click(screen.getByRole('button', { name: 'Xác nhận xoá' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Xoá thẻ' }));
 
     expect(await screen.findByRole('status')).toHaveTextContent('Đã xoá thẻ khỏi thư viện');
-    expect(await screen.findByRole('heading', { name: 'Thư viện chưa có thẻ nào' })).toBeVisible();
+    expect(
+      await screen.findByRole('heading', { name: 'Thư viện của bạn đang trống' }),
+    ).toBeVisible();
     expect(screen.queryByRole('searchbox', { name: 'Tìm trong thư viện' })).not.toBeInTheDocument();
     await waitFor(() => expect(deleted()).toBe(true));
   });
@@ -294,27 +296,27 @@ describe('E9-S1-T2 — TC-068 tìm kiếm, sắp xếp, lọc Topic trong Thư v
     );
     expect(libraryCalls(fetchMock)[0]).toBe('/api/cards?page=2&pageSize=20&q=fsrs');
 
-    const chips = await screen.findByRole('group', { name: 'Lọc theo nhánh kiến thức' });
+    const chips = await screen.findByRole('group', { name: 'Lọc theo chủ đề' });
     expect(within(chips).getByRole('button', { name: 'Tất cả 1' })).toHaveAttribute(
       'aria-pressed',
       'true',
     );
     expect(within(chips).getByRole('button', { name: 'Trí nhớ 1' })).toBeVisible();
     expect(within(chips).getByRole('button', { name: 'Kiến trúc 0' })).toBeVisible();
-    expect(within(chips).getByRole('button', { name: 'Chưa gán 0' })).toBeVisible();
+    expect(within(chips).getByRole('button', { name: 'Chưa có chủ đề 0' })).toBeVisible();
 
     await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Sắp xếp thẻ' }), 'due');
     await waitFor(() =>
       expect(libraryCalls(fetchMock)).toContain('/api/cards?page=1&pageSize=20&q=fsrs&sort=due'),
     );
 
-    await userEvent.click(within(chips).getByRole('button', { name: 'Chưa gán 0' }));
+    await userEvent.click(within(chips).getByRole('button', { name: 'Chưa có chủ đề 0' }));
     await waitFor(() =>
       expect(libraryCalls(fetchMock)).toContain(
         '/api/cards?page=1&pageSize=20&q=fsrs&sort=due&topic=none',
       ),
     );
-    expect(within(chips).getByRole('button', { name: 'Chưa gán 0' })).toHaveAttribute(
+    expect(within(chips).getByRole('button', { name: 'Chưa có chủ đề 0' })).toHaveAttribute(
       'aria-pressed',
       'true',
     );
@@ -365,16 +367,16 @@ describe('E9-S1-T2 — TC-068 tìm kiếm, sắp xếp, lọc Topic trong Thư v
     const reviewed = (await screen.findByText('Thẻ đã ôn')).closest('article')!;
     expect(within(reviewed).getByText('Trí nhớ')).toBeVisible();
     expect(within(reviewed).getByText('Nguồn: Bài viết FSRS')).toBeVisible();
-    expect(within(reviewed).getByText(/^Quá hạn \d+ ngày$/)).toBeVisible();
+    expect(within(reviewed).getByText(/^Cần ôn từ \d+ ngày trước$/)).toBeVisible();
     expect(within(reviewed).getByText(/14,2 ngày/)).toBeVisible();
     expect(within(reviewed).getByText(/3,2/)).toBeVisible();
 
     const fresh = screen.getByText('FSRS dùng để làm gì?').closest('article')!;
-    expect(within(fresh).getByText('Chưa gán')).toBeVisible();
+    expect(within(fresh).getByText('Chưa có chủ đề')).toBeVisible();
     expect(within(fresh).getByText('Thẻ mới')).toBeVisible();
     expect(within(fresh).getByText('Chưa ôn lần nào')).toBeVisible();
 
-    expect(screen.getByRole('link', { name: 'Ôn ngay (3 đến hạn)' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Ôn 3 thẻ hôm nay' })).toHaveAttribute(
       'href',
       '/review',
     );
@@ -410,7 +412,7 @@ describe('E9-S1-T2 — TC-068 tìm kiếm, sắp xếp, lọc Topic trong Thư v
     queryClient.setQueryData(['stats', '30d'], statsFixture());
     await userEvent.click(await screen.findByRole('button', { name: /Sửa thẻ/ }));
 
-    const topicSelect = screen.getByRole('combobox', { name: 'Nhánh kiến thức' });
+    const topicSelect = screen.getByRole('combobox', { name: 'Chủ đề' });
     await waitFor(() => expect(topicSelect).toHaveValue(TOPIC.id));
     expect(screen.getByRole('button', { name: 'Lưu thay đổi' })).toBeDisabled();
 
@@ -425,8 +427,8 @@ describe('E9-S1-T2 — TC-068 tìm kiếm, sắp xếp, lọc Topic trong Thư v
 
     await userEvent.click(screen.getByRole('button', { name: /Sửa thẻ/ }));
     await userEvent.selectOptions(
-      screen.getByRole('combobox', { name: 'Nhánh kiến thức' }),
-      'Chưa phân nhánh',
+      screen.getByRole('combobox', { name: 'Chủ đề' }),
+      'Chưa có chủ đề',
     );
     await userEvent.click(screen.getByRole('button', { name: 'Lưu thay đổi' }));
 
@@ -462,9 +464,9 @@ describe('E9-S1-T3 — TC-069 ô số liệu Thư viện', () => {
 
     const stats = await screen.findByLabelText('Số liệu thư viện');
     expect(stats).toHaveTextContent('Cần ôn hôm nay3thẻTrong đó 1 quá hạn');
-    expect(stats).toHaveTextContent('Độ nhớ trung bình91%Trên 4 thẻ đã ôn');
-    expect(stats).toHaveTextContent('Độ ổn định (S)18,6 ngàyTrên 4 thẻ đã ôn');
-    expect(stats).toHaveTextContent('Đã thuộc2/ 5 thẻ40% · S trên 30 ngày');
+    expect(stats).toHaveTextContent('Khả năng nhớ91%Trên 4 thẻ đã ôn');
+    expect(stats).toHaveTextContent('Thời gian nhớ vững18,6 ngàyTrên 4 thẻ đã ôn');
+    expect(stats).toHaveTextContent('Đã nhớ vững2/ 5 thẻ40% · nhớ vững trên 30 ngày');
   });
 
   it('chưa ôn thẻ nào thì độ nhớ và S hiện "—", không báo quá hạn', async () => {
@@ -474,9 +476,9 @@ describe('E9-S1-T3 — TC-069 ô số liệu Thư viện', () => {
 
     const stats = await screen.findByLabelText('Số liệu thư viện');
     expect(stats).toHaveTextContent('Cần ôn hôm nay1thẻKhông có thẻ quá hạn');
-    expect(stats).toHaveTextContent('Độ nhớ trung bình—Chưa ôn thẻ nào');
-    expect(stats).toHaveTextContent('Độ ổn định (S)—Chưa ôn thẻ nào');
-    expect(stats).toHaveTextContent('Đã thuộc0/ 1 thẻ0% · S trên 30 ngày');
+    expect(stats).toHaveTextContent('Khả năng nhớ—Chưa ôn thẻ nào');
+    expect(stats).toHaveTextContent('Thời gian nhớ vững—Chưa ôn thẻ nào');
+    expect(stats).toHaveTextContent('Đã nhớ vững0/ 1 thẻ0% · nhớ vững trên 30 ngày');
   });
 
   it('không tải được số liệu thì ẩn khối số liệu, danh sách thẻ vẫn dùng được', async () => {
@@ -504,7 +506,7 @@ describe('E9-S1-T3 — TC-069 ô số liệu Thư viện', () => {
     expect(statsCalls()).toBe(1);
 
     await userEvent.click(screen.getByRole('button', { name: /Xoá thẻ/ }));
-    await userEvent.click(screen.getByRole('button', { name: 'Xác nhận xoá' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Xoá thẻ' }));
 
     await waitFor(() => expect(statsCalls()).toBe(2));
 
@@ -560,7 +562,7 @@ describe('E9-S1-T2b — TC-068 kiểu xem Lưới / Bảng', () => {
 
     const toggle = await screen.findByRole('button', { name: CARD.front });
     const row = toggle.closest('tr')!;
-    expect(within(row).getByText('Chưa gán')).toBeVisible();
+    expect(within(row).getByText('Chưa có chủ đề')).toBeVisible();
     expect(within(row).getByText('Thẻ mới')).toBeVisible();
     expect(within(row).getAllByText('—')).toHaveLength(2);
     expect(screen.getByText(CARD.back)).not.toBeVisible();

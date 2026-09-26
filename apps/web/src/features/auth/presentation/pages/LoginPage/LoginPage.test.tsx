@@ -104,7 +104,7 @@ describe('E4-S1-T6 — đăng nhập email/mật khẩu', () => {
       password: 'mat-khau-dung',
     });
 
-    expect(await screen.findByText('Xác thực thành công!')).toBeVisible();
+    expect(await screen.findByText('Đăng nhập thành công!')).toBeVisible();
     const login = fetchMock.mock.calls.find(([url]) => url === '/api/auth/login');
     expect(JSON.parse(String(login?.[1]?.body))).toEqual({
       email: 'learner@retainly.app',
@@ -147,7 +147,7 @@ describe('E4-S1-T6 — đăng nhập email/mật khẩu', () => {
 
     const alert = screen.getByRole('alert');
     expect(alert).toHaveTextContent('Quên mật khẩu');
-    expect(alert).toHaveTextContent('Liên hệ quản trị viên Retainly để được cấp mật khẩu tạm');
+    expect(alert).toHaveTextContent('Hãy liên hệ quản trị viên Retainly để nhận mật khẩu tạm');
     expect(fetchMock).toHaveBeenCalledTimes(callsBefore);
 
     await user.click(screen.getByRole('tab', { name: 'Đăng ký' }));
@@ -170,7 +170,7 @@ describe('E4-S1-T6 — đăng nhập email/mật khẩu', () => {
       password: 'mat-khau-dung',
     });
 
-    await screen.findByText('Xác thực thành công!');
+    await screen.findByText('Đăng nhập thành công!');
     const login = fetchMock.mock.calls.find(([url]) => url === '/api/auth/login');
     expect(JSON.parse(String(login?.[1]?.body))).toMatchObject({ remember: true });
   });
@@ -275,7 +275,7 @@ describe('E4-S1-T6 — đăng ký tài khoản nội bộ', () => {
       password: 'Mat-khau-moi-1',
     });
 
-    expect(await screen.findByText('Xác thực thành công!')).toBeVisible();
+    expect(await screen.findByText('Tạo tài khoản thành công!')).toBeVisible();
     // Ô nhập lại chỉ để kiểm tra ở client, không gửi lên máy chủ.
     const register = fetchMock.mock.calls.find(([url]) => url === '/api/auth/register');
     expect(JSON.parse(String(register?.[1]?.body))).toEqual({
@@ -304,7 +304,7 @@ describe('E4-S1-T6 — đăng ký tài khoản nội bộ', () => {
     [
       'TC-033: hệ thống đủ tài khoản thì hiện cảnh báo hết chỗ',
       apiError(403, 'ERR_USER_LIMIT_REACHED', 'Đã đạt giới hạn số tài khoản cho phép'),
-      'Retainly đã đủ số tài khoản',
+      'Retainly hiện chưa thể nhận thêm tài khoản',
     ],
     [
       'TC-031: email trùng hiện thông điệp của máy chủ',
@@ -326,35 +326,50 @@ describe('E4-S1-T6 — đăng ký tài khoản nội bộ', () => {
 });
 
 describe('E4-S1-T6 — đăng nhập Authentik SSO', () => {
-  it('hiện màn kết nối, sau 2 giây mới rời sang Authentik', async () => {
-    stubApi();
-    const user = renderLogin();
+  it.each(['login', 'register'] as const)(
+    '%s: hiện màn kết nối, sau 2 giây mới rời sang Authentik',
+    async (mode) => {
+      stubApi();
+      const user = renderLogin();
 
-    await user.click(screen.getByRole('button', { name: 'Đăng nhập với Authentik SSO' }));
+      if (mode === 'register') await user.click(screen.getByRole('tab', { name: 'Đăng ký' }));
+      await user.click(
+        screen.getByRole('button', {
+          name: mode === 'login' ? 'Đăng nhập với Authentik' : 'Đăng ký với Authentik',
+        }),
+      );
 
-    expect(screen.getByText('Đang kết nối tới Authentik SSO…')).toBeVisible();
-    await act(() => vi.advanceTimersByTimeAsync(1900));
-    expect(redirectToSso).not.toHaveBeenCalled();
+      expect(screen.getByText('Đang mở Authentik…')).toBeVisible();
+      expect(
+        screen.getByText(
+          mode === 'login'
+            ? 'Tiếp tục đăng nhập trên trang Authentik.'
+            : 'Tiếp tục đăng ký trên trang Authentik.',
+        ),
+      ).toBeVisible();
+      await act(() => vi.advanceTimersByTimeAsync(1900));
+      expect(redirectToSso).not.toHaveBeenCalled();
 
-    await act(() => vi.advanceTimersByTimeAsync(100));
-    expect(redirectToSso).toHaveBeenCalledTimes(1);
-  });
+      await act(() => vi.advanceTimersByTimeAsync(100));
+      expect(redirectToSso).toHaveBeenCalledTimes(1);
+    },
+  );
 
   it('bấm Hủy trong lúc chờ thì quay lại form và không rời trang', async () => {
     stubApi();
     const user = renderLogin();
 
-    await user.click(screen.getByRole('button', { name: 'Đăng nhập với Authentik SSO' }));
+    await user.click(screen.getByRole('button', { name: 'Đăng nhập với Authentik' }));
     await user.click(screen.getByRole('button', { name: 'Hủy và quay lại' }));
     await act(() => vi.advanceTimersByTimeAsync(3000));
 
-    expect(screen.getByRole('button', { name: 'Đăng nhập với Authentik SSO' })).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Đăng nhập với Authentik' })).toBeVisible();
     expect(redirectToSso).not.toHaveBeenCalled();
   });
 
   it.each([
-    ['user_limit', 'Retainly đã đủ số tài khoản'],
-    ['sso_failed', 'Đăng nhập SSO không thành công'],
+    ['user_limit', 'Retainly hiện chưa thể nhận thêm tài khoản'],
+    ['sso_failed', 'Chưa thể tiếp tục với Authentik'],
   ])('callback trả về ?error=%s thì hiện banner tương ứng', (reason, title) => {
     stubApi();
     renderLogin(`/login?error=${reason}`);
@@ -408,7 +423,7 @@ describe('E4-S1-T6 — kiểm tra form trước khi gửi', () => {
       password: 'matkhaucu',
     });
 
-    expect(await screen.findByText('Xác thực thành công!')).toBeVisible();
+    expect(await screen.findByText('Đăng nhập thành công!')).toBeVisible();
     expect(fetchMock.mock.calls.some(([url]) => url === '/api/auth/login')).toBe(true);
   });
 });

@@ -1,20 +1,23 @@
 export const errorCatalog = {
   // SDD — bảng mã lỗi chung
-  ERR_INVALID_URL: { status: 400, message: 'Đường dẫn không hợp lệ, kiểm tra lại URL' },
-  ERR_FETCH_FAILED: { status: 502, message: 'Không tải được nội dung từ URL này' },
-  ERR_FETCH_TIMEOUT: { status: 504, message: 'Tải nội dung quá lâu, thử lại sau' },
+  ERR_INVALID_URL: { status: 400, message: 'Liên kết chưa đúng. Hãy kiểm tra rồi thử lại.' },
+  ERR_FETCH_FAILED: { status: 502, message: 'Chưa đọc được nội dung từ liên kết này' },
+  ERR_FETCH_TIMEOUT: {
+    status: 504,
+    message: 'Bài viết mất nhiều thời gian để tải. Vui lòng thử lại.',
+  },
   ERR_EMPTY_FRONT: { status: 400, message: 'Mặt hỏi của thẻ không được để trống' },
   ERR_EMPTY_BACK: { status: 400, message: 'Mặt trả lời của thẻ không được để trống' },
-  ERR_TOPIC_NOT_FOUND: { status: 404, message: 'Không tìm thấy nhánh kiến thức này' },
-  ERR_TOPIC_NAME_TAKEN: { status: 409, message: 'Tên nhánh kiến thức này đã được sử dụng' },
+  ERR_TOPIC_NOT_FOUND: { status: 404, message: 'Không tìm thấy chủ đề này' },
+  ERR_TOPIC_NAME_TAKEN: { status: 409, message: 'Tên chủ đề này đã được sử dụng' },
   ERR_SOURCE_NOT_FOUND: { status: 404, message: 'Không tìm thấy nguồn bài viết này' },
   ERR_CARD_NOT_FOUND: { status: 404, message: 'Không tìm thấy thẻ này' },
   ERR_UNAUTHORIZED: { status: 401, message: 'Vui lòng đăng nhập lại' },
-  ERR_INVALID_OUTCOME: { status: 400, message: 'Kết quả ôn tập không hợp lệ' },
+  ERR_INVALID_OUTCOME: { status: 400, message: 'Lựa chọn cho lượt ôn chưa hợp lệ' },
   ERR_OUTCOME_NOT_FOUND: { status: 404, message: 'Không tìm thấy lượt ôn này' },
   ERR_UNDO_NOT_ALLOWED: {
     status: 409,
-    message: 'Chỉ hoàn tác được lượt ôn mới nhất của thẻ, trong vòng 10 phút',
+    message: 'Bạn chỉ có thể hoàn tác lựa chọn gần nhất trong vòng 10 phút',
   },
   ERR_FORBIDDEN: { status: 403, message: 'Bạn không có quyền truy cập nội dung này' },
   ERR_USER_LIMIT_REACHED: { status: 403, message: 'Đã đạt giới hạn số tài khoản cho phép' },
@@ -30,9 +33,9 @@ export const errorCatalog = {
   },
 
   // Hạ tầng — chưa có trong SDD, xem ghi chú cuối bài
-  ERR_BAD_REQUEST: { status: 400, message: 'Yêu cầu không hợp lệ' },
-  ERR_NOT_FOUND: { status: 404, message: 'Không tìm thấy đường dẫn này' },
-  ERR_INTERNAL: { status: 500, message: 'Có lỗi xảy ra, thử lại sau' },
+  ERR_BAD_REQUEST: { status: 400, message: 'Yêu cầu chưa hợp lệ' },
+  ERR_NOT_FOUND: { status: 404, message: 'Không tìm thấy nội dung này' },
+  ERR_INTERNAL: { status: 500, message: 'Có lỗi xảy ra. Vui lòng thử lại.' },
 } as const satisfies Record<string, { status: number; message: string }>;
 
 export type ErrorCode = keyof typeof errorCatalog;

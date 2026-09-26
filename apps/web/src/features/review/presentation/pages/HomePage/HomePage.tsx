@@ -61,7 +61,7 @@ export function HomePage() {
 
       <aside className="home__tip text-small">
         <span aria-hidden="true">💡</span>
-        Chỉ cần 5–10 phút mỗi ngày để duy trì nhịp ghi nhớ.
+        Một lượt ôn ngắn mỗi ngày giúp việc học dễ duy trì hơn.
       </aside>
     </div>
   );

@@ -24,11 +24,8 @@ function MemoryChip({ memory }: { memory: CardMemory }) {
 
   const { stability, difficulty, retrievability } = formatMemory(memory);
   return (
-    <span
-      className="review-card__memory text-caption"
-      title="Độ ổn định (S) · Độ khó (D) · Khả năng nhớ lúc này (R)"
-    >
-      S {stability} · D {difficulty} · R {retrievability}
+    <span className="review-card__memory text-caption">
+      Nhớ vững {stability} · Độ khó {difficulty}/10 · Khả năng nhớ {retrievability}
     </span>
   );
 }
@@ -70,7 +67,7 @@ export function ReviewCard({ card, memory, flipped, onFlip }: ReviewCardProps) {
         >
           <span className="review-card__head">
             <span className="review-card__tag review-card__tag--answer text-caption-caps">
-              Mặt đáp án
+              Đáp án
             </span>
             {memory ? <MemoryChip memory={memory} /> : null}
           </span>

@@ -20,7 +20,7 @@ type TopicSelectorProps = {
 };
 
 function messageOf(error: unknown): string {
-  return error instanceof Error ? error.message : 'Không tải được nhánh kiến thức';
+  return error instanceof Error ? error.message : 'Chưa tải được danh sách chủ đề';
 }
 
 export function TopicSelector({
@@ -62,7 +62,7 @@ export function TopicSelector({
     <div className="topic-selector">
       <div className="topic-selector__heading">
         <label className="text-small" htmlFor="card-topic">
-          Nhánh kiến thức
+          Chủ đề
         </label>
         {!adding ? (
           <button
@@ -73,13 +73,13 @@ export function TopicSelector({
               setAdding(true);
             }}
           >
-            Tạo nhánh mới
+            Thêm chủ đề
           </button>
         ) : null}
       </div>
 
       <p className="topic-selector__description text-caption">
-        Giúp nhóm các thẻ cùng chủ đề để theo dõi hiệu quả ghi nhớ.
+        Gom các thẻ liên quan để bạn dễ tìm và theo dõi tiến bộ.
       </p>
 
       {loadError ? (
@@ -96,7 +96,7 @@ export function TopicSelector({
           disabled={loading}
           onChange={(event) => onChange(event.target.value)}
         >
-          <option value="">{loading ? 'Đang tải nhánh…' : 'Chưa phân nhánh'}</option>
+          <option value="">{loading ? 'Đang tải chủ đề…' : 'Chưa có chủ đề'}</option>
           {topics.map((topic) => (
             <option key={topic.id} value={topic.id}>
               {topic.name}
@@ -108,7 +108,7 @@ export function TopicSelector({
       {adding ? (
         <div className="topic-selector__creation">
           <label className="text-caption" htmlFor="new-topic-name">
-            Tên nhánh mới
+            Tên chủ đề mới
           </label>
           <div className="topic-selector__creation-row">
             <input
@@ -116,7 +116,7 @@ export function TopicSelector({
               value={name}
               maxLength={100}
               autoFocus
-              placeholder="Ví dụ: Khoa học"
+              placeholder="Ví dụ: Tâm lý học"
               aria-invalid={Boolean(createError)}
               onChange={(event) => {
                 setName(event.target.value);

@@ -124,14 +124,14 @@ export function CardLibraryPage() {
             ) : null}
           </div>
           <p className="card-library__description text-small">
-            Tìm lại kiến thức, xem độ nhớ của từng thẻ và dọn những thẻ không còn cần.
+            Tìm lại điều đã lưu, xem thẻ nào cần ôn và sắp xếp theo chủ đề.
           </p>
         </div>
 
         <div className="card-library__header-actions">
           {dueCount > 0 ? (
             <Link className="link-button link-button--outline" to="/review">
-              Ôn ngay ({dueCount} đến hạn)
+              Ôn {dueCount} thẻ hôm nay
             </Link>
           ) : null}
           <Link className="link-button link-button--accent" to="/cards/new">
@@ -175,8 +175,10 @@ export function CardLibraryPage() {
           <span className="card-library__empty-icon" aria-hidden="true">
             <IconLibrary size={28} />
           </span>
-          <h2 className="text-h2">Thư viện chưa có thẻ nào</h2>
-          <p className="text-small">Tạo thẻ đầu tiên để bắt đầu xây dựng kho kiến thức của bạn.</p>
+          <h2 className="text-h2">Thư viện của bạn đang trống</h2>
+          <p className="text-small">
+            Lưu điều đầu tiên bạn muốn nhớ, rồi Retainly sẽ giúp bạn ôn lại.
+          </p>
           <Link className="link-button link-button--accent" to="/cards/new">
             <IconNewCard />
             Tạo thẻ đầu tiên

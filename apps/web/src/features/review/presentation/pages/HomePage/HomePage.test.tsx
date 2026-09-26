@@ -97,7 +97,7 @@ describe('E10-S1-T2 — Trang chủ design 0.1.2 (TC-071)', () => {
     const week = screen.getByRole('region', { name: 'Chuỗi ngày ôn tuần này' });
     expect(week).toHaveTextContent('7 ngày liền');
     expect(within(week).getByLabelText('T2: đã ôn')).toBeVisible();
-    expect(within(week).getByLabelText('T3: không ôn')).toBeVisible();
+    expect(within(week).getByLabelText('T3: chưa ôn')).toBeVisible();
     expect(within(week).getByLabelText('T5: hôm nay, chưa ôn')).toHaveAttribute(
       'aria-current',
       'date',
@@ -120,7 +120,7 @@ describe('E10-S1-T2 — Trang chủ design 0.1.2 (TC-071)', () => {
 
     renderWithProviders(<HomePage />);
 
-    expect(await screen.findByRole('heading', { name: /12\s*thẻ đến hạn/ })).toBeVisible();
+    expect(await screen.findByRole('heading', { name: /12\s*thẻ cần ôn/ })).toBeVisible();
     expect(
       screen.getByText(
         (_, node) =>
@@ -148,7 +148,7 @@ describe('E10-S1-T2 — Trang chủ design 0.1.2 (TC-071)', () => {
 
     renderWithProviders(<HomePage />);
 
-    expect(await screen.findByRole('heading', { name: /4\s*thẻ đến hạn/ })).toBeVisible();
+    expect(await screen.findByRole('heading', { name: /4\s*thẻ cần ôn/ })).toBeVisible();
     expect(screen.queryByText(/^Gồm/)).not.toBeInTheDocument();
   });
 
@@ -162,11 +162,11 @@ describe('E10-S1-T2 — Trang chủ design 0.1.2 (TC-071)', () => {
     renderWithProviders(<HomePage />);
 
     const list = await screen.findByLabelText('Tổng quan thư viện');
-    expect(list).toHaveTextContent('Tổng thẻ38thẻChia trên 4 chủ đề');
+    expect(list).toHaveTextContent('Tổng thẻ38thẻThuộc 4 chủ đề');
     expect(await within(list).findByText('86%')).toBeVisible();
-    expect(list).toHaveTextContent('Độ nhớ trung bình của 30 thẻ đã ôn');
-    expect(list).toHaveTextContent('Cần củng cố gấp3thẻĐộ khó D > 7,5');
-    expect(within(list).getByRole('link', { name: 'Xem thẻ khó' })).toHaveAttribute(
+    expect(list).toHaveTextContent('Ước tính từ 30 thẻ đã ôn');
+    expect(list).toHaveTextContent('Cần chú ý thêm3thẻNhững thẻ bạn thường trả lời chưa đúng');
+    expect(within(list).getByRole('link', { name: 'Xem các thẻ này' })).toHaveAttribute(
       'href',
       '/cards?sort=difficulty',
     );
@@ -182,7 +182,7 @@ describe('E10-S1-T2 — Trang chủ design 0.1.2 (TC-071)', () => {
 
     const list = await screen.findByLabelText('Tổng quan thư viện');
     expect(list).toHaveTextContent('Tổng thẻ');
-    expect(list).not.toHaveTextContent('Tỷ lệ lưu giữ');
+    expect(list).not.toHaveTextContent('Khả năng nhớ');
   });
 
   it('chu kỳ ôn kế tiếp chỉ hiện mặt hỏi, khoảng cách và lần lặp', async () => {
@@ -203,15 +203,15 @@ describe('E10-S1-T2 — Trang chủ design 0.1.2 (TC-071)', () => {
 
     renderWithProviders(<HomePage />);
 
-    const section = await screen.findByRole('region', { name: 'Chu kỳ ôn kế tiếp' });
+    const section = await screen.findByRole('region', { name: 'Sắp tới' });
     const [card] = within(section).getAllByRole('listitem');
     expect(card).toHaveTextContent('FSRS');
     expect(card).toHaveTextContent('+3 ngày');
     expect(card).toHaveTextContent('Thành phần S trong FSRS là gì?');
-    expect(card).toHaveTextContent('Lặp lần 3');
-    expect(card).toHaveTextContent('Dự kiến: Chủ Nhật, 27/09');
+    expect(card).toHaveTextContent('Lần ôn thứ 3');
+    expect(card).toHaveTextContent('Ôn vào Chủ Nhật, 27/09');
     expect(card).not.toHaveTextContent('Độ ổn định');
-    expect(within(section).getByRole('link', { name: /Xem toàn bộ lịch/ })).toHaveAttribute(
+    expect(within(section).getByRole('link', { name: /Xem lịch ôn/ })).toHaveAttribute(
       'href',
       '/cards?sort=due',
     );
@@ -226,12 +226,12 @@ describe('E10-S1-T2 — Trang chủ design 0.1.2 (TC-071)', () => {
 
     expect(await screen.findByText('Bạn đã hoàn thành hôm nay')).toBeVisible();
     expect(screen.getByText('6/6 thẻ')).toBeVisible();
-    expect(screen.getByRole('link', { name: /Ôn thêm 5 thẻ sắp quên/ })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /Ôn thêm một lượt/ })).toHaveAttribute(
       'href',
       '/review/extra',
     );
     expect(screen.getByRole('link', { name: /Tạo thẻ mới/ })).toHaveAttribute('href', '/cards/new');
-    expect(screen.queryByRole('region', { name: 'Chu kỳ ôn kế tiếp' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: 'Sắp tới' })).not.toBeInTheDocument();
   });
 
   it('chưa có thẻ nào thì mời tạo thẻ đầu tiên, không hiện số liệu', async () => {

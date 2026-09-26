@@ -18,8 +18,8 @@ export function UrlBar({ url, canLoad, loading, error, onUrlChange, onLoad }: Ur
   return (
     <form className="url-bar" onSubmit={onLoad} noValidate>
       <Field
-        label="Đường dẫn bài viết"
-        description="Dán link bài viết công khai, Retainly sẽ bóc lấy phần chữ sạch."
+        label="Liên kết bài viết"
+        description="Dán liên kết bài viết công khai để chọn nội dung bạn muốn lưu."
         error={error ?? undefined}
       >
         {(props) => (
@@ -35,7 +35,7 @@ export function UrlBar({ url, canLoad, loading, error, onUrlChange, onLoad }: Ur
               onChange={onUrlChange}
             />
             <Button type="submit" variant="primary" disabled={!canLoad}>
-              {loading ? 'Đang nạp…' : 'Nạp'}
+              {loading ? 'Đang mở…' : 'Mở bài viết'}
             </Button>
           </div>
         )}

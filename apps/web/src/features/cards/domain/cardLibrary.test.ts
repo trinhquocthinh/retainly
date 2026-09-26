@@ -35,13 +35,13 @@ describe('E9-S1-T2 — describeDue', () => {
 
   it.each([
     // 23:30 cùng ngày giờ Việt Nam vẫn là hôm nay.
-    ['2026-09-23T16:30:00.000Z', 'due', 'Đến hạn hôm nay'],
+    ['2026-09-23T16:30:00.000Z', 'due', 'Cần ôn hôm nay'],
     // 23:00 hôm qua giờ Việt Nam: chưa đủ 24 giờ nhưng đã qua một ngày lịch.
-    ['2026-09-22T16:00:00.000Z', 'due', 'Quá hạn 1 ngày'],
-    ['2026-09-20T02:00:00.000Z', 'due', 'Quá hạn 3 ngày'],
+    ['2026-09-22T16:00:00.000Z', 'due', 'Cần ôn từ 1 ngày trước'],
+    ['2026-09-20T02:00:00.000Z', 'due', 'Cần ôn từ 3 ngày trước'],
     // 00:30 ngày mai giờ Việt Nam.
-    ['2026-09-23T17:30:00.000Z', 'upcoming', 'Còn 1 ngày'],
-    ['2026-10-03T02:00:00.000Z', 'upcoming', 'Còn 10 ngày'],
+    ['2026-09-23T17:30:00.000Z', 'upcoming', 'Ôn sau 1 ngày'],
+    ['2026-10-03T02:00:00.000Z', 'upcoming', 'Ôn sau 10 ngày'],
   ])('hạn %s → %s "%s"', (dueDate, tone, label) => {
     expect(describeDue(schedule({ dueDate }), NOW)).toEqual({ tone, label });
   });

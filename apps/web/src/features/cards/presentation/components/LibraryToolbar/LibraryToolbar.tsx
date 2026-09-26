@@ -155,7 +155,7 @@ export function LibraryToolbar({
       </div>
 
       {counts ? (
-        <div className="library-toolbar__chips" role="group" aria-label="Lọc theo nhánh kiến thức">
+        <div className="library-toolbar__chips" role="group" aria-label="Lọc theo chủ đề">
           <TopicChip
             label="Tất cả"
             count={counts.all}
@@ -172,7 +172,7 @@ export function LibraryToolbar({
             />
           ))}
           <TopicChip
-            label="Chưa gán"
+            label="Chưa có chủ đề"
             count={counts.unassigned}
             active={topic === UNASSIGNED_TOPIC}
             onSelect={() => onTopicChange(UNASSIGNED_TOPIC)}

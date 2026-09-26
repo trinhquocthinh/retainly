@@ -31,10 +31,10 @@ export function ReviewScreen({ onExit, queueLabel, progress, children }: ReviewS
             className="review-screen__exit"
             onClick={onExit}
             // Mobile ẩn chữ, chỉ còn icon X.
-            aria-label="Kết thúc phiên"
+            aria-label="Kết thúc lượt ôn"
           >
             <IconClose size={16} />
-            <span className="review-screen__exit-label">Kết thúc phiên</span>
+            <span className="review-screen__exit-label">Kết thúc lượt ôn</span>
             <kbd>Esc</kbd>
           </button>
         </div>
@@ -42,7 +42,7 @@ export function ReviewScreen({ onExit, queueLabel, progress, children }: ReviewS
         {progress ? (
           <div className="review-screen__progress">
             <div className="review-screen__progress-head text-caption">
-              <span className="review-screen__progress-label">Tiến độ ôn tập</span>
+              <span className="review-screen__progress-label">Tiến độ</span>
               <span className="review-screen__eta">
                 <IconClock size={12} />~{progress.remainingMinutes} phút còn lại
               </span>
@@ -53,7 +53,7 @@ export function ReviewScreen({ onExit, queueLabel, progress, children }: ReviewS
             <div
               className="review-screen__track"
               role="progressbar"
-              aria-label="Tiến độ ôn tập"
+              aria-label="Tiến độ lượt ôn"
               aria-valuemin={0}
               aria-valuemax={progress.total}
               aria-valuenow={progress.reviewed}

@@ -94,16 +94,16 @@ export function LibraryTable({ cards, now, onEdit, onDelete }: LibraryTableProps
           <tr>
             <th scope="col">Mặt hỏi</th>
             <th scope="col" className="library-table__topic-col">
-              Nhánh
+              Chủ đề
             </th>
             <th scope="col" className="library-table__due-col">
-              Hạn ôn
+              Lịch ôn
             </th>
             <th scope="col" className="library-table__stability-col">
-              <abbr title="Độ ổn định">S</abbr>
+              Nhớ vững
             </th>
             <th scope="col" className="library-table__difficulty-col">
-              <abbr title="Độ khó">D</abbr>
+              Độ khó
             </th>
             <th scope="col" className="library-table__last-col">
               Ôn gần nhất

@@ -62,22 +62,22 @@ export function LibraryStats({ stats, loading }: { stats: Stats | undefined; loa
         tone={stats.overdue > 0 ? 'danger' : undefined}
       />
       <StatTile
-        label="Độ nhớ trung bình"
+        label="Khả năng nhớ"
         value={
           stats.averageRetrievability === null ? '—' : formatPercent(stats.averageRetrievability)
         }
         hint={reviewedHint}
       />
       <StatTile
-        label="Độ ổn định (S)"
+        label="Thời gian nhớ vững"
         value={stats.averageStability === null ? '—' : formatStability(stats.averageStability)}
         hint={reviewedHint}
       />
       <StatTile
-        label="Đã thuộc"
+        label="Đã nhớ vững"
         value={stats.masteredCards}
         unit={`/ ${stats.totalCards} thẻ`}
-        hint={`${formatPercent(stats.masteredCards / stats.totalCards)} · S trên ${MASTERED_STABILITY_DAYS} ngày`}
+        hint={`${formatPercent(stats.masteredCards / stats.totalCards)} · nhớ vững trên ${MASTERED_STABILITY_DAYS} ngày`}
       />
     </dl>
   );

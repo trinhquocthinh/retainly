@@ -172,8 +172,8 @@ describe('E11-S1-T2 — màn Tài khoản', () => {
     renderAccount({}, 'sso');
 
     const panel = await screen.findByRole('region', { name: 'Đổi mật khẩu' });
-    expect(panel).toHaveTextContent('mật khẩu được quản lý tại Authentik');
+    expect(panel).toHaveTextContent('Mật khẩu của tài khoản này được quản lý trên Authentik');
     expect(within(panel).queryByLabelText('Mật khẩu hiện tại')).not.toBeInTheDocument();
-    expect(screen.getByRole('region', { name: 'Hồ sơ' })).toHaveTextContent('Authentik SSO');
+    expect(screen.getByRole('region', { name: 'Hồ sơ' })).toHaveTextContent('Authentik');
   });
 });

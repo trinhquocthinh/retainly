@@ -43,7 +43,7 @@ afterEach(() => vi.unstubAllGlobals());
 describe('E1-S3-T6 — màn tạo thẻ', () => {
   it('nút Lưu bị vô hiệu khi chưa nhập đủ hai mặt', async () => {
     renderPage();
-    const luu = screen.getByRole('button', { name: 'Lưu & tạo tiếp' });
+    const luu = screen.getByRole('button', { name: 'Lưu và tạo tiếp' });
     expect(luu).toBeDisabled();
 
     await userEvent.type(screen.getByLabelText('Mặt hỏi'), 'Thủ đô Pháp?');
@@ -58,7 +58,7 @@ describe('E1-S3-T6 — màn tạo thẻ', () => {
     await userEvent.type(screen.getByLabelText('Mặt hỏi'), '   ');
     await userEvent.type(screen.getByLabelText('Mặt trả lời'), '   ');
 
-    expect(screen.getByRole('button', { name: 'Lưu & tạo tiếp' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Lưu và tạo tiếp' })).toBeDisabled();
   });
 
   it('gửi đúng nội dung tới POST /api/cards', async () => {
@@ -67,7 +67,7 @@ describe('E1-S3-T6 — màn tạo thẻ', () => {
 
     await userEvent.type(screen.getByLabelText('Mặt hỏi'), 'Thủ đô Pháp?');
     await userEvent.type(screen.getByLabelText('Mặt trả lời'), 'Paris');
-    await userEvent.click(screen.getByRole('button', { name: 'Lưu & tạo tiếp' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Lưu và tạo tiếp' }));
 
     await waitFor(() => {
       expect(fetchGia.mock.calls.some(([url]) => url === '/api/cards')).toBe(true);
@@ -90,7 +90,7 @@ describe('E1-S3-T6 — màn tạo thẻ', () => {
 
     await userEvent.type(screen.getByLabelText('Mặt hỏi'), 'Thủ đô Pháp?');
     await userEvent.type(screen.getByLabelText('Mặt trả lời'), 'Paris');
-    await userEvent.click(screen.getByRole('button', { name: 'Lưu & tạo tiếp' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Lưu và tạo tiếp' }));
 
     const error = await screen.findByRole('alert');
     expect(error.textContent).toBe('Mặt trả lời của thẻ không được để trống');
@@ -116,7 +116,7 @@ describe('E1-S3-T6 — màn tạo thẻ', () => {
 
     await userEvent.type(screen.getByLabelText('Mặt hỏi'), 'Thủ đô Pháp?');
     await userEvent.type(screen.getByLabelText('Mặt trả lời'), 'Paris');
-    await userEvent.click(screen.getByRole('button', { name: 'Lưu & tạo tiếp' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Lưu và tạo tiếp' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'Không lưu được thẻ, kiểm tra mạng rồi thử lại',
@@ -129,11 +129,11 @@ describe('E1-S3-T6 — màn tạo thẻ', () => {
 
     await userEvent.type(screen.getByLabelText('Mặt hỏi'), 'Thủ đô Pháp?');
     await userEvent.type(screen.getByLabelText('Mặt trả lời'), 'Paris');
-    await userEvent.click(screen.getByRole('button', { name: 'Lưu & tạo tiếp' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Lưu và tạo tiếp' }));
 
     expect(await screen.findByRole('status')).toHaveTextContent('Đã lưu thẻ');
     expect(screen.getByLabelText('Mặt hỏi')).toHaveValue('');
-    expect(screen.getByRole('button', { name: 'Lưu & tạo tiếp' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Lưu và tạo tiếp' })).toBeDisabled();
   });
 
   it('gửi topicId đã chọn trong cùng request tạo thẻ', async () => {
@@ -171,10 +171,10 @@ describe('E1-S3-T6 — màn tạo thẻ', () => {
 
     await screen.findByRole('option', { name: 'Khoa học' });
 
-    await userEvent.selectOptions(screen.getByLabelText('Nhánh kiến thức'), topicId);
+    await userEvent.selectOptions(screen.getByLabelText('Chủ đề'), topicId);
     await userEvent.type(screen.getByLabelText('Mặt hỏi'), 'Hỏi');
     await userEvent.type(screen.getByLabelText('Mặt trả lời'), 'Đáp');
-    await userEvent.click(screen.getByRole('button', { name: 'Lưu & tạo tiếp' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Lưu và tạo tiếp' }));
 
     await waitFor(() => {
       expect(fetchMock.mock.calls.some(([url]) => url === '/api/cards')).toBe(true);
@@ -200,7 +200,7 @@ describe('E7-S1-T2 — TC-055 ghi chú khi tạo thẻ', () => {
     await userEvent.type(screen.getByLabelText('Mặt trả lời'), 'Paris');
     await userEvent.click(screen.getByRole('button', { name: /Thêm mẹo ghi nhớ/ }));
     await userEvent.type(screen.getByLabelText(/Ghi chú/), 'Nhớ tháp **Eiffel**');
-    await userEvent.click(screen.getByRole('button', { name: 'Lưu & tạo tiếp' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Lưu và tạo tiếp' }));
 
     await waitFor(() => {
       expect(fetchMock.mock.calls.some(([url]) => url === '/api/cards')).toBe(true);
@@ -220,7 +220,7 @@ describe('E7-S1-T3 — TC-057 tạo thẻ đục lỗ', () => {
   it('mặt hỏi có đoạn đục lỗ thì lưu được khi để trống mặt trả lời', async () => {
     const fetchGia = mockFetch(201, { id: 'card-1' });
     renderPage();
-    const luu = screen.getByRole('button', { name: 'Lưu & tạo tiếp' });
+    const luu = screen.getByRole('button', { name: 'Lưu và tạo tiếp' });
 
     await userEvent.click(screen.getByLabelText('Mặt hỏi'));
     await userEvent.paste('Thủ đô Pháp là [[ ]]');
@@ -264,17 +264,17 @@ describe('E7-S1-T4 — form soạn thẻ theo design 0.1.2', () => {
 
     expect(
       within(screen.getByRole('toolbar', { name: 'Định dạng mặt trả lời' })).queryByRole('button', {
-        name: /Cloze/,
+        name: /Tạo chỗ trống/,
       }),
     ).not.toBeInTheDocument();
 
     await userEvent.click(screen.getByLabelText('Mặt hỏi'));
     await userEvent.paste('Thủ đô Pháp là ');
-    await userEvent.click(screen.getByRole('button', { name: /Cloze/ }));
+    await userEvent.click(screen.getByRole('button', { name: /Tạo chỗ trống/ }));
 
     expect(screen.getByLabelText('Mặt hỏi')).toHaveValue('Thủ đô Pháp là [[đáp án]]');
     expect(screen.getByLabelText('Mặt trả lời — tuỳ chọn')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Lưu & tạo tiếp' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Lưu và tạo tiếp' })).toBeEnabled();
   });
 
   it('bộ đếm ký tự theo sát nội dung và trần của từng ô', async () => {
@@ -303,7 +303,7 @@ describe('E7-S1-T4 — form soạn thẻ theo design 0.1.2', () => {
   it('xem trước thẻ: trống thì nhắc gõ, có cloze thì hiện chỗ trống và lật được', async () => {
     renderPage();
 
-    expect(screen.getByText(/Gõ mặt hỏi để xem thẻ/)).toBeInTheDocument();
+    expect(screen.getByText(/Nhập mặt hỏi để xem thẻ/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Lật thẻ' })).toBeDisabled();
 
     await userEvent.click(screen.getByLabelText('Mặt hỏi'));
@@ -313,7 +313,7 @@ describe('E7-S1-T4 — form soạn thẻ theo design 0.1.2', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Lật thẻ' }));
     // Tên nút lấy từ nội dung mặt đang hiện; jsdom không chèn khoảng trắng giữa các span.
     expect(
-      screen.getByRole('button', { name: /^Mặt đáp án\s*Thủ đô Pháp là Paris/ }),
+      screen.getByRole('button', { name: /^Đáp án\s*Thủ đô Pháp là Paris/ }),
     ).toBeInTheDocument();
   });
 

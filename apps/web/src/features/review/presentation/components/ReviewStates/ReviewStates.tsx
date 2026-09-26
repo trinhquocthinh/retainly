@@ -5,7 +5,7 @@ import { Button } from '@src/shared/ui/Button/Button';
 import './ReviewStates.css';
 
 export function ReviewSkeleton() {
-  return <div className="review-skeleton" role="status" aria-label="Đang tải thẻ đến hạn" />;
+  return <div className="review-skeleton" role="status" aria-label="Đang chuẩn bị thẻ ôn" />;
 }
 
 type ReviewMessageProps = {

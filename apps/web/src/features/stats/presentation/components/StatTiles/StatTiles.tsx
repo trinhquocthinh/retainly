@@ -53,8 +53,8 @@ function ConsistencyTile({ stats }: { stats: Stats }) {
 
   return (
     <StatTile
-      label="Tính kỷ luật"
-      title="Tỷ lệ ngày có ôn"
+      label="Nhịp ôn tập"
+      title="Số ngày bạn đã ôn"
       icon={<IconToday size={16} />}
       footer={period ? `Khoảng ${period}` : 'Chưa có lượt ôn nào'}
     >
@@ -74,8 +74,8 @@ function ConsistencyTile({ stats }: { stats: Stats }) {
 function StreakTile({ streak }: { streak: Stats['streak'] }) {
   return (
     <StatTile
-      label="Kỷ lục thói quen"
-      title="Chuỗi ôn dài nhất"
+      label="Duy trì đều đặn"
+      title="Chuỗi tốt nhất"
       icon={<span className="stat-tile__emoji">🔥</span>}
       footer={`Chuỗi hiện tại: ${streak.current} ngày`}
     >
@@ -85,7 +85,7 @@ function StreakTile({ streak }: { streak: Stats['streak'] }) {
       </p>
       <p className="stat-tile__hint text-caption">
         {streak.current >= streak.longest
-          ? 'Bạn đang ở chuỗi kỷ lục'
+          ? 'Bạn đang cân bằng kỷ lục của mình'
           : 'Chuỗi hiện tại so với kỷ lục'}
       </p>
       {/* Kỷ lục bằng 0 thì màn đã chuyển sang trạng thái rỗng, không tới được đây. */}
@@ -97,8 +97,8 @@ function StreakTile({ streak }: { streak: Stats['streak'] }) {
 function DurableTile({ durable }: { durable: Stats['durable'] }) {
   return (
     <StatTile
-      label="Vùng bền vững"
-      title="Thẻ nhớ sâu"
+      label="Đã nhớ vững"
+      title="Thẻ đã nhớ lâu"
       icon={<IconShield size={16} />}
       footer={
         durable.share === null
@@ -111,7 +111,7 @@ function DurableTile({ durable }: { durable: Stats['durable'] }) {
         <span className="text-caption">thẻ</span>
       </p>
       <p className="stat-tile__hint text-caption">
-        Đã ôn và có độ ổn định S trên {DURABLE_STABILITY_DAYS} ngày
+        Ước tính có thể nhớ vững trên {DURABLE_STABILITY_DAYS} ngày
       </p>
     </StatTile>
   );
@@ -121,10 +121,10 @@ function RecallTile({ recall }: { recall: Stats['recall'] }) {
   if (recall.rate === null) {
     return (
       <StatTile
-        label="Độ chính xác thực nghiệm"
-        title="Tỷ lệ nhớ lại"
+        label="Kết quả ôn tập"
+        title="Tỷ lệ trả lời đúng"
         icon={<IconCheck size={16} />}
-        footer={`Mục tiêu FSRS: ${formatRate(recall.target)}`}
+        footer={`Mức tham chiếu: ${formatRate(recall.target)}`}
       >
         <p className="stat-tile__value">
           <strong className="text-h1">—</strong>
@@ -138,17 +138,17 @@ function RecallTile({ recall }: { recall: Stats['recall'] }) {
   const gapText = {
     above: `vượt ${gap.points} điểm`,
     below: `thấp hơn ${gap.points} điểm`,
-    equal: 'đúng mục tiêu',
+    equal: 'đạt mức tham chiếu',
   }[gap.direction];
 
   return (
     <StatTile
-      label="Độ chính xác thực nghiệm"
-      title="Tỷ lệ nhớ lại"
+      label="Kết quả ôn tập"
+      title="Tỷ lệ trả lời đúng"
       icon={<IconCheck size={16} />}
       footer={
         <>
-          Mục tiêu FSRS {formatRate(recall.target)} ·{' '}
+          Mức tham chiếu {formatRate(recall.target)} ·{' '}
           <span className="stat-tile__gap" data-direction={gap.direction}>
             {gapText}
           </span>
@@ -159,7 +159,7 @@ function RecallTile({ recall }: { recall: Stats['recall'] }) {
         <strong className="text-h1" data-direction={gap.direction}>
           {formatRate(recall.rate)}
         </strong>
-        <span className="text-caption">/ {formatRate(recall.target)} mục tiêu</span>
+        <span className="text-caption">/ {formatRate(recall.target)} tham chiếu</span>
       </p>
       <p className="stat-tile__hint text-caption">
         Nhớ {recall.remembered} / {recall.total} lượt ôn
@@ -175,7 +175,7 @@ function RecallTile({ recall }: { recall: Stats['recall'] }) {
  */
 export function StatTiles({ stats }: { stats: Stats }) {
   return (
-    <section className="stat-tiles" aria-label="Chỉ số ghi nhớ">
+    <section className="stat-tiles" aria-label="Tổng quan tiến bộ">
       <ConsistencyTile stats={stats} />
       <StreakTile streak={stats.streak} />
       <DurableTile durable={stats.durable} />

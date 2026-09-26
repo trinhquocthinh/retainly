@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { topicReviewLink } from '@src/features/review/domain/review';
 import { IconAlert, IconArrowRight, IconCheck, IconClock } from '@src/shared/ui/Icons/Icons';
 
-import { formatRate, pickAdvice, type TopicStats } from '../../../domain/stats';
+import { pickAdvice, type TopicStats } from '../../../domain/stats';
 
 import './StatsAdvice.css';
 
@@ -19,9 +19,9 @@ export function StatsAdvice({ topics }: { topics: readonly TopicStats[] }) {
           <IconCheck size={18} />
         </span>
         <div className="stats-advice__body">
-          <span className="stats-advice__eyebrow text-caption-caps">Trạng thái ổn định</span>
+          <span className="stats-advice__eyebrow text-caption-caps">Mọi thứ đang ổn</span>
           <p className="text-small">
-            Không nhánh nào còn thẻ đến hạn hôm nay. FSRS sẽ nhắc bạn khi tới lúc ôn lại.
+            Hôm nay bạn không còn thẻ nào cần ôn. Retainly sẽ nhắc khi có lượt tiếp theo.
           </p>
         </div>
       </section>
@@ -38,20 +38,18 @@ export function StatsAdvice({ topics }: { topics: readonly TopicStats[] }) {
 
       <div className="stats-advice__body">
         <span className="stats-advice__eyebrow text-caption-caps">
-          {attention ? 'Đề xuất ôn tập' : 'Trạng thái ổn định'}
+          {attention ? 'Gợi ý hôm nay' : 'Mọi thứ đang ổn'}
         </span>
 
         {attention ? (
           <p className="text-small">
-            Nhánh <strong>{advice.topic.name}</strong> có tỷ lệ quên cao nhất trong các nhánh còn
-            thẻ đến hạn ({formatRate(advice.forgetRate)}) — nên ưu tiên ôn{' '}
-            <strong>{advice.dueCount} thẻ</strong> của nhánh này hôm nay.
+            Bạn thường quên thẻ trong chủ đề <strong>{advice.topic.name}</strong> nhiều hơn các chủ
+            đề khác. Hôm nay có <strong>{advice.dueCount} thẻ</strong> phù hợp để ôn lại.
           </p>
         ) : (
           <p className="text-small">
-            Các nhánh còn thẻ đến hạn đều dưới ngưỡng an toàn. Nhánh{' '}
-            <strong>{advice.topic.name}</strong> có {advice.dueCount} thẻ đến hạn, tỷ lệ quên chỉ{' '}
-            {formatRate(advice.forgetRate)}.
+            Các chủ đề hôm nay đều đang tiến triển tốt. Chủ đề <strong>{advice.topic.name}</strong>{' '}
+            còn {advice.dueCount} thẻ cần ôn.
           </p>
         )}
 
@@ -65,7 +63,7 @@ export function StatsAdvice({ topics }: { topics: readonly TopicStats[] }) {
         className={`link-button ${attention ? 'link-button--accent' : 'link-button--outline'}`}
         {...topicReviewLink(advice.topic)}
       >
-        Ôn {advice.dueCount} thẻ ngay
+        Ôn {advice.dueCount} thẻ
         <IconArrowRight />
       </Link>
     </section>

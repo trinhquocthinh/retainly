@@ -38,12 +38,12 @@ function mockApi(routes: Record<string, { status: number; body: unknown }>) {
 }
 
 async function moTabUrl() {
-  await userEvent.click(screen.getByRole('tab', { name: 'Từ URL' }));
+  await userEvent.click(screen.getByRole('tab', { name: 'Từ bài viết' }));
 }
 
 async function napUrl(url = 'https://example.com/bai-viet') {
-  await userEvent.type(screen.getByLabelText('Đường dẫn bài viết'), url);
-  await userEvent.click(screen.getByRole('button', { name: 'Nạp' }));
+  await userEvent.type(screen.getByLabelText('Liên kết bài viết'), url);
+  await userEvent.click(screen.getByRole('button', { name: 'Mở bài viết' }));
 }
 
 /** Bôi đen trọn một phần tử rồi thả chuột, đúng như thao tác thật. */
@@ -63,12 +63,15 @@ afterEach(() => vi.unstubAllGlobals());
 describe('E2-S2-T5 — tạo thẻ từ URL', () => {
   it('tab Từ URL mở ra ô nhập đường dẫn', async () => {
     renderWithProviders(<CreateCardPage />);
-    expect(screen.queryByLabelText('Đường dẫn bài viết')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Liên kết bài viết')).not.toBeInTheDocument();
 
     await moTabUrl();
 
-    expect(screen.getByLabelText('Đường dẫn bài viết')).toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: 'Từ URL' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByLabelText('Liên kết bài viết')).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Từ bài viết' })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
   });
 
   it('nạp thành công thì hiện tiêu đề và nội dung đã bóc tách', async () => {
@@ -98,9 +101,9 @@ describe('E2-S2-T5 — tạo thẻ từ URL', () => {
     await napUrl();
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Không tải được nội dung từ URL này',
+      'Chưa đọc được nội dung từ liên kết này',
     );
-    expect(screen.queryByText('Nguồn đã bóc tách')).not.toBeInTheDocument();
+    expect(screen.queryByText('Nội dung bài viết')).not.toBeInTheDocument();
   });
 
   it('lưu thẻ ở tab Từ URL thì gửi kèm sourceId', async () => {
@@ -116,7 +119,7 @@ describe('E2-S2-T5 — tạo thẻ từ URL', () => {
 
     await userEvent.type(screen.getByLabelText('Mặt hỏi'), 'Đường cong quên do ai mô tả?');
     await userEvent.type(screen.getByLabelText('Mặt trả lời'), 'Hermann Ebbinghaus');
-    await userEvent.click(screen.getByRole('button', { name: 'Lưu & tạo tiếp' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Lưu và tạo tiếp' }));
 
     await waitFor(() => {
       expect(fetchGia.mock.calls.some(([url]) => url === '/api/cards')).toBe(true);
@@ -145,9 +148,11 @@ describe('E2-S2-T5 — tạo thẻ từ URL', () => {
 
     await userEvent.type(screen.getByLabelText('Mặt hỏi'), 'Hỏi');
     await userEvent.type(screen.getByLabelText('Mặt trả lời'), 'Đáp');
-    await userEvent.click(screen.getByRole('button', { name: 'Lưu & tạo tiếp' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Lưu và tạo tiếp' }));
 
-    expect(await screen.findByRole('status')).toHaveTextContent('Tiếp tục rút ý từ bài viết này');
+    expect(await screen.findByRole('status')).toHaveTextContent(
+      'Đã lưu thẻ. Bạn có thể chọn thêm ý từ bài viết này.',
+    );
     expect(screen.getByText(ARTICLE.title)).toBeInTheDocument();
     expect(screen.getByLabelText('Mặt hỏi')).toHaveValue('');
     expect(screen.getByLabelText('Mặt trả lời')).toHaveValue('');

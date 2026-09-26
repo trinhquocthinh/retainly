@@ -58,7 +58,7 @@ function renderAt(path: string) {
 }
 
 function findSsoButton() {
-  return screen.findByRole('button', { name: 'Đăng nhập với Authentik SSO' });
+  return screen.findByRole('button', { name: 'Đăng nhập với Authentik' });
 }
 
 afterEach(() => vi.unstubAllGlobals());
@@ -68,7 +68,7 @@ describe('E0-S2-T4 — khung định tuyến', () => {
     ['/', /^Chào buổi/],
     ['/cards', 'Thư viện thẻ'],
     ['/cards/new', 'Thẻ mới'],
-    ['/stats', 'Thống kê & Hiệu quả ghi nhớ'],
+    ['/stats', 'Thống kê học tập'],
   ])('route %s render màn hình "%s"', async (path, title) => {
     stubApi({
       ...SIGNED_IN,

@@ -28,7 +28,7 @@ function TopicRow({ row, index }: { row: TopicStats; index: number }) {
           </span>
           {row.averageDifficulty === null
             ? null
-            : ` • Độ khó D: ${formatDifficulty(row.averageDifficulty)}/10`}
+            : ` • Độ khó: ${formatDifficulty(row.averageDifficulty)}/10`}
         </span>
       </div>
       <div className="topic-breakdown__share">
@@ -42,13 +42,13 @@ function TopicRow({ row, index }: { row: TopicStats; index: number }) {
           <Link
             className="link-button link-button--outline topic-breakdown__review"
             {...topicReviewLink(row.topic)}
-            aria-label={`Ôn ngay ${row.dueCount} thẻ đến hạn của nhánh ${row.topic.name}`}
+            aria-label={`Ôn ngay ${row.dueCount} thẻ cần ôn của chủ đề ${row.topic.name}`}
           >
             Ôn ngay ({row.dueCount})
             <IconArrowRight size={14} />
           </Link>
         ) : (
-          <span className="topic-breakdown__idle text-caption">Không có thẻ đến hạn</span>
+          <span className="topic-breakdown__idle text-caption">Không có thẻ cần ôn</span>
         )}
       </div>
     </li>
@@ -69,10 +69,10 @@ export function TopicBreakdown({ stats, onShowAll }: TopicBreakdownProps) {
       <div className="topic-breakdown__head">
         <div>
           <h2 className="text-h2" id="topic-breakdown-title">
-            Tỷ lệ quên &amp; Độ khó theo nhánh kiến thức
+            Kết quả ôn theo chủ đề
           </h2>
           <p className="topic-breakdown__note text-caption">
-            Sắp giảm dần theo tỷ lệ quên. Tỷ trọng tính trên lượt ôn của các nhánh trong khoảng.
+            Sắp xếp theo tỷ lệ quên để bạn biết chủ đề nào cần chú ý trước.
           </p>
         </div>
         {topics.length > 0 ? (
@@ -85,7 +85,7 @@ export function TopicBreakdown({ stats, onShowAll }: TopicBreakdownProps) {
           <p className="text-small">
             {stats.recall.total === 0
               ? 'Không có lượt ôn nào trong 30 ngày gần nhất.'
-              : 'Các lượt ôn trong khoảng này đều thuộc thẻ chưa gán nhánh kiến thức.'}
+              : 'Các lượt ôn trong khoảng này đều thuộc thẻ chưa có chủ đề.'}
           </p>
           {stats.range === '30d' ? (
             <Button onClick={onShowAll}>Xem toàn bộ thời gian</Button>

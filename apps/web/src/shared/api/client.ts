@@ -17,7 +17,7 @@ export class ApiError extends Error {
  */
 export class NetworkError extends Error {
   constructor(cause: unknown) {
-    super('Không kết nối được máy chủ');
+    super('Chưa thể kết nối. Kiểm tra mạng rồi thử lại.');
     this.name = 'NetworkError';
     this.cause = cause;
   }
@@ -38,7 +38,7 @@ export function setUnauthorizedHandler(handler: UnauthorizedHandler): void {
 /** Máy chủ không trả lời trong hạn. Đáng thử lại, khác hẳn lỗi nghiệp vụ. */
 export class TimeoutError extends Error {
   constructor() {
-    super('Máy chủ phản hồi quá lâu');
+    super('Phản hồi mất nhiều thời gian hơn dự kiến. Vui lòng thử lại.');
     this.name = 'TimeoutError';
   }
 }

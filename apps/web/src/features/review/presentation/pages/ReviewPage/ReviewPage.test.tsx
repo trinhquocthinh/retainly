@@ -114,7 +114,7 @@ describe('E1-S3-T7 — màn ôn tập', () => {
     await userEvent.click(await screen.findByText('Hỏi A'));
     await userEvent.click(screen.getByRole('button', { name: /Quên/ }));
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('Không lưu được kết quả');
+    expect(await screen.findByRole('alert')).toHaveTextContent('Chưa lưu được lựa chọn này');
     // Thẻ không được nhảy sang cái kế tiếp — đây là điều NFR#2 đòi
     expect(screen.getByText('Đáp A')).toBeInTheDocument();
     expect(screen.getByText('1 / 2')).toBeInTheDocument();
@@ -491,11 +491,11 @@ describe('E8-S1-T4 — TC-065 ôn thêm thẻ sắp quên', () => {
     renderReviewRoutes('/review');
 
     await screen.findByText('Xong rồi!');
-    expect(screen.getByText('Thẻ đến hạn hôm nay')).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Ôn thêm 5 thẻ sắp quên' }));
+    expect(screen.getByText('Thẻ cần ôn hôm nay')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Ôn thêm một lượt' }));
 
     expect(await screen.findByText('Hỏi X')).toBeInTheDocument();
-    expect(screen.getByText('Ôn thêm · thẻ sắp quên')).toBeInTheDocument();
+    expect(screen.getByText('Ôn thêm một lượt')).toBeInTheDocument();
     expect(screen.getByText('1 / 2')).toBeInTheDocument();
 
     // Chấm như lượt thường: cùng endpoint nên được tính vào Streak (BR-001)
@@ -522,7 +522,7 @@ describe('E8-S1-T4 — TC-065 ôn thêm thẻ sắp quên', () => {
     await userEvent.click(screen.getByRole('button', { name: /Nhớ/ }));
 
     expect(await screen.findByText('Xong lượt ôn thêm!')).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Ôn thêm 5 thẻ nữa' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Ôn thêm một lượt' }));
 
     // Phiên mới: về thẻ đầu tiên của danh sách mới, không kế thừa vị trí cũ
     expect(await screen.findByText('Hỏi Z')).toBeInTheDocument();
@@ -571,9 +571,11 @@ describe('E8-S1-T5 — TC-066 màn ôn theo design 0.1.2', () => {
 
     await screen.findByText('Hỏi R');
 
-    expect(frontFace(container)).toHaveTextContent('S 13,8 ngày · D 2,1 · R 90%');
-    expect(screen.getByRole('button', { name: /Quên/ })).toHaveTextContent('+2 ngày');
-    expect(screen.getByRole('button', { name: /Nhớ/ })).toHaveTextContent('+57 ngày');
+    expect(frontFace(container)).toHaveTextContent(
+      'Nhớ vững 13,8 ngày · Độ khó 2,1/10 · Khả năng nhớ 90%',
+    );
+    expect(screen.getByRole('button', { name: /^Quên\s*\+2 ngày$/ })).toHaveTextContent('+2 ngày');
+    expect(screen.getByRole('button', { name: /^Nhớ\s*\+57 ngày$/ })).toHaveTextContent('+57 ngày');
 
     await userEvent.click(screen.getByText('Hỏi R'));
     expect(screen.getByText(/^Ôn gần nhất: /)).toBeInTheDocument();
@@ -586,7 +588,7 @@ describe('E8-S1-T5 — TC-066 màn ôn theo design 0.1.2', () => {
     await screen.findByText('Hỏi A');
 
     expect(frontFace(container)).toHaveTextContent('Thẻ mới');
-    expect(frontFace(container)).not.toHaveTextContent('R 0%');
+    expect(frontFace(container)).not.toHaveTextContent('Khả năng nhớ 0%');
     expect(screen.getByRole('button', { name: /Nhớ/ })).toHaveTextContent('+3 ngày');
   });
 
@@ -745,11 +747,11 @@ describe('E10-S1-T4 — TC-073 ôn ngay theo Topic', () => {
 
     await userEvent.click(await screen.findByText('Hỏi A'));
     // Mở thẳng bằng đường dẫn thì không có tên Topic trong state điều hướng
-    expect(screen.getByText('Thẻ đến hạn của nhánh')).toBeInTheDocument();
+    expect(screen.getByText('Thẻ cần ôn theo chủ đề')).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: /Nhớ/ }));
 
-    expect(await screen.findByText('Xong nhánh này!')).toBeInTheDocument();
-    expect(screen.getByText('Không còn thẻ đến hạn trong nhánh này.')).toBeInTheDocument();
+    expect(await screen.findByText('Đã ôn xong chủ đề này!')).toBeInTheDocument();
+    expect(screen.getByText('Không còn thẻ cần ôn trong chủ đề này.')).toBeInTheDocument();
     expect(fetchMock.mock.calls.some(([url]) => url === '/api/cards/due')).toBe(false);
 
     await userEvent.click(screen.getByRole('button', { name: 'Về Thống kê' }));

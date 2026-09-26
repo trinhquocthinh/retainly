@@ -75,7 +75,7 @@ describe('E10-S1-T4 — TC-073 màn Thống kê đầy đủ', () => {
     const fetchMock = mockApi({ '/api/stats?range=30d': POPULATED });
     renderStats();
 
-    const tiles = await screen.findByRole('region', { name: 'Chỉ số ghi nhớ' });
+    const tiles = await screen.findByRole('region', { name: 'Tổng quan tiến bộ' });
     const [consistency, streak, durable, recall] = within(tiles).getAllByRole('article');
 
     expect(consistency).toHaveTextContent('86,7%');
@@ -85,7 +85,7 @@ describe('E10-S1-T4 — TC-073 màn Thống kê đầy đủ', () => {
     expect(streak).toHaveTextContent('Chuỗi hiện tại: 7 ngày');
     expect(durable).toHaveTextContent('38thẻ');
     expect(durable).toHaveTextContent('Chiếm 41,8% kho thẻ (91 thẻ)');
-    expect(recall).toHaveTextContent('94,2%/ 90% mục tiêu');
+    expect(recall).toHaveTextContent('94,2%/ 90% tham chiếu');
     expect(recall).toHaveTextContent('Nhớ 942 / 1000 lượt ôn');
     expect(recall).toHaveTextContent('vượt 4,2 điểm');
 
@@ -141,14 +141,14 @@ describe('E10-S1-T4 — TC-073 màn Thống kê đầy đủ', () => {
     mockApi({ '/api/stats?range=30d': POPULATED });
     renderStats();
 
-    const panel = await screen.findByRole('region', { name: /Tỷ lệ quên & Độ khó/ });
+    const panel = await screen.findByRole('region', { name: 'Kết quả ôn theo chủ đề' });
     const rows = within(panel).getAllByRole('listitem');
 
     expect(rows).toHaveLength(2);
     expect(rows[0]).toHaveTextContent('Kiến trúc phần mềm');
-    expect(rows[0]).toHaveTextContent('Tỷ lệ quên: 42% • Độ khó D: 6,8/10');
+    expect(rows[0]).toHaveTextContent('Tỷ lệ quên: 42% • Độ khó: 6,8/10');
     expect(rows[0]).toHaveTextContent('48%48 lượt ôn');
-    expect(rows[0]).toHaveTextContent('Không có thẻ đến hạn');
+    expect(rows[0]).toHaveTextContent('Không có thẻ cần ôn');
     expect(within(rows[0]!).queryByRole('link')).not.toBeInTheDocument();
 
     // Chưa có D trung bình thì không in "Độ khó"
@@ -165,13 +165,12 @@ describe('E10-S1-T4 — TC-073 màn Thống kê đầy đủ', () => {
 
     const advice = await screen.findByRole('note');
 
-    expect(advice).toHaveTextContent('Đề xuất ôn tập');
+    expect(advice).toHaveTextContent('Gợi ý hôm nay');
     expect(advice).toHaveTextContent('Trí nhớ & học tập');
-    expect(advice).toHaveTextContent('(14,8%)');
     expect(advice).toHaveTextContent('15 thẻ');
     expect(advice).toHaveTextContent('Ước tính ~2 phút');
     expect(advice).not.toHaveTextContent('Kiến trúc phần mềm');
-    expect(within(advice).getByRole('link', { name: /Ôn 15 thẻ ngay/ })).toHaveAttribute(
+    expect(within(advice).getByRole('link', { name: /Ôn 15 thẻ/ })).toHaveAttribute(
       'href',
       '/review/topic/topic-memory',
     );
@@ -185,7 +184,7 @@ describe('E10-S1-T4 — TC-073 màn Thống kê đầy đủ', () => {
 
     const advice = await screen.findByRole('note');
 
-    expect(advice).toHaveTextContent('Không nhánh nào còn thẻ đến hạn hôm nay');
+    expect(advice).toHaveTextContent('Hôm nay bạn không còn thẻ nào cần ôn');
     expect(within(advice).queryByRole('link')).not.toBeInTheDocument();
   });
 
@@ -228,17 +227,15 @@ describe('E10-S1-T4 — TC-073 màn Thống kê đầy đủ', () => {
     });
     renderStats();
 
-    const panel = await screen.findByRole('region', { name: /Tỷ lệ quên & Độ khó/ });
+    const panel = await screen.findByRole('region', { name: 'Kết quả ôn theo chủ đề' });
     await userEvent.click(within(panel).getByRole('link', { name: /Ôn ngay 15 thẻ/ }));
 
     expect(await screen.findByText('Hỏi trí nhớ')).toBeInTheDocument();
     expect(screen.getByText('Ôn ngay · Trí nhớ & học tập')).toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole('button', { name: /Kết thúc phiên/ }));
+    await userEvent.click(screen.getByRole('button', { name: /Kết thúc lượt ôn/ }));
 
-    expect(
-      await screen.findByRole('heading', { name: 'Thống kê & Hiệu quả ghi nhớ' }),
-    ).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Thống kê học tập' })).toBeInTheDocument();
     // Rời phiên đánh dấu số liệu cũ: vào lại màn Thống kê là nạp lại
     await waitFor(() => expect(statsRequests(fetchMock)).toHaveLength(2));
   });
@@ -259,12 +256,12 @@ describe('E10-S1-T4 — TC-073 trạng thái của màn Thống kê', () => {
     });
     renderStats();
 
-    expect(await screen.findByText('Chưa có đủ dữ liệu ôn tập để tổng hợp')).toBeInTheDocument();
+    expect(await screen.findByText('Chưa có thống kê để xem')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Bắt đầu ôn tập/ })).toHaveAttribute('href', '/review');
     expect(screen.getByRole('link', { name: /Tạo thẻ mới/ })).toHaveAttribute('href', '/cards/new');
     expect(screen.queryByRole('tablist')).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Xuất báo cáo CSV' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('region', { name: 'Chỉ số ghi nhớ' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Tải báo cáo' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: 'Tổng quan tiến bộ' })).not.toBeInTheDocument();
   });
 
   it('30 ngày không có lượt ôn thì không hiện 0% giả và mời xem toàn bộ', async () => {
@@ -282,7 +279,7 @@ describe('E10-S1-T4 — TC-073 trạng thái của màn Thống kê', () => {
     });
     renderStats();
 
-    const tiles = await screen.findByRole('region', { name: 'Chỉ số ghi nhớ' });
+    const tiles = await screen.findByRole('region', { name: 'Tổng quan tiến bộ' });
     const recall = within(tiles).getAllByRole('article')[3];
     expect(recall).toHaveTextContent('—');
     expect(recall).toHaveTextContent('Chưa có lượt ôn trong khoảng này');
@@ -306,11 +303,11 @@ describe('E10-S1-T4 — TC-073 trạng thái của màn Thống kê', () => {
     renderStats();
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Không tải được thống kê');
-    expect(screen.queryByRole('button', { name: 'Xuất báo cáo CSV' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Tải báo cáo' })).not.toBeInTheDocument();
 
     await userEvent.click(screen.getByRole('button', { name: 'Thử lại' }));
 
-    expect(await screen.findByRole('region', { name: 'Chỉ số ghi nhớ' })).toBeInTheDocument();
+    expect(await screen.findByRole('region', { name: 'Tổng quan tiến bộ' })).toBeInTheDocument();
   });
 
   it('đang tải thì hiện khung chờ', () => {
@@ -329,7 +326,7 @@ describe('E10-S1-T5 — TC-074 xuất báo cáo', () => {
     const fetchMock = mockApi({ '/api/stats?range=30d': POPULATED });
     renderStats();
 
-    await userEvent.click(await screen.findByRole('button', { name: 'Xuất báo cáo CSV' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Tải báo cáo' }));
 
     expect(downloadCsv).toHaveBeenCalledTimes(1);
     const [fileName, csv] = vi.mocked(downloadCsv).mock.calls[0]!;
@@ -345,7 +342,7 @@ describe('E10-S1-T5 — TC-074 xuất báo cáo', () => {
     mockApi({ '/api/stats?range=30d': POPULATED });
     renderStats();
 
-    const exportButton = await screen.findByRole('button', { name: 'Xuất báo cáo CSV' });
+    const exportButton = await screen.findByRole('button', { name: 'Tải báo cáo' });
     expect(exportButton).toBeEnabled();
 
     vi.stubGlobal(

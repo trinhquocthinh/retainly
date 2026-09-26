@@ -20,7 +20,7 @@ const MODE_TABS = [
   { value: 'register', label: 'Đăng ký' },
 ] as const;
 
-/** Màn `/login` — design `designs/v0.1/login`, design-criteria §5. */
+/** Màn đăng nhập và đăng ký dùng chung bố cục auth. */
 export function LoginPage() {
   const [searchParams] = useSearchParams();
   const session = useSession({ fetchSession });
@@ -48,11 +48,21 @@ export function LoginPage() {
           {flow.alert ? <LoginAlert alert={flow.alert} /> : null}
 
           {flow.signedIn ? (
-            <SignedIn />
+            <SignedIn mode={flow.mode} />
           ) : flow.connectingSso ? (
-            <SsoConnecting onCancel={flow.cancelSso} />
+            <SsoConnecting mode={flow.mode} onCancel={flow.cancelSso} />
           ) : (
             <>
+              <div className="login__intro">
+                <h2 className="text-h2">
+                  {flow.mode === 'login' ? 'Chào mừng bạn trở lại' : 'Bắt đầu cùng Retainly'}
+                </h2>
+                <p className="text-small">
+                  {flow.mode === 'login'
+                    ? 'Đăng nhập để tiếp tục với những thẻ bạn đã lưu.'
+                    : 'Tạo tài khoản để lưu kiến thức và xây dựng thói quen ôn tập.'}
+                </p>
+              </div>
               <SegmentedTabs
                 label="Cách vào Retainly"
                 tabs={MODE_TABS}
@@ -64,7 +74,7 @@ export function LoginPage() {
                 <span className="login__sso-icon">
                   <IconShield />
                 </span>
-                Đăng nhập với Authentik SSO
+                {flow.mode === 'login' ? 'Đăng nhập với Authentik' : 'Đăng ký với Authentik'}
               </Button>
 
               <p className="login__divider text-small">
@@ -94,43 +104,54 @@ export function LoginPage() {
       </main>
 
       <footer className="login__footer text-caption">
-        Retainly v0.1 · Hệ thống lặp lại ngắt quãng thuật toán FSRS-6
+        Retainly · Khỏi lo brain drain, đã có Retain!
       </footer>
     </div>
   );
 }
 
-/**
- * Cột giới thiệu của design 0.1.2, rút gọn: chỉ giữ chữ nói đúng về sản phẩm, bỏ
- * đồ thị minh hoạ và số liệu không có thật. Dưới 1024px chỉ còn logo và tagline.
- */
+/** Giới thiệu ngắn trên mobile; mở rộng thành cột nội dung trên desktop. */
 function LoginHero() {
   return (
     <header className="login__hero">
       <div className="login__brand">
-        <Logo size={48} />
-        <h1 className="text-h1">Retainly</h1>
-        <p className="login__tagline">
-          Khỏi lo&nbsp;<strong>brain drain</strong>, đã có Retain!
-        </p>
+        <Logo size={56} />
+        <div>
+          <h1 className="text-h1">Retainly</h1>
+          <p className="login__tagline text-small">Khỏi lo brain drain, đã có Retain!</p>
+        </div>
       </div>
 
       <div className="login__pitch">
-        <span className="login__eyebrow text-caption-caps">Khoa học trí nhớ</span>
+        <span className="login__eyebrow text-caption-caps">Một chút mỗi ngày</span>
         <p className="text-display">
-          Đọc rồi nhớ.
+          Điều đáng học.
           <br />
-          Ôn đúng lúc sắp quên.
+          <span>Đáng để nhớ lâu.</span>
         </p>
         <p className="login__pitch-body">
-          Thuật toán FSRS-6 ước lượng thời điểm bạn sắp quên từng thẻ và nhắc ôn đúng lúc đó, để
-          kiến thức rời rạc thành trí nhớ dài hạn.
+          Biến điều bạn đọc thành thẻ hỏi đáp. Tự nhớ lại câu trả lời, rồi ôn theo lịch được điều
+          chỉnh từ kết quả của bạn.
         </p>
+        <ol className="login__steps">
+          <li>
+            <strong>Lưu kiến thức</strong>
+            <span>Gói một ý thành một thẻ hỏi đáp.</span>
+          </li>
+          <li>
+            <strong>Tự nhớ lại</strong>
+            <span>Thử trả lời trước khi xem đáp án.</span>
+          </li>
+          <li>
+            <strong>Ôn theo lịch</strong>
+            <span>Tiếp tục với những thẻ cần ôn.</span>
+          </li>
+        </ol>
       </div>
 
       <p className="login__trust text-small">
         <IconShield />
-        Đăng nhập qua Authentik SSO hoặc email nội bộ, mật khẩu băm bằng Argon2id.
+        Dùng tài khoản Authentik hoặc đăng nhập bằng email và mật khẩu.
       </p>
     </header>
   );

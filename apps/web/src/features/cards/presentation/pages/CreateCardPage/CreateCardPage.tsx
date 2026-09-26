@@ -17,9 +17,9 @@ import { ModeTabs, type CreateMode } from '../../components/ModeTabs/ModeTabs';
 import { TopicPicker } from '@src/features/topics/presentation/components/TopicPicker/TopicPicker';
 
 const ATOMIC_RULES = [
-  'Một ý chính trên mỗi thẻ: nếu câu hỏi có hơn 3 ý con, hãy chia nhỏ thành nhiều thẻ độc lập.',
-  'Hỏi trực diện: tập trung vào "Tại sao" hoặc "Cái gì" thay vì câu trả lời Có/Không.',
-  'Đọc lướt nhanh: tránh các đoạn văn giải thích dài dòng ở mặt trả lời.',
+  'Mỗi thẻ chỉ nên hỏi một ý để bạn dễ nhớ và dễ trả lời.',
+  'Ưu tiên câu hỏi “Tại sao?”, “Như thế nào?” hoặc “Điều gì?” thay vì Có/Không.',
+  'Giữ câu trả lời ngắn; phần giải thích dài hơn có thể đặt trong ghi chú.',
 ];
 
 export function CreateCardPage() {
@@ -96,7 +96,7 @@ export function CreateCardPage() {
             <div className="create-card__rules surface-panel">
               <h2 className="create-card__rules-title text-h2">
                 <IconCheck size={20} />
-                Quy tắc thẻ ghi nhớ nguyên tử
+                Mẹo tạo thẻ dễ nhớ
               </h2>
               <ul className="create-card__rules-list">
                 {ATOMIC_RULES.map((rule) => (
@@ -129,8 +129,8 @@ export function CreateCardPage() {
 
       <Toast open={form.justSaved}>
         {source
-          ? 'Đã lưu thẻ. Tiếp tục rút ý từ bài viết này.'
-          : 'Đã lưu thẻ. Nhập tiếp thẻ nữa hoặc mở Thư viện thẻ.'}
+          ? 'Đã lưu thẻ. Bạn có thể chọn thêm ý từ bài viết này.'
+          : 'Đã lưu thẻ. Bạn có thể tạo thêm hoặc quay lại Thư viện.'}
       </Toast>
     </div>
   );
