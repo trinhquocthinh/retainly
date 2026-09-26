@@ -19,14 +19,15 @@ type TileProps = {
 function HomeTile({ label, value, unit, children, aside }: TileProps) {
   return (
     <div className="home-stats__tile surface-panel">
-      <div className="home-stats__body">
+      {/* Mỗi ô một <dl>: <dl> chỉ cho phép một lớp <div> bọc dt/dd, ô lại cần chỗ cho vòng tròn. */}
+      <dl className="home-stats__body">
         <dt className="text-caption-caps">{label}</dt>
         <dd className="home-stats__value">
           <span className="text-h1">{value}</span>
           {unit ? <span className="text-caption">{unit}</span> : null}
         </dd>
         <dd className="home-stats__hint text-caption">{children}</dd>
-      </div>
+      </dl>
       {aside}
     </div>
   );
@@ -59,7 +60,7 @@ export function HomeStats({ library, retention }: HomeStatsProps) {
   const averageR = retention?.averageRetrievability ?? null;
 
   return (
-    <dl className="home-stats" aria-label="Tổng quan thư viện">
+    <div className="home-stats" role="group" aria-label="Tổng quan thư viện">
       <HomeTile label="Tổng thẻ" value={library.totalCards} unit="thẻ">
         {library.topicCount > 0 ? `Chia trên ${library.topicCount} chủ đề` : 'Chưa chia chủ đề'}
       </HomeTile>
@@ -85,6 +86,6 @@ export function HomeStats({ library, retention }: HomeStatsProps) {
           </>
         ) : null}
       </HomeTile>
-    </dl>
+    </div>
   );
 }

@@ -1,47 +1,19 @@
-import { lazy, Suspense } from 'react';
+import { Suspense } from 'react';
 import { Outlet, Route, Routes } from 'react-router';
 
 import { PlaceholderPage } from '@src/shared/pages/PlaceholderPage/PlaceholderPage';
 import { AppShell } from '@src/shared/layout/AppShell/AppShell';
 import { RequireAuth } from '@src/features/auth/presentation/components/RequireAuth/RequireAuth';
 
-// Mỗi màn một chunk riêng: vào /login không phải tải bộ ôn tập, vào app rồi
-// không phải tải lại zod/TanStack Form. Giữ bundle đầu dưới mốc 500 kB của Vite.
-const LoginPage = lazy(() =>
-  import('@src/features/auth/presentation/pages/LoginPage/LoginPage').then((m) => ({
-    default: m.LoginPage,
-  })),
-);
-const ReviewPage = lazy(() =>
-  import('@src/features/review/presentation/pages/ReviewPage/ReviewPage').then((m) => ({
-    default: m.ReviewPage,
-  })),
-);
-const CardLibraryPage = lazy(() =>
-  import('@src/features/cards/presentation/pages/CardLibraryPage/CardLibraryPage').then((m) => ({
-    default: m.CardLibraryPage,
-  })),
-);
-const CreateCardPage = lazy(() =>
-  import('@src/features/cards/presentation/pages/CreateCardPage/CreateCardPage').then((m) => ({
-    default: m.CreateCardPage,
-  })),
-);
-const StatsPage = lazy(() =>
-  import('@src/features/stats/presentation/pages/StatsPage/StatsPage').then((m) => ({
-    default: m.StatsPage,
-  })),
-);
-const AccountPage = lazy(() =>
-  import('@src/features/auth/presentation/pages/AccountPage/AccountPage').then((m) => ({
-    default: m.AccountPage,
-  })),
-);
-const HomePage = lazy(() =>
-  import('@src/features/review/presentation/pages/HomePage/HomePage').then((m) => ({
-    default: m.HomePage,
-  })),
-);
+import {
+  AccountPage,
+  CardLibraryPage,
+  CreateCardPage,
+  HomePage,
+  LoginPage,
+  ReviewPage,
+  StatsPage,
+} from './pages';
 
 function RouteLoading() {
   return (

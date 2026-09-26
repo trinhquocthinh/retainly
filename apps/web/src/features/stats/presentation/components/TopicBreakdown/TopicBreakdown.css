@@ -148,7 +148,7 @@
 
 .topic-breakdown__share-note,
 .topic-breakdown__idle {
-  color: var(--color-placeholder);
+  color: var(--color-text-secondary);
 }
 
 .topic-breakdown__action {

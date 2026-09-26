@@ -5,7 +5,8 @@
   --color-bg: #fafaf8;
   --color-surface: #ffffff;
   --color-text: #1a1d23;
-  --color-text-secondary: #6b7280;
+  /* Đậm hơn #6b7280 của design gốc để đạt WCAG AA 4,5:1 cả trên nền xám #f3f4f6 (E12-S1-T2). */
+  --color-text-secondary: #636a78;
   --color-placeholder: #9ca3af;
   --color-border: #e5e7eb;
 
@@ -70,7 +71,7 @@
   --duration-base: 200ms;
 
   font-family:
-    Inter,
+    'Inter Variable',
     system-ui,
     -apple-system,
     'Segoe UI',

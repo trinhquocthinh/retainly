@@ -108,7 +108,7 @@
 }
 
 .card-dialog__shortcut {
-  color: var(--color-placeholder);
+  color: var(--color-text-secondary);
 }
 
 .card-dialog__actions {

@@ -42,12 +42,13 @@ export function ReviewCard({ card, memory, flipped, onFlip }: ReviewCardProps) {
   // chỉ là thông tin bổ sung.
   const cloze = hasCloze(card.front);
 
+  // Không đặt aria-label: tên nút lấy từ mặt đang hiện (nhãn, nội dung thẻ, gợi ý
+  // chạm), nhờ vậy trình đọc màn hình đọc được câu hỏi (E12-S1-T2).
   return (
     <button
       type="button"
       className={`review-card ${flipped ? 'review-card--flipped' : ''}`}
       onClick={onFlip}
-      aria-label={flipped ? 'Mặt trả lời — chạm để lật lại' : 'Mặt hỏi — chạm để xem đáp án'}
     >
       <span className="review-card__inner">
         <span className="review-card__face surface-raised" aria-hidden={flipped}>

@@ -4,11 +4,11 @@ import { BrowserRouter } from 'react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { isRetryable } from '@src/shared/api/client';
 import { App } from './App';
+import { preloadPage } from './pages';
 
-import '@fontsource/inter/400.css';
-import '@fontsource/inter/500.css';
-import '@fontsource/inter/600.css';
-import '@fontsource/inter/700.css';
+// Font biến thiên: một tệp cho mọi độ đậm thay vì một tệp mỗi weight.
+import '@fontsource-variable/inter';
+import './fonts.css';
 import './index.css';
 
 const rootElement = document.getElementById('root');
@@ -16,6 +16,8 @@ const rootElement = document.getElementById('root');
 if (!rootElement) {
   throw new Error('Không tìm thấy phần tử #root trong index.html');
 }
+
+void preloadPage(window.location.pathname);
 
 const queryClient = new QueryClient({
   defaultOptions: {

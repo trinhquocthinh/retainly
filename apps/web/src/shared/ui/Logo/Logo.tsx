@@ -1,4 +1,4 @@
-import logoUrl from '@src/assets/images/logo.png';
+import logoUrl from '@src/assets/images/logo.webp';
 
 import './Logo.css';
 

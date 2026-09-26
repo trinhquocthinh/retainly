@@ -781,10 +781,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fontsource/inter@npm:^5.3.0":
+"@fontsource-variable/inter@npm:^5.3.0":
   version: 5.3.0
-  resolution: "@fontsource/inter@npm:5.3.0"
-  checksum: 10c0/568601c10c83601c23005f8cd7434499df6e007eaa22c4dabbb1dcae327cc8e4a148ece8d4a4edaa8bafc5d2371ea97a37d1cc91ffbed77a43e2d8c15a6e831b
+  resolution: "@fontsource-variable/inter@npm:5.3.0"
+  checksum: 10c0/46fbe41e8482a718f99634c8254346c6081d615415059be12e177224c903d688199125967825e75d4b8122668fd83f70880e11d4e02d08c20b503c65fe2a96d1
   languageName: node
   linkType: hard
 
@@ -8101,7 +8101,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "web@workspace:apps/web"
   dependencies:
-    "@fontsource/inter": "npm:^5.3.0"
+    "@fontsource-variable/inter": "npm:^5.3.0"
     "@react-spring/web": "npm:^10.1.2"
     "@tanstack/react-form": "npm:^1.33.5"
     "@tanstack/react-query": "npm:^5.102.8"

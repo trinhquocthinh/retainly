@@ -51,9 +51,9 @@ export function LibraryCard({ card, now, onEdit, onDelete }: LibraryCardProps) {
         <DueBadge card={card} now={now} />
       </div>
 
-      <h3 className="library-card__front">
+      <h2 className="library-card__front">
         <InlineMarkdown text={card.front} />
-      </h3>
+      </h2>
 
       {card.source ? (
         <p className="library-card__source text-caption">Nguồn: {card.source.title}</p>

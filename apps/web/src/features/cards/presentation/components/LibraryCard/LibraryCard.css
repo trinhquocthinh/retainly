@@ -28,6 +28,8 @@
 
 .library-card__front {
   display: -webkit-box;
+  /* h2 (dưới h1 của trang, a11y heading-order) nhưng giữ khoảng cách của h3 cũ. */
+  margin-block: 1em;
   overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;

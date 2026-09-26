@@ -21,7 +21,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-1);
-  color: var(--color-placeholder);
+  color: var(--color-text-secondary);
 }
 
 .create-card__breadcrumb a {
@@ -162,7 +162,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-1);
-  color: var(--color-placeholder);
+  color: var(--color-text-secondary);
   order: 2;
 }
 

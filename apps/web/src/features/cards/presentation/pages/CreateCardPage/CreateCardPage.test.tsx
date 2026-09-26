@@ -311,8 +311,9 @@ describe('E7-S1-T4 — form soạn thẻ theo design 0.1.2', () => {
 
     expect(screen.getByRole('img', { name: 'chỗ trống' })).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Lật thẻ' }));
+    // Tên nút lấy từ nội dung mặt đang hiện; jsdom không chèn khoảng trắng giữa các span.
     expect(
-      screen.getByRole('button', { name: /Mặt trả lời — chạm để lật lại/ }),
+      screen.getByRole('button', { name: /^Mặt đáp án\s*Thủ đô Pháp là Paris/ }),
     ).toBeInTheDocument();
   });
 
