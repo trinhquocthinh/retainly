@@ -1,5 +1,5 @@
 import { isStrongPassword } from '@retainly/password-policy';
-import { z } from 'zod';
+import { z } from 'zod/mini';
 
 import { ApiError } from '@src/shared/api/client';
 
@@ -20,17 +20,21 @@ export const WRONG_CURRENT_PASSWORD_MESSAGE = 'Mật khẩu hiện tại không 
  */
 export const changePasswordSchema = z
   .object({
-    currentPassword: z.string().min(1, 'Vui lòng nhập mật khẩu hiện tại'),
+    currentPassword: z.string().check(z.minLength(1, 'Vui lòng nhập mật khẩu hiện tại')),
     newPassword: z
       .string()
-      .min(1, 'Vui lòng nhập mật khẩu mới')
-      .refine(isStrongPassword, WEAK_PASSWORD_MESSAGE),
-    confirmPassword: z.string().min(1, 'Vui lòng nhập lại mật khẩu mới'),
+      .check(
+        z.minLength(1, 'Vui lòng nhập mật khẩu mới'),
+        z.refine(isStrongPassword, WEAK_PASSWORD_MESSAGE),
+      ),
+    confirmPassword: z.string().check(z.minLength(1, 'Vui lòng nhập lại mật khẩu mới')),
   })
-  .refine((values) => values.newPassword === values.confirmPassword, {
-    message: PASSWORD_MISMATCH_MESSAGE,
-    path: ['confirmPassword'],
-  });
+  .check(
+    z.refine((values) => values.newPassword === values.confirmPassword, {
+      message: PASSWORD_MISMATCH_MESSAGE,
+      path: ['confirmPassword'],
+    }),
+  );
 
 /**
  * Máy chủ trả ERR_INVALID_CREDENTIALS khi mật khẩu hiện tại sai — lỗi của một ô,
