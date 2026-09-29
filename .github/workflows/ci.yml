@@ -2,21 +2,13 @@ name: CI
 
 on:
   push:
-    branches:
-      - sit
-      - prod
-      - infra/actions-private-boundary
+    branches: [sit, prod]
   pull_request:
-    branches:
-      - sit
-      - prod
+    branches: [sit, prod]
 
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
-
-permissions:
-  contents: read
 
 jobs:
   verify:
@@ -29,8 +21,7 @@ jobs:
           POSTGRES_USER: retainly
           POSTGRES_PASSWORD: test
           POSTGRES_DB: retainly
-        ports:
-          - 5432:5432
+        ports: ['5432:5432']
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -39,57 +30,168 @@ jobs:
     env:
       DATABASE_URL: postgresql://retainly:test@localhost:5432/retainly?schema=public&options=-c%20timezone%3DUTC
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with:
           node-version-file: .nvmrc
 
       - run: corepack enable
-      - run: yarn install --immutable
-      - run: yarn verify
 
-  dispatch-sit:
-    name: Dispatch verified SHA to private control plane
+      - run: yarn install --immutable
+
+      - run: yarn verify
+  build-push:
     needs: verify
-    if: >-
-      github.event_name == 'push' &&
-      (github.ref == 'refs/heads/sit' ||
-       github.ref == 'refs/heads/infra/actions-private-boundary')
+    if: github.event_name == 'push' && github.ref_name == 'sit'
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 30
     permissions:
       contents: read
-
+      packages: write
+    outputs:
+      api: ${{ steps.api.outputs.digest }}
+      migrate: ${{ steps.migrate.outputs.digest }}
+      web: ${{ steps.web.outputs.digest }}
     steps:
-      - name: Mint short-lived installation token
-        id: app-token
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
-        with:
-          app-id: ${{ secrets.HOMELAB_DEPLOY_APP_ID }}
-          private-key: ${{ secrets.HOMELAB_DEPLOY_APP_PRIVATE_KEY }}
-          owner: trinhquocthinh
-          repositories: homelab-deploy
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Dispatch exact verified SHA
+      - name: Đăng nhập registry bằng token của chính lần chạy
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Bật buildx với driver docker-container
+        run: docker buildx create --name retainly --driver docker-container --use
+
+      - name: Build và đẩy api
+        id: api
         env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-          SOURCE_SHA: ${{ github.sha }}
-        shell: bash
+          CACHE: ghcr.io/trinhquocthinh/retainly-buildcache:api
         run: |
-          set -euo pipefail
+          img="ghcr.io/trinhquocthinh/retainly-api:${GITHUB_SHA}"
+          docker buildx build -f docker/Dockerfile.api --target runtime \
+            --provenance=false \
+            --cache-from "type=registry,ref=$CACHE" \
+            --cache-to "type=registry,ref=$CACHE,mode=max" \
+            --metadata-file meta-api.json \
+            -t "$img" --push .
+          echo "digest=$(jq -r '."containerimage.digest"' meta-api.json)" >> "$GITHUB_OUTPUT"
 
-          if [[ ! "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]; then
-            echo "::error::Invalid GITHUB_SHA"
-            exit 1
-          fi
+      - name: Build và đẩy migrate
+        id: migrate
+        env:
+          CACHE: ghcr.io/trinhquocthinh/retainly-buildcache:migrate
+        run: |
+          img="ghcr.io/trinhquocthinh/retainly-migrate:${GITHUB_SHA}"
+          docker buildx build -f docker/Dockerfile.migrate \
+            --provenance=false \
+            --cache-from "type=registry,ref=$CACHE" \
+            --cache-to "type=registry,ref=$CACHE,mode=max" \
+            --metadata-file meta-migrate.json \
+            -t "$img" --push .
+          echo "digest=$(jq -r '."containerimage.digest"' meta-migrate.json)" >> "$GITHUB_OUTPUT"
 
-          gh api             --method POST             -H "Accept: application/vnd.github+json"             repos/trinhquocthinh/homelab-deploy/actions/workflows/retainly-sit.yml/dispatches             -f ref=main             -f "inputs[source_sha]=$SOURCE_SHA"
+      - name: Build và đẩy web
+        id: web
+        env:
+          CACHE: ghcr.io/trinhquocthinh/retainly-buildcache:web
+        run: |
+          img="ghcr.io/trinhquocthinh/retainly-web:${GITHUB_SHA}"
+          docker buildx build -f docker/Dockerfile.web --target runtime \
+            --provenance=false \
+            --cache-from "type=registry,ref=$CACHE" \
+            --cache-to "type=registry,ref=$CACHE,mode=max" \
+            --metadata-file meta-web.json \
+            -t "$img" --push .
+          echo "digest=$(jq -r '."containerimage.digest"' meta-web.json)" >> "$GITHUB_OUTPUT"
 
+      - name: Đăng xuất
+        if: always()
+        run: docker logout ghcr.io
+
+      - name: Ghi digest ra tóm tắt job
+        run: |
           {
-            echo "## Private control-plane dispatch"
+            echo "## Artifact của \`${GITHUB_SHA}\`"
             echo
-            echo "- Target: `trinhquocthinh/homelab-deploy/.github/workflows/retainly-sit.yml`"
-            echo "- SHA: `$SOURCE_SHA`"
-            echo "- Authentication: short-lived GitHub App installation token"
+            echo '| Image | Digest |'
+            echo '|---|---|'
+            echo "| api | \`${{ steps.api.outputs.digest }}\` |"
+            echo "| migrate | \`${{ steps.migrate.outputs.digest }}\` |"
+            echo "| web | \`${{ steps.web.outputs.digest }}\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
+  deploy-sit:
+    needs: build-push
+    runs-on: [self-hosted, retainly-deploy]
+    environment: sit
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: read
+    env:
+      STACK: sit
+      DEPLOY_DIR: /home/toni/homelab/project/retainly/retainly-sit
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Đặt compose file và danh sách image vào thư mục triển khai
+        env:
+          API_DIGEST: ${{ needs.build-push.outputs.api }}
+          MIGRATE_DIGEST: ${{ needs.build-push.outputs.migrate }}
+          WEB_DIGEST: ${{ needs.build-push.outputs.web }}
+        run: |
+          for v in "$API_DIGEST" "$MIGRATE_DIGEST" "$WEB_DIGEST"; do
+            case "$v" in
+              sha256:*) ;;
+              *) echo "::error::digest khong hop le: '$v'"; exit 1 ;;
+            esac
+          done
+          mkdir -p "$DEPLOY_DIR"
+          cp docker/docker-compose.yml "$DEPLOY_DIR/docker-compose.yml"
+          cat > "$DEPLOY_DIR/.env.images" <<EOF
+          API_IMAGE=ghcr.io/trinhquocthinh/retainly-api@$API_DIGEST
+          MIGRATE_IMAGE=ghcr.io/trinhquocthinh/retainly-migrate@$MIGRATE_DIGEST
+          WEB_IMAGE=ghcr.io/trinhquocthinh/retainly-web@$WEB_DIGEST
+          EOF
+
+      - name: Đăng nhập registry bằng token của chính lần chạy
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Kéo image và khởi động stack
+        run: |
+          cd "$DEPLOY_DIR"
+          docker compose -p "retainly-$STACK" \
+            --env-file .env --env-file .env.images \
+            -f docker-compose.yml pull
+          docker compose -p "retainly-$STACK" \
+            --env-file .env --env-file .env.images \
+            -f docker-compose.yml up -d --remove-orphans
+
+      - name: Đăng xuất
+        if: always()
+        run: docker logout ghcr.io
+
+      - name: Kiểm tra health
+        run: |
+          for i in $(seq 1 20); do
+            if docker exec "retainly-$STACK-api" node -e "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"; then
+              echo "health OK"; exit 0
+            fi
+            sleep 3
+          done
+          echo "::error::health FAIL"
+          cd "$DEPLOY_DIR" && docker compose -p "retainly-$STACK" \
+            --env-file .env --env-file .env.images \
+            -f docker-compose.yml logs --tail=50
+          exit 1
+
+      - name: Ghi digest đang chạy ra tóm tắt job
+        if: always()
+        run: |
+          {
+            echo "## SIT dang chay"
+            echo
+            for c in api migrate web; do
+              id=$(docker inspect "retainly-$STACK-$c" --format '{{.Image}}' 2>/dev/null) || continue
+              echo "- \`$c\` → \`$(docker inspect "$id" --format '{{index .RepoDigests 0}}')\`"
+            done
           } >> "$GITHUB_STEP_SUMMARY"
