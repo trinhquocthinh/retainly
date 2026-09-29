@@ -1,0 +1,16 @@
+name: Runner Smoke Test
+
+on:
+  push:
+    branches:
+      - infra/actions-private-boundary
+
+permissions: {}
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Smoke
+        run: echo "github-hosted runner started"
