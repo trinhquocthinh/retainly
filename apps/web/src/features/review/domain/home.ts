@@ -30,8 +30,6 @@ export type HomeOverview = {
   upcoming: UpcomingCard[];
 };
 
-/** Khớp `DIFFICULT_CARD_THRESHOLD` của API — chỉ dùng để giải thích trên giao diện. */
-const DIFFICULT_CARD_THRESHOLD = 7.5;
 
 /** Số Topic nêu tên trong câu tóm tắt hàng đợi; phần còn lại gộp thành "N thẻ khác". */
 const TOPIC_BREAKDOWN_LIMIT = 3;
