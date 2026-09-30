@@ -30,7 +30,6 @@ export type HomeOverview = {
   upcoming: UpcomingCard[];
 };
 
-
 /** Số Topic nêu tên trong câu tóm tắt hàng đợi; phần còn lại gộp thành "N thẻ khác". */
 const TOPIC_BREAKDOWN_LIMIT = 3;
 
