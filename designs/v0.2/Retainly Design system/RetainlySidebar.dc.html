@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="box-sizing:border-box; width:{{ w }}; height:100%; background:#FFFFFF; border-right:1px solid #E5E7EB; padding:24px 16px; display:flex; flex-direction:column; gap:24px; font-family:Inter, system-ui, sans-serif; color:#1A1D23;">
+  <div style="display:flex; align-items:center; gap:12px; padding:0 8px;">
+    <div style="width:28px; height:28px; border-radius:7px; background:#F59E0B;"></div>
+    <span style="font-size:18px; line-height:26px; font-weight:600;">Retainly</span>
+  </div>
+  <div style="height:44px; border-radius:8px; background:#F59E0B; color:#1A1D23; display:flex; align-items:center; justify-content:center; gap:8px; font-size:16px; font-weight:600;">+ Tạo thẻ</div>
+  <div style="display:flex; flex-direction:column; gap:4px;">
+    <sc-for list="{{ items }}" as="it" hint-placeholder-count="5">
+      <div style="height:44px; border-radius:8px; background:{{ it.bg }}; color:{{ it.fg }}; font-weight:{{ it.fw }}; display:flex; align-items:center; gap:12px; padding:0 12px; font-size:16px;">
+        <span style="width:14px; height:14px; border:2px solid {{ it.ic }}; border-radius:4px; flex:0 0 auto;"></span>
+        <span style="flex:1;">{{ it.label }}</span>
+        <sc-if value="{{ it.hasCount }}" hint-placeholder-val="{{ false }}"><span style="font-size:14px;">{{ it.count }}</span></sc-if>
+        <sc-if value="{{ it.hasPill }}" hint-placeholder-val="{{ false }}"><span style="min-width:24px; height:20px; padding:0 6px; box-sizing:border-box; border-radius:10px; background:#F59E0B; color:#1A1D23; font-size:12px; font-weight:600; display:flex; align-items:center; justify-content:center;">{{ it.pill }}</span></sc-if>
+      </div>
+    </sc-for>
+  </div>
+  <div style="margin-top:auto; display:flex; align-items:center; gap:12px; padding:12px 8px 0; border-top:1px solid #E5E7EB;">
+    <div style="width:32px; height:32px; border-radius:16px; background:#FEF3C7; color:#92400E; font-size:12px; font-weight:600; display:flex; align-items:center; justify-content:center;">MA</div>
+    <div style="display:flex; flex-direction:column;"><span style="font-size:14px; line-height:20px; font-weight:500;">Minh Anh</span><span style="font-size:12px; line-height:16px; color:#636A78;">minhanh@vidu.com</span></div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:240,&quot;height&quot;:800},&quot;active&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;today&quot;,&quot;cards&quot;,&quot;sources&quot;,&quot;capture&quot;,&quot;stats&quot;,&quot;none&quot;],&quot;default&quot;:&quot;today&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;badge&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;4&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;width&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;240px&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const a = this.props.active ?? 'today';
+    const badge = String(this.props.badge ?? '4');
+    const defs = [['today','Hôm nay','12',''],['cards','Thư viện','',''],['sources','Nguồn','',''],['capture','Ghi nhận','',badge],['stats','Thống kê','','']];
+    return {
+      w: this.props.width ?? '240px',
+      items: defs.map(([k,label,count,pill]) => {
+        const on = k === a;
+        return { label, count, pill, hasCount: !!count, hasPill: !!pill && pill !== '0',
+          bg: on ? '#FEF3C7' : 'transparent', fg: on ? '#92400E' : '#1A1D23', fw: on ? 600 : 400, ic: on ? '#B45309' : '#636A78' };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>
