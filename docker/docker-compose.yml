@@ -1,38 +1,17 @@
 name: retainly
 
 services:
-  db:
-    image: postgres:16-alpine
-    container_name: retainly-${STACK}-db
-    restart: unless-stopped
-    environment:
-      TZ: Asia/Ho_Chi_Minh
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-    volumes:
-      - retainly_db:/var/lib/postgresql/data
-    networks: [internal]
-    security_opt:
-      - no-new-privileges:true
-    healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER}']
-      interval: 10s
-      timeout: 5s
-      retries: 5
   migrate:
     image: ${MIGRATE_IMAGE:?MIGRATE_IMAGE chua duoc dat}
     container_name: retainly-${STACK}-migrate
     environment:
       TZ: Asia/Ho_Chi_Minh
-      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@retainly-${STACK}-db:5432/${DB_NAME}?schema=public&options=-c%20timezone%3DUTC
-    depends_on:
-      db:
-        condition: service_healthy
-    networks: [internal]
+      DATABASE_URL: ${DATABASE_URL:?DATABASE_URL chua duoc dat}
+    networks: [db]
     restart: 'no'
     security_opt:
       - no-new-privileges:true
+
   api:
     image: ${API_IMAGE:?API_IMAGE chua duoc dat}
     container_name: retainly-${STACK}-api
@@ -41,7 +20,7 @@ services:
       TZ: Asia/Ho_Chi_Minh
       NODE_ENV: production
       PORT: 3000
-      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@retainly-${STACK}-db:5432/${DB_NAME}?schema=public&options=-c%20timezone%3DUTC
+      DATABASE_URL: ${DATABASE_URL:?DATABASE_URL chua duoc dat}
       APP_ORIGIN: ${APP_ORIGIN:?APP_ORIGIN chua duoc dat}
       OIDC_ISSUER: ${OIDC_ISSUER:?OIDC_ISSUER chua duoc dat}
       OIDC_CLIENT_ID: ${OIDC_CLIENT_ID:?OIDC_CLIENT_ID chua duoc dat}
@@ -50,7 +29,7 @@ services:
     depends_on:
       migrate:
         condition: service_completed_successfully
-    networks: [edge, internal]
+    networks: [edge, db]
     security_opt:
       - no-new-privileges:true
 
@@ -68,8 +47,6 @@ networks:
   edge:
     name: edge
     external: true
-  internal:
-    internal: true
-
-volumes:
-  retainly_db:
+  db:
+    name: db-sit
+    external: true
