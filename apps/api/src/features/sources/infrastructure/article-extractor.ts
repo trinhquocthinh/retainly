@@ -12,13 +12,15 @@ const DEFAULT_TIMEOUT_MS = 8000;
  * Allowlist thẻ HTML cho bước `cleanify` của article-extractor. Thẻ ngoài danh sách
  * bị xoá CẢ CÂY CON chứ không bóc vỏ, nên thẻ bọc như `<main>` (VnExpress, Tuổi Trẻ)
  * làm mất trắng thân bài. Thư viện không export danh sách mặc định, nên dòng đầu
- * chép lại bản 9.0.1, dòng sau bổ sung thẻ bọc/ngữ nghĩa hay gặp.
+ * chép lại bản 9.0.1, dòng sau bổ sung thẻ bọc/ngữ nghĩa hay gặp. `html`/`body` có
+ * mặt vì linkedom dựng cặp `<html><body>` nhúng giữa trang (Cổng DVC Bộ Công an)
+ * thành phần tử lồng thật thay vì bỏ qua như trình duyệt.
  */
 const ALLOWED_TAGS = [
   ...'h1 h2 h3 h4 h5 h6 u b i em strong small sup sub div span p article blockquote section details summary pre code ul ol li dd dl table th tr td thead tbody tfoot fieldset legend figure figcaption img picture video audio source iframe progress br hr label abbr a svg'.split(
     ' ',
   ),
-  ...'main header time mark cite q s del ins caption'.split(' '),
+  ...'main header time mark cite q s del ins caption html body'.split(' '),
 ];
 
 /** Tái sử dụng một instance: khởi tạo bảng luật translator khá tốn cho mỗi lần gọi. */
