@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  body { margin:0; background:#FAFAF8; font-family:Inter, system-ui, sans-serif; -webkit-font-smoothing:antialiased; }
+  a { color:#B45309; text-decoration:none; }
+  a:hover { color:#92400E; text-decoration:underline; }
+  *::selection { background:#FDE68A; }
+</style>
+</helmet>
+
+<div style="max-width:1120px; margin:0 auto; padding:64px 24px 96px; color:#1A1D23; font-family:Inter, system-ui, sans-serif;">
+
+  <div style="display:flex; flex-direction:column; gap:12px; padding-bottom:32px; border-bottom:1px solid #E5E7EB;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <div style="width:28px; height:28px; border-radius:8px; background:#F59E0B;"></div>
+      <div style="font-size:14px; line-height:20px; color:#6B7280; letter-spacing:.08em; text-transform:uppercase;">Retainly · v0.1</div>
+    </div>
+    <h1 style="margin:0; font-size:36px; line-height:44px; font-weight:700; letter-spacing:-.02em;">Design style &amp; design pattern</h1>
+    <p style="margin:0; max-width:60ch; font-size:16px; line-height:24px; color:#6B7280; text-wrap:pretty;">Tài liệu triển khai của <em>design-criteria v1.2.0</em>. Mọi giá trị dưới đây là nguồn sự thật duy nhất cho giao diện v0.1 — người dựng UI không cần đọc thêm tài liệu nào khác.</p>
+  </div>
+
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:16px; margin-top:32px;">
+    <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:20px; box-shadow:0 1px 2px rgba(0,0,0,.05);">
+      <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em;">Tính cách 01</div>
+      <div style="margin-top:8px; font-size:18px; line-height:26px; font-weight:600;">Tập trung</div>
+      <p style="margin:4px 0 0; font-size:14px; line-height:20px; color:#6B7280;">Công cụ dùng hàng ngày — không phải mạng xã hội cần giữ chân. Không ồn ào.</p>
+    </div>
+    <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:20px; box-shadow:0 1px 2px rgba(0,0,0,.05);">
+      <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em;">Tính cách 02</div>
+      <div style="margin-top:8px; font-size:18px; line-height:26px; font-weight:600;">Ấm áp</div>
+      <p style="margin:4px 0 0; font-size:14px; line-height:20px; color:#6B7280;">Quên một thẻ không phải thất bại — chỉ là dữ liệu để lịch ôn điều chỉnh.</p>
+    </div>
+    <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:20px; box-shadow:0 1px 2px rgba(0,0,0,.05);">
+      <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em;">Tính cách 03</div>
+      <div style="margin-top:8px; font-size:18px; line-height:26px; font-weight:600;">Nhanh gọn</div>
+      <p style="margin:4px 0 0; font-size:14px; line-height:20px; color:#6B7280;">Vuốt phản hồi tức thì. Không animation rườm rà làm chậm vòng lặp ôn tập.</p>
+    </div>
+  </div>
+
+  <h2 style="margin:64px 0 4px; font-size:24px; line-height:32px; font-weight:600; letter-spacing:-.01em;">1 · Design pattern</h2>
+  <p style="margin:0 0 24px; max-width:70ch; font-size:16px; line-height:24px; color:#6B7280;"><strong style="color:#1A1D23; font-weight:600;">Flat Design</strong> nghiêng về tinh thần <strong style="color:#1A1D23; font-weight:600;">Minimalism</strong> — đôi khi gọi là “flat 2.0”: bề mặt phẳng, viền mảnh 1px thay cho bóng nặng, đúng hai mức bóng dùng để phân tầng chứ không trang trí.</p>
+
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px,1fr)); gap:16px;">
+    <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:24px;">
+      <div style="display:flex; align-items:center; gap:8px; font-size:14px; line-height:20px; font-weight:600; color:#16A34A;">✓ Là cái này</div>
+      <div style="margin-top:16px; display:flex; flex-direction:column; gap:12px;">
+        <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:16px; padding:16px; box-shadow:0 4px 6px rgba(0,0,0,.07); font-size:14px; line-height:20px;">Panel phẳng · viền 1px · radius 16px · shadow.md</div>
+        <div style="font-size:14px; line-height:20px; color:#6B7280;">Tách khối bằng viền và khoảng trắng. Bóng chỉ để nói “lớp này nổi lên trên”.</div>
+      </div>
+    </div>
+    <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:24px;">
+      <div style="display:flex; align-items:center; gap:8px; font-size:14px; line-height:20px; font-weight:600; color:#DC2626;">✕ Không phải cái này</div>
+      <div style="margin-top:16px; display:flex; flex-direction:column; gap:8px;">
+        <div style="display:flex; justify-content:space-between; gap:12px; font-size:14px; line-height:20px; padding:8px 0; border-bottom:1px solid #E5E7EB;"><span style="font-weight:500;">Neumorphism</span><span style="color:#6B7280; text-align:right;">Không cặp bóng sáng/tối “ép nổi”</span></div>
+        <div style="display:flex; justify-content:space-between; gap:12px; font-size:14px; line-height:20px; padding:8px 0; border-bottom:1px solid #E5E7EB;"><span style="font-weight:500;">Claymorphism</span><span style="color:#6B7280; text-align:right;">Radius ≤16px, bóng ≤4/6px</span></div>
+        <div style="display:flex; justify-content:space-between; gap:12px; font-size:14px; line-height:20px; padding:8px 0; border-bottom:1px solid #E5E7EB;"><span style="font-weight:500;">Glassmorphism</span><span style="color:#6B7280; text-align:right;">Không backdrop-blur, không nền trong</span></div>
+        <div style="display:flex; justify-content:space-between; gap:12px; font-size:14px; line-height:20px; padding:8px 0; border-bottom:1px solid #E5E7EB;"><span style="font-weight:500;">Skeuomorphism · Retro</span><span style="color:#6B7280; text-align:right;">Không giả texture vật liệu</span></div>
+        <div style="display:flex; justify-content:space-between; gap:12px; font-size:14px; line-height:20px; padding:8px 0; border-bottom:1px solid #E5E7EB;"><span style="font-weight:500;">Brutalism · Collage</span><span style="color:#6B7280; text-align:right;">Không viền thô/dày</span></div>
+        <div style="display:flex; justify-content:space-between; gap:12px; font-size:14px; line-height:20px; padding:8px 0;"><span style="font-weight:500;">Aurora UI · Maximalism</span><span style="color:#6B7280; text-align:right;">Không gradient sặc sỡ</span></div>
+      </div>
+    </div>
+  </div>
+
+  <h2 style="margin:64px 0 4px; font-size:24px; line-height:32px; font-weight:600; letter-spacing:-.01em;">2 · Màu</h2>
+  <p style="margin:0 0 24px; max-width:70ch; font-size:16px; line-height:24px; color:#6B7280;">Một màu nhấn duy nhất. <code style="font-size:14px; background:#F3F4F6; padding:2px 6px; border-radius:4px;">success</code> và <code style="font-size:14px; background:#F3F4F6; padding:2px 6px; border-radius:4px;">danger</code> bị khoá vào đúng một ngữ nghĩa — dùng ở chỗ khác là nhiễu nghĩa.</p>
+
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:12px;">
+    <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; overflow:hidden;">
+      <div style="height:72px; background:#FAFAF8; border-bottom:1px solid #E5E7EB;"></div>
+      <div style="padding:12px 16px;"><div style="font-size:14px; line-height:20px; font-weight:600;">color.bg</div><div style="font-size:12px; line-height:16px; color:#6B7280; margin-top:2px;">#FAFAF8 · #14161A tối</div><div style="font-size:12px; line-height:16px; color:#6B7280;">Nền màn hình</div></div>
+    </div>
+    <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; overflow:hidden;">
+      <div style="height:72px; background:#FFFFFF; border-bottom:1px solid #E5E7EB;"></div>
+      <div style="padding:12px 16px;"><div style="font-size:14px; line-height:20px; font-weight:600;">color.surface</div><div style="font-size:12px; line-height:16px; color:#6B7280; margin-top:2px;">#FFFFFF · #1E2126 tối</div><div style="font-size:12px; line-height:16px; color:#6B7280;">Nền thẻ/panel</div></div>
+    </div>
+    <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; overflow:hidden;">
+      <div style="height:72px; background:#1A1D23;"></div>
+      <div style="padding:12px 16px;"><div style="font-size:14px; line-height:20px; font-weight:600;">text.primary</div><div style="font-size:12px; line-height:16px; color:#6B7280; margin-top:2px;">#1A1D23 · #ECEDEE tối</div><div style="font-size:12px; line-height:16px; color:#6B7280;">Chữ chính</div></div>
+    </div>
+    <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; overflow:hidden;">
+      <div style="height:72px; background:#6B7280;"></div>
+      <div style="padding:12px 16px;"><div style="font-size:14px; line-height:20px; font-weight:600;">text.secondary</div><div style="font-size:12px; line-height:16px; color:#6B7280; margin-top:2px;">#6B7280</div><div style="font-size:12px; line-height:16px; color:#6B7280;">Chữ phụ, chú thích</div></div>
+    </div>
+    <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; overflow:hidden;">
+      <div style="height:72px; background:#E5E7EB;"></div>
+      <div style="padding:12px 16px;"><div style="font-size:14px; line-height:20px; font-weight:600;">color.border</div><div style="font-size:12px; line-height:16px; color:#6B7280; margin-top:2px;">#E5E7EB · #2D3138 tối</div><div style="font-size:12px; line-height:16px; color:#6B7280;">Viền, phân cách</div></div>
+    </div>
+    <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; overflow:hidden;">
+      <div style="height:72px; background:#F59E0B;"></div>
+      <div style="padding:12px 16px;"><div style="font-size:14px; line-height:20px; font-weight:600;">color.accent</div><div style="font-size:12px; line-height:16px; color:#6B7280; margin-top:2px;">#F59E0B</div><div style="font-size:12px; line-height:16px; color:#6B7280;">Nút chính, streak, link</div></div>
+    </div>
+    <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; overflow:hidden;">
+      <div style="height:72px; background:#16A34A;"></div>
+      <div style="padding:12px 16px;"><div style="font-size:14px; line-height:20px; font-weight:600;">color.success</div><div style="font-size:12px; line-height:16px; color:#6B7280; margin-top:2px;">#16A34A</div><div style="font-size:12px; line-height:16px; color:#16A34A; font-weight:500;">Chỉ dùng: vuốt phải (Nhớ)</div></div>
+    </div>
+    <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; overflow:hidden;">
+      <div style="height:72px; background:#DC2626;"></div>
+      <div style="padding:12px 16px;"><div style="font-size:14px; line-height:20px; font-weight:600;">color.danger</div><div style="font-size:12px; line-height:16px; color:#6B7280; margin-top:2px;">#DC2626</div><div style="font-size:12px; line-height:16px; color:#DC2626; font-weight:500;">Chỉ dùng: vuốt trái (Quên) &amp; Xoá</div></div>
+    </div>
+  </div>
+
+  <div style="margin-top:16px; display:grid; grid-template-columns:repeat(auto-fit, minmax(300px,1fr)); gap:16px;">
+    <div style="background:#14161A; border:1px solid #2D3138; border-radius:12px; padding:24px;">
+      <div style="font-size:12px; line-height:16px; color:#9CA3AF; text-transform:uppercase; letter-spacing:.08em;">Chế độ tối</div>
+      <div style="margin-top:12px; background:#1E2126; border:1px solid #2D3138; border-radius:16px; padding:16px;">
+        <div style="font-size:16px; line-height:24px; color:#ECEDEE;">Bề mặt tối dùng đúng cùng cấu trúc — chỉ đổi ba token nền/chữ/viền.</div>
+        <div style="margin-top:12px; display:flex; gap:8px;">
+          <div style="height:36px; padding:0 16px; display:flex; align-items:center; border-radius:8px; background:#F59E0B; color:#1A1D23; font-size:14px; font-weight:600;">Bắt đầu ôn tập</div>
+          <div style="height:36px; padding:0 16px; display:flex; align-items:center; border-radius:8px; border:1px solid #2D3138; color:#ECEDEE; font-size:14px; font-weight:500;">Tạo thẻ</div>
+        </div>
+      </div>
+    </div>
+    <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:24px; display:flex; flex-direction:column; gap:12px;">
+      <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em;">Tương phản (WCAG AA)</div>
+      <div style="display:flex; justify-content:space-between; font-size:14px; line-height:20px; padding-bottom:8px; border-bottom:1px solid #E5E7EB;"><span>#1A1D23 trên #FAFAF8</span><span style="font-weight:600; color:#16A34A;">15.9:1 ✓</span></div>
+      <div style="display:flex; justify-content:space-between; font-size:14px; line-height:20px; padding-bottom:8px; border-bottom:1px solid #E5E7EB;"><span>#6B7280 trên #FFFFFF</span><span style="font-weight:600; color:#16A34A;">4.8:1 ✓</span></div>
+      <div style="display:flex; justify-content:space-between; font-size:14px; line-height:20px; padding-bottom:8px; border-bottom:1px solid #E5E7EB;"><span>#1A1D23 trên #F59E0B</span><span style="font-weight:600; color:#16A34A;">8.9:1 ✓</span></div>
+      <div style="display:flex; justify-content:space-between; font-size:14px; line-height:20px;"><span>#F59E0B làm chữ nhỏ trên nền sáng</span><span style="font-weight:600; color:#DC2626;">2.1:1 ✕</span></div>
+      <p style="margin:0; font-size:14px; line-height:20px; color:#6B7280;">Amber là màu <em>nền</em> nút và <em>khối</em> đồ hoạ. Chữ amber cỡ Body trở xuống phải đậm hơn: dùng <code style="background:#F3F4F6; padding:2px 6px; border-radius:4px;">#B45309</code>.</p>
+    </div>
+  </div>
+
+  <h2 style="margin:64px 0 4px; font-size:24px; line-height:32px; font-weight:600; letter-spacing:-.01em;">3 · Chữ</h2>
+  <p style="margin:0 0 24px; max-width:70ch; font-size:16px; line-height:24px; color:#6B7280;">Inter, self-host qua <code style="font-size:14px; background:#F3F4F6; padding:2px 6px; border-radius:4px;">@fontsource/inter</code>. Đúng một font family cho toàn app — không có ngoại lệ.</p>
+
+  <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; overflow:hidden;">
+    <div style="display:grid; grid-template-columns:110px 1fr 150px; gap:16px; padding:16px 24px; border-bottom:1px solid #E5E7EB; background:#FAFAF8; font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em;"><div>Cấp</div><div>Mẫu</div><div>Đặc tả</div></div>
+    <div style="display:grid; grid-template-columns:110px 1fr 150px; gap:16px; padding:20px 24px; border-bottom:1px solid #E5E7EB; align-items:center;"><div style="font-size:14px; color:#6B7280;">Display</div><div style="font-size:36px; line-height:44px; font-weight:700; letter-spacing:-.02em;">12</div><div style="font-size:12px; line-height:16px; color:#6B7280;">36/44 · 700<br>Streak, số thẻ đến hạn</div></div>
+    <div style="display:grid; grid-template-columns:110px 1fr 150px; gap:16px; padding:20px 24px; border-bottom:1px solid #E5E7EB; align-items:center;"><div style="font-size:14px; color:#6B7280;">H1</div><div style="font-size:24px; line-height:32px; font-weight:600;">Thư viện thẻ</div><div style="font-size:12px; line-height:16px; color:#6B7280;">24/32 · 600<br>Tiêu đề màn hình</div></div>
+    <div style="display:grid; grid-template-columns:110px 1fr 150px; gap:16px; padding:20px 24px; border-bottom:1px solid #E5E7EB; align-items:center;"><div style="font-size:14px; color:#6B7280;">H2</div><div style="font-size:18px; line-height:26px; font-weight:600;">Hôm nay cần ôn</div><div style="font-size:12px; line-height:16px; color:#6B7280;">18/26 · 600<br>Tiêu đề khu vực</div></div>
+    <div style="display:grid; grid-template-columns:110px 1fr 150px; gap:16px; padding:20px 24px; border-bottom:1px solid #E5E7EB; align-items:center;"><div style="font-size:14px; color:#6B7280;">Body</div><div style="font-size:16px; line-height:24px; font-weight:400;">Spaced repetition giãn khoảng ôn theo độ khó của từng thẻ.</div><div style="font-size:12px; line-height:16px; color:#6B7280;">16/24 · 400<br>Nội dung, mặt thẻ</div></div>
+    <div style="display:grid; grid-template-columns:110px 1fr 150px; gap:16px; padding:20px 24px; border-bottom:1px solid #E5E7EB; align-items:center;"><div style="font-size:14px; color:#6B7280;">Small</div><div style="font-size:14px; line-height:20px;">Nhánh: Trí nhớ &amp; học tập</div><div style="font-size:12px; line-height:16px; color:#6B7280;">14/20 · 400<br>Nhãn phụ, tên nhánh</div></div>
+    <div style="display:grid; grid-template-columns:110px 1fr 150px; gap:16px; padding:20px 24px; align-items:center;"><div style="font-size:14px; color:#6B7280;">Caption</div><div style="font-size:12px; line-height:16px; color:#6B7280;">Ôn lần cuối 3 ngày trước</div><div style="font-size:12px; line-height:16px; color:#6B7280;">12/16 · 400<br>Timestamp, chú thích</div></div>
+  </div>
+
+  <h2 style="margin:64px 0 4px; font-size:24px; line-height:32px; font-weight:600; letter-spacing:-.01em;">4 · Khoảng cách, bo góc, bóng</h2>
+  <p style="margin:0 0 24px; max-width:70ch; font-size:16px; line-height:24px; color:#6B7280;">Thang bội số 4. Đúng hai mức bóng — không có mức thứ ba.</p>
+
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px,1fr)); gap:16px;">
+    <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:24px;">
+      <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em; margin-bottom:16px;">space</div>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <div style="display:flex; align-items:center; gap:12px;"><div style="width:4px; height:16px; background:#F59E0B; border-radius:2px;"></div><span style="font-size:14px; color:#6B7280;">4 — khe giữa nhãn và ô</span></div>
+        <div style="display:flex; align-items:center; gap:12px;"><div style="width:8px; height:16px; background:#F59E0B; border-radius:2px;"></div><span style="font-size:14px; color:#6B7280;">8 — trong nút</span></div>
+        <div style="display:flex; align-items:center; gap:12px;"><div style="width:12px; height:16px; background:#F59E0B; border-radius:2px;"></div><span style="font-size:14px; color:#6B7280;">12 — giữa các dòng danh sách</span></div>
+        <div style="display:flex; align-items:center; gap:12px;"><div style="width:16px; height:16px; background:#F59E0B; border-radius:2px;"></div><span style="font-size:14px; color:#6B7280;">16 — padding panel, lề màn hình</span></div>
+        <div style="display:flex; align-items:center; gap:12px;"><div style="width:24px; height:16px; background:#F59E0B; border-radius:2px;"></div><span style="font-size:14px; color:#6B7280;">24 — giữa các khối</span></div>
+        <div style="display:flex; align-items:center; gap:12px;"><div style="width:32px; height:16px; background:#F59E0B; border-radius:2px;"></div><span style="font-size:14px; color:#6B7280;">32 — giữa các khu vực</span></div>
+        <div style="display:flex; align-items:center; gap:12px;"><div style="width:48px; height:16px; background:#F59E0B; border-radius:2px;"></div><span style="font-size:14px; color:#6B7280;">48 — trên/dưới vùng ôn tập</span></div>
+        <div style="display:flex; align-items:center; gap:12px;"><div style="width:64px; height:16px; background:#F59E0B; border-radius:2px;"></div><span style="font-size:14px; color:#6B7280;">64 — khoảng thở màn hình rỗng</span></div>
+      </div>
+    </div>
+    <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:24px;">
+      <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em; margin-bottom:16px;">radius</div>
+      <div style="display:flex; gap:12px; flex-wrap:wrap;">
+        <div style="text-align:center;"><div style="width:64px; height:64px; background:#FAFAF8; border:1px solid #E5E7EB; border-radius:4px;"></div><div style="font-size:12px; color:#6B7280; margin-top:6px;">sm 4</div></div>
+        <div style="text-align:center;"><div style="width:64px; height:64px; background:#FAFAF8; border:1px solid #E5E7EB; border-radius:8px;"></div><div style="font-size:12px; color:#6B7280; margin-top:6px;">md 8</div></div>
+        <div style="text-align:center;"><div style="width:64px; height:64px; background:#FAFAF8; border:1px solid #E5E7EB; border-radius:12px;"></div><div style="font-size:12px; color:#6B7280; margin-top:6px;">lg 12</div></div>
+        <div style="text-align:center;"><div style="width:64px; height:64px; background:#FAFAF8; border:1px solid #E5E7EB; border-radius:16px;"></div><div style="font-size:12px; color:#6B7280; margin-top:6px;">xl 16</div></div>
+      </div>
+      <div style="font-size:12px; line-height:16px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em; margin:24px 0 16px;">shadow</div>
+      <div style="display:flex; gap:16px; flex-wrap:wrap;">
+        <div style="flex:1; min-width:120px;"><div style="height:64px; background:#FFFFFF; border-radius:12px; box-shadow:0 1px 2px rgba(0,0,0,.05);"></div><div style="font-size:12px; color:#6B7280; margin-top:8px;">sm — panel thường</div></div>
+        <div style="flex:1; min-width:120px;"><div style="height:64px; background:#FFFFFF; border-radius:12px; box-shadow:0 4px 6px rgba(0,0,0,.07);"></div><div style="font-size:12px; color:#6B7280; margin-top:8px;">md — thẻ ôn đang active</div></div>
+      </div>
+    </div>
+  </div>
+
+  <h2 style="margin:64px 0 4px; font-size:24px; line-height:32px; font-weight:600; letter-spacing:-.01em;">5 · Component</h2>
+  <p style="margin:0 0 24px; max-width:70ch; font-size:16px; line-height:24px; color:#6B7280;">Tự xây tối giản — không Material, không Ant. Mọi thứ bấm được phải có đủ năm trạng thái, và vùng chạm tối thiểu 44×44px.</p>
+
+  <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:24px; margin-bottom:16px;">
+    <div style="font-size:18px; line-height:26px; font-weight:600; margin-bottom:4px;">Button</div>
+    <p style="margin:0 0 20px; font-size:14px; line-height:20px; color:#6B7280;">Cao 44px. Primary nền amber chữ mực; secondary viền 1px; danger chỉ cho hành động xoá.</p>
+    <div style="display:grid; grid-template-columns:auto repeat(5, 1fr); gap:12px 16px; align-items:center;">
+      <div></div>
+      <div style="font-size:12px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em;">default</div>
+      <div style="font-size:12px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em;">hover</div>
+      <div style="font-size:12px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em;">active</div>
+      <div style="font-size:12px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em;">focus</div>
+      <div style="font-size:12px; color:#6B7280; text-transform:uppercase; letter-spacing:.08em;">disabled</div>
+
+      <div style="font-size:14px; font-weight:500;">Primary</div>
+      <div style="height:44px; border-radius:8px; background:#F59E0B; color:#1A1D23; font-size:16px; font-weight:600; display:flex; align-items:center; justify-content:center;">Lưu</div>
+      <div style="height:44px; border-radius:8px; background:#D97706; color:#FFFFFF; font-size:16px; font-weight:600; display:flex; align-items:center; justify-content:center;">Lưu</div>
+      <div style="height:44px; border-radius:8px; background:#B45309; color:#FFFFFF; font-size:16px; font-weight:600; display:flex; align-items:center; justify-content:center;">Lưu</div>
+      <div style="height:44px; border-radius:8px; background:#F59E0B; color:#1A1D23; font-size:16px; font-weight:600; display:flex; align-items:center; justify-content:center; outline:2px solid #1A1D23; outline-offset:2px;">Lưu</div>
+      <div style="height:44px; border-radius:8px; background:#F59E0B; color:#1A1D23; font-size:16px; font-weight:600; display:flex; align-items:center; justify-content:center; opacity:.4;">Lưu</div>
+
+      <div style="font-size:14px; font-weight:500;">Secondary</div>
+      <div style="height:44px; border-radius:8px; border:1px solid #E5E7EB; background:#FFFFFF; font-size:16px; font-weight:500; display:flex; align-items:center; justify-content:center;">Huỷ</div>
+      <div style="height:44px; border-radius:8px; border:1px solid #D1D5DB; background:#F9FAFB; font-size:16px; font-weight:500; display:flex; align-items:center; justify-content:center;">Huỷ</div>
+      <div style="height:44px; border-radius:8px; border:1px solid #D1D5DB; background:#F3F4F6; font-size:16px; font-weight:500; display:flex; align-items:center; justify-content:center;">Huỷ</div>
+      <div style="height:44px; border-radius:8px; border:1px solid #E5E7EB; background:#FFFFFF; font-size:16px; font-weight:500; display:flex; align-items:center; justify-content:center; outline:2px solid #1A1D23; outline-offset:2px;">Huỷ</div>
+      <div style="height:44px; border-radius:8px; border:1px solid #E5E7EB; background:#FFFFFF; font-size:16px; font-weight:500; display:flex; align-items:center; justify-content:center; opacity:.4;">Huỷ</div>
+
+      <div style="font-size:14px; font-weight:500;">Danger</div>
+      <div style="height:44px; border-radius:8px; border:1px solid #DC2626; color:#DC2626; background:#FFFFFF; font-size:16px; font-weight:500; display:flex; align-items:center; justify-content:center;">Xoá</div>
+      <div style="height:44px; border-radius:8px; border:1px solid #DC2626; color:#FFFFFF; background:#DC2626; font-size:16px; font-weight:500; display:flex; align-items:center; justify-content:center;">Xoá</div>
+      <div style="height:44px; border-radius:8px; border:1px solid #991B1B; color:#FFFFFF; background:#991B1B; font-size:16px; font-weight:500; display:flex; align-items:center; justify-content:center;">Xoá</div>
+      <div style="height:44px; border-radius:8px; border:1px solid #DC2626; color:#DC2626; background:#FFFFFF; font-size:16px; font-weight:500; display:flex; align-items:center; justify-content:center; outline:2px solid #1A1D23; outline-offset:2px;">Xoá</div>
+      <div style="height:44px; border-radius:8px; border:1px solid #DC2626; color:#DC2626; background:#FFFFFF; font-size:16px; font-weight:500; display:flex; align-items:center; justify-content:center; opacity:.4;">Xoá</div>
+    </div>
+  </div>
+
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px,1fr)); gap:16px;">
+    <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:24px;">
+      <div style="font-size:18px; line-height:26px; font-weight:600; margin-bottom:16px;">Input · TextArea</div>
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div style="display:flex; flex-direction:column; gap:4px;"><label style="font-size:14px; line-height:20px; font-weight:500;">Mặt hỏi</label><div style="height:44px; border:1px solid #E5E7EB; border-radius:8px; background:#FFFFFF; padding:0 12px; display:flex; align-items:center; font-size:16px; color:#9CA3AF;">Nhập câu hỏi…</div></div>
+        <div style="display:flex; flex-direction:column; gap:4px;"><label style="font-size:14px; line-height:20px; font-weight:500;">Focus</label><div style="height:44px; border:1px solid #F59E0B; border-radius:8px; background:#FFFFFF; padding:0 12px; display:flex; align-items:center; font-size:16px; outline:2px solid #1A1D23; outline-offset:2px;">FSRS là gì?</div></div>
+        <div style="display:flex; flex-direction:column; gap:4px;"><label style="font-size:14px; line-height:20px; font-weight:500;">Lỗi</label><div style="height:44px; border:1px solid #DC2626; border-radius:8px; background:#FFFFFF; padding:0 12px; display:flex; align-items:center; font-size:16px; color:#9CA3AF;">https://</div><div style="font-size:14px; line-height:20px; color:#DC2626;">URL không hợp lệ</div></div>
+        <div style="display:flex; flex-direction:column; gap:4px;"><label style="font-size:14px; line-height:20px; font-weight:500;">Mặt trả lời</label><div style="min-height:88px; border:1px solid #E5E7EB; border-radius:8px; background:#FFFFFF; padding:12px; font-size:16px; line-height:24px; color:#9CA3AF;">Nhập câu trả lời…</div></div>
+      </div>
+    </div>
+    <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:24px;">
+      <div style="font-size:18px; line-height:26px; font-weight:600; margin-bottom:16px;">Banner · Toast · Skeleton</div>
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div style="border:1px solid #FCA5A5; background:#FEF2F2; border-radius:8px; padding:12px 16px; display:flex; align-items:center; justify-content:space-between; gap:12px;"><span style="font-size:14px; line-height:20px; color:#991B1B;">Mất kết nối — chưa lưu được kết quả.</span><span style="font-size:14px; font-weight:600; color:#991B1B; text-decoration:underline;">Thử lại</span></div>
+        <div style="background:#1A1D23; border-radius:8px; padding:12px 16px; color:#FFFFFF; font-size:14px; line-height:20px; box-shadow:0 4px 6px rgba(0,0,0,.07);">Đã lưu thẻ mới</div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div style="height:16px; width:60%; border-radius:4px; background:#E5E7EB;"></div>
+          <div style="height:16px; width:90%; border-radius:4px; background:#E5E7EB;"></div>
+          <div style="height:16px; width:40%; border-radius:4px; background:#E5E7EB;"></div>
+        </div>
+        <div style="font-size:12px; line-height:16px; color:#6B7280;">Skeleton là khối xám tĩnh có nhịp thở nhẹ — không spinner xoay trừ lúc chờ redirect Authentik.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:16px; display:grid; grid-template-columns:repeat(auto-fit, minmax(320px,1fr)); gap:16px;">
+    <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:24px;">
+      <div style="font-size:18px; line-height:26px; font-weight:600; margin-bottom:4px;">SwipeableCard</div>
+      <p style="margin:0 0 16px; font-size:14px; line-height:20px; color:#6B7280;">Radius xl, shadow.md khi active. Chạm để lật → vuốt để đánh giá. Ngưỡng vuốt 96px; dưới ngưỡng thì bật về chỗ cũ trong 160ms.</p>
+      <div style="position:relative; height:200px; background:#FAFAF8; border-radius:12px; border:1px dashed #E5E7EB; display:flex; align-items:center; justify-content:center;">
+        <div style="position:absolute; left:16px; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; align-items:center; gap:4px; color:#DC2626;"><span style="font-size:24px;">←</span><span style="font-size:12px; font-weight:600;">Quên</span></div>
+        <div style="position:absolute; right:16px; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; align-items:center; gap:4px; color:#16A34A;"><span style="font-size:24px;">→</span><span style="font-size:12px; font-weight:600;">Nhớ</span></div>
+        <div style="width:200px; height:150px; background:#FFFFFF; border:1px solid #E5E7EB; border-radius:16px; box-shadow:0 4px 6px rgba(0,0,0,.07); transform:rotate(-4deg); display:flex; align-items:center; justify-content:center; padding:16px; text-align:center; font-size:16px; line-height:24px;">FSRS là gì?</div>
+      </div>
+    </div>
+    <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:24px;">
+      <div style="font-size:18px; line-height:26px; font-weight:600; margin-bottom:4px;">Dialog</div>
+      <p style="margin:0 0 16px; font-size:14px; line-height:20px; color:#6B7280;">Bắt buộc cho xoá thẻ. Nút Xoá đặt cách biệt hẳn khỏi Huỷ.</p>
+      <div style="background:rgba(26,29,35,.4); border-radius:12px; padding:32px 24px; display:flex; justify-content:center;">
+        <div style="width:100%; max-width:320px; background:#FFFFFF; border-radius:16px; padding:24px; box-shadow:0 4px 6px rgba(0,0,0,.07);">
+          <div style="font-size:18px; line-height:26px; font-weight:600;">Xoá thẻ này?</div>
+          <p style="margin:8px 0 24px; font-size:14px; line-height:20px; color:#6B7280;">Toàn bộ lịch ôn và lịch sử của thẻ sẽ bị xoá theo. Không hoàn tác được.</p>
+          <div style="display:flex; justify-content:space-between; gap:32px;">
+            <div style="height:44px; flex:1; border-radius:8px; border:1px solid #E5E7EB; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:500;">Huỷ</div>
+            <div style="height:44px; flex:1; border-radius:8px; background:#DC2626; color:#FFFFFF; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:500;">Xoá</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2 style="margin:64px 0 4px; font-size:24px; line-height:32px; font-weight:600; letter-spacing:-.01em;">6 · Breakpoint</h2>
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:16px; margin-top:24px;">
+    <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:20px;"><div style="font-size:18px; line-height:26px; font-weight:600;">&lt; 640px</div><div style="font-size:14px; line-height:20px; color:#6B7280; margin-top:4px;">Mobile — mặc định. Một cột, lề 16px, vuốt bằng ngón tay.</div></div>
+    <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:20px;"><div style="font-size:18px; line-height:26px; font-weight:600;">640 – 1024px</div><div style="font-size:14px; line-height:20px; color:#6B7280; margin-top:4px;">Tablet — nội dung căn giữa tối đa 560px, thẻ ôn không kéo giãn quá khổ.</div></div>
+    <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:20px;"><div style="font-size:18px; line-height:26px; font-weight:600;">&gt; 1024px</div><div style="font-size:14px; line-height:20px; color:#6B7280; margin-top:4px;">Desktop — vùng vuốt giữ cỡ tablet. Nút Nhớ/Quên thay cho vuốt bằng chuột.</div></div>
+  </div>
+
+  <h2 style="margin:64px 0 4px; font-size:24px; line-height:32px; font-weight:600; letter-spacing:-.01em;">7 · Tiếp cận</h2>
+  <div style="background:#FFFFFF; border:1px solid #E5E7EB; border-radius:12px; padding:24px; margin-top:24px; display:grid; grid-template-columns:repeat(auto-fit, minmax(260px,1fr)); gap:24px;">
+    <div><div style="font-size:14px; font-weight:600; margin-bottom:6px;">Tương phản</div><div style="font-size:14px; line-height:20px; color:#6B7280;">4.5:1 chữ thường, 3:1 chữ lớn (≥18px bold hoặc ≥24px) — WCAG AA.</div></div>
+    <div><div style="font-size:14px; font-weight:600; margin-bottom:6px;">Vùng chạm</div><div style="font-size:14px; line-height:20px; color:#6B7280;">Tối thiểu 44×44px cho mọi nút, kể cả icon sửa/xoá trong danh sách.</div></div>
+    <div><div style="font-size:14px; font-weight:600; margin-bottom:6px;">Thứ tự focus</div><div style="font-size:14px; line-height:20px; color:#6B7280;">Theo luồng đọc. Nút Lưu/Xác nhận luôn nằm cuối tab order của form.</div></div>
+    <div><div style="font-size:14px; font-weight:600; margin-bottom:6px;">Thay thế cho vuốt</div><div style="font-size:14px; line-height:20px; color:#6B7280;">Luôn có nút Nhớ/Quên song song. Mặt thẻ có <code style="background:#F3F4F6; padding:2px 6px; border-radius:4px;">aria-label</code> rõ ràng.</div></div>
+  </div>
+
+  <h2 style="margin:64px 0 4px; font-size:24px; line-height:32px; font-weight:600; letter-spacing:-.01em;">8 · Chống mẫu</h2>
+  <div style="margin-top:24px; display:flex; flex-direction:column; gap:1px; background:#E5E7EB; border:1px solid #E5E7EB; border-radius:12px; overflow:hidden;">
+    <div style="background:#FFFFFF; padding:14px 20px; font-size:14px; line-height:20px; display:flex; gap:12px;"><span style="color:#DC2626; font-weight:600;">✕</span><span>Gradient trang trí không cần thiết</span></div>
+    <div style="background:#FFFFFF; padding:14px 20px; font-size:14px; line-height:20px; display:flex; gap:12px;"><span style="color:#DC2626; font-weight:600;">✕</span><span>Hiệu ứng ăn mừng quá đà — confetti, popup to; mâu thuẫn tính cách điềm tĩnh</span></div>
+    <div style="background:#FFFFFF; padding:14px 20px; font-size:14px; line-height:20px; display:flex; gap:12px;"><span style="color:#DC2626; font-weight:600;">✕</span><span>Dùng success/danger ngoài phản hồi vuốt và nút Xoá</span></div>
+    <div style="background:#FFFFFF; padding:14px 20px; font-size:14px; line-height:20px; display:flex; gap:12px;"><span style="color:#DC2626; font-weight:600;">✕</span><span>Quảng cáo hoặc banner mời nâng cấp — Retainly không có subscription</span></div>
+    <div style="background:#FFFFFF; padding:14px 20px; font-size:14px; line-height:20px; display:flex; gap:12px;"><span style="color:#DC2626; font-weight:600;">✕</span><span>Quá một font family</span></div>
+    <div style="background:#FFFFFF; padding:14px 20px; font-size:14px; line-height:20px; display:flex; gap:12px;"><span style="color:#DC2626; font-weight:600;">✕</span><span>Nút Xoá đứng sát nút Lưu mà không có dialog xác nhận</span></div>
+  </div>
+
+  <div style="margin-top:64px; padding-top:24px; border-top:1px solid #E5E7EB; font-size:14px; line-height:20px; color:#6B7280;">Nguồn: design-criteria v1.2.0 · prd v1.2.0. Bộ màn hình v0.1 nằm ở tệp <strong style="color:#1A1D23; font-weight:600;">Retainly Screens v0.1</strong>.</div>
+</div>
+
+</x-dc>
+</body>
+</html>
