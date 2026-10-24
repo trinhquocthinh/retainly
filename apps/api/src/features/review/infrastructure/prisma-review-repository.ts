@@ -42,7 +42,7 @@ function fromSnapshot(json: Prisma.JsonValue | null): Schedule | null {
   };
 }
 
-function storeFor(tx: Prisma.TransactionClient): ReviewStore {
+export function storeFor(tx: Prisma.TransactionClient): ReviewStore {
   return {
     async lockSchedule(userId, cardId) {
       // Prisma Client không có SELECT … FOR UPDATE: khoá bằng raw, đọc lại qua
@@ -65,11 +65,22 @@ function storeFor(tx: Prisma.TransactionClient): ReviewStore {
     async findOutcome(userId, outcomeId) {
       const row = await tx.reviewOutcome.findFirst({
         where: { id: outcomeId, card: { userId } },
-        select: { id: true, cardId: true, reviewedAt: true, previousSchedule: true },
+        select: {
+          id: true,
+          cardId: true,
+          reviewedAt: true,
+          previousSchedule: true,
+          practiceItem: { select: { sessionId: true } },
+        },
       });
       if (row === null) return null;
 
-      return { ...row, previousSchedule: fromSnapshot(row.previousSchedule) };
+      const { practiceItem, ...outcome } = row;
+      return {
+        ...outcome,
+        previousSchedule: fromSnapshot(row.previousSchedule),
+        practiceSessionId: practiceItem?.sessionId ?? null,
+      };
     },
 
     async latestOutcomeId(cardId) {

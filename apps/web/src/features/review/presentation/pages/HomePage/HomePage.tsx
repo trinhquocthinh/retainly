@@ -4,6 +4,9 @@ import { useLibraryStats } from '@src/features/cards/application/useLibraryStats
 import { fetchLibraryStats } from '@src/features/cards/infrastructure/cardsApi';
 import { Button } from '@src/shared/ui/Button/Button';
 
+import { useQuery } from '@tanstack/react-query';
+import { fetchPracticeOverview } from '../../../infrastructure/practiceApi';
+
 import { useHomeOverview } from '../../../application/useHomeOverview';
 import { countDue } from '../../../domain/home';
 import { fetchHomeOverview } from '../../../infrastructure/reviewApi';
@@ -16,6 +19,11 @@ import './HomePage.css';
 
 export function HomePage() {
   const overview = useHomeOverview(fetchHomeOverview);
+  const practice = useQuery({
+    queryKey: ['practice', 'overview'],
+    queryFn: fetchPracticeOverview,
+    retry: false,
+  });
   // Shell chỉ render sau RequireAuth nên phiên đã nằm sẵn trong cache.
   const session = useSession({ fetchSession });
   const retention = useLibraryStats(fetchLibraryStats);
@@ -50,7 +58,7 @@ export function HomePage() {
   return (
     <div className="home">
       <HomeHeader name={session.data?.displayName} streak={data.streak} now={now} />
-      <DueHero dueCount={countDue(data.dueByTopic)} overview={data} />
+      <DueHero dueCount={countDue(data.dueByTopic)} overview={data} practice={practice.data} />
 
       {data.library.totalCards > 0 ? (
         <>

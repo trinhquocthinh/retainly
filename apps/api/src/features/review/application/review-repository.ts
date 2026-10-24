@@ -4,6 +4,8 @@ export type RecordedOutcome = {
   id: string;
   cardId: string;
   reviewedAt: Date;
+  /** Outcome của bài học phải hoàn tác qua API bài học để đồng bộ tiến độ. */
+  practiceSessionId?: string | null;
   /** Null ở outcome ghi trước E8-S1-T1 — không hoàn tác được. */
   previousSchedule: Schedule | null;
 };

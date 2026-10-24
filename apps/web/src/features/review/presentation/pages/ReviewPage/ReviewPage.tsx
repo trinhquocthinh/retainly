@@ -1,183 +1,116 @@
 import { useCallback } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router';
 import { useQueryClient } from '@tanstack/react-query';
-
 import { Button } from '@src/shared/ui/Button/Button';
-
-import type { ReviewSource, TopicReviewState } from '../../../domain/review';
+import type { ReviewSource } from '../../../domain/review';
 import { useReviewSession } from '../../../application/useReviewSession';
 import {
-  fetchDueCards,
-  fetchExtraCards,
-  fetchTopicDueCards,
-  recordOutcome,
-  undoOutcome,
-} from '../../../infrastructure/reviewApi';
+  beginPractice,
+  loadPractice,
+  ratePractice,
+  undoPractice,
+} from '../../../infrastructure/practiceApi';
 import { ReviewScreen } from '../../components/ReviewScreen/ReviewScreen';
 import { ReviewSession } from '../../components/ReviewSession/ReviewSession';
 import { ReviewMessage, ReviewSkeleton } from '../../components/ReviewStates/ReviewStates';
 import { UndoAction } from '../../components/UndoAction/UndoAction';
 import { SessionSummary } from '../../components/SessionSummary/SessionSummary';
 
-type SessionCopy = {
-  queueLabel: string;
-  doneTitle: string;
-  doneNote: string;
-  /** Rời phiên thì về đâu: phiên theo Topic mở từ màn Thống kê nên quay lại đó. */
-  exitPath: string;
-  exitLabel: string;
-};
-
-function copyFor(source: ReviewSource, topicName: string | undefined): SessionCopy {
-  if (source === 'topic') {
-    return {
-      // Tải lại trang thì mất state điều hướng, không còn tên Topic để hiện.
-      queueLabel: topicName ? `Ôn ngay · ${topicName}` : 'Thẻ cần ôn theo chủ đề',
-      doneTitle: 'Đã ôn xong chủ đề này!',
-      doneNote: topicName
-        ? `Không còn thẻ cần ôn trong chủ đề ${topicName}.`
-        : 'Không còn thẻ cần ôn trong chủ đề này.',
-      exitPath: '/stats',
-      exitLabel: 'Về Thống kê',
-    };
-  }
-
-  if (source === 'extra') {
-    return {
-      queueLabel: 'Ôn thêm một lượt',
-      doneTitle: 'Xong lượt ôn thêm!',
-      doneNote: 'Mỗi lượt ôn đều giúp kiến thức ở lại lâu hơn.',
-      exitPath: '/',
-      exitLabel: 'Về trang chủ',
-    };
-  }
-
-  return {
-    queueLabel: 'Thẻ cần ôn hôm nay',
-    doneTitle: 'Xong rồi!',
-    doneNote: 'Không còn thẻ cần ôn hôm nay.',
-    exitPath: '/',
-    exitLabel: 'Về trang chủ',
-  };
+export function ReviewPage({ source = 'due' }: { source?: ReviewSource }) {
+  const { key } = useLocation();
+  return <ReviewRun key={key} source={source} />;
 }
 
-type ReviewPageProps = { source?: ReviewSource };
-
-export function ReviewPage({ source = 'due' }: ReviewPageProps) {
-  // Mỗi lần điều hướng vào là một phiên mới, kể cả "Ôn thêm 5 thẻ nữa" ngay
-  // từ màn này: /review và /review/extra cùng component nên React sẽ giữ lại
-  // vị trí thẻ của phiên trước nếu không đổi key.
-  const { key, state } = useLocation();
-  const { topicId } = useParams();
-  const topicName = (state as TopicReviewState | null)?.topicName;
-
-  return <ReviewRun key={key} source={source} topicId={topicId} topicName={topicName} />;
-}
-
-type ReviewRunProps = {
-  source: ReviewSource;
-  topicId: string | undefined;
-  topicName: string | undefined;
-};
-
-function ReviewRun({ source, topicId, topicName }: ReviewRunProps) {
+function ReviewRun({ source }: { source: ReviewSource }) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [search] = useSearchParams();
+  const { topicId } = useParams();
   const queryClient = useQueryClient();
-  const copy = copyFor(source, topicName);
-
-  const leaveTo = useCallback(
-    (path: string) => {
-      // Chỉ đánh dấu stale khi rời phiên. `refetchType: 'none'` ngăn danh sách
-      // thẻ đang ôn bị nạp lại và thay đổi ngay trước khi điều hướng.
-      void queryClient.invalidateQueries({
-        queryKey: ['cards', 'due'],
-        refetchType: 'none',
+  const invalidate = useCallback(() => {
+    for (const queryKey of [['practice'], ['cards'], ['home', 'overview'], ['stats']]) {
+      void queryClient.invalidateQueries({ queryKey });
+    }
+  }, [queryClient]);
+  const onFinish = useCallback(() => {
+    invalidate();
+    navigate(source === 'topic' ? '/stats' : '/');
+  }, [invalidate, navigate, source]);
+  const onSession = useCallback(
+    (id: string) => {
+      navigate(`${location.pathname}?session=${encodeURIComponent(id)}`, {
+        replace: true,
+        state: location.state,
       });
-      void queryClient.invalidateQueries({
-        queryKey: ['home', 'overview'],
-        refetchType: 'none',
-      });
-      void queryClient.invalidateQueries({ queryKey: ['stats'], refetchType: 'none' });
-      // Xoá hẳn thay vì đánh dấu stale: dữ liệu cũ sẽ hiện ra trong lúc nạp lại
-      // rồi bị thay dưới tay người ôn. Lượt sau luôn phải là 5 thẻ mới (BR-026).
-      queryClient.removeQueries({ queryKey: ['cards', 'extra'] });
-
-      navigate(path);
     },
-    [navigate, queryClient],
+    [navigate, location.pathname, location.state],
   );
-
-  const onFinish = useCallback(() => leaveTo(copy.exitPath), [leaveTo, copy.exitPath]);
-  const onExtra = useCallback(() => leaveTo('/review/extra'), [leaveTo]);
-
+  const onNext = () => {
+    invalidate();
+    navigate(`${location.pathname}?size=15`);
+  };
   const session = useReviewSession({
-    source,
-    topicId,
-    fetchDueCards,
-    fetchExtraCards,
-    fetchTopicDueCards,
-    recordOutcome,
-    undoOutcome,
+    sessionId: search.get('session'),
+    size: search.get('size') === '10' ? 10 : 15,
+    topicId: source === 'topic' ? topicId : undefined,
+    begin: beginPractice,
+    load: loadPractice,
+    rate: ratePractice,
+    undo: undoPractice,
+    onSession,
+    onChanged: invalidate,
     onFinish,
   });
-
-  const { queueLabel } = copy;
-
-  if (session.loading) {
+  const topicName = (location.state as { topicName?: string } | null)?.topicName;
+  const queueLabel =
+    topicId !== undefined && session.session?.topicId === topicId
+      ? topicName
+        ? `Ôn ngay · ${topicName}`
+        : 'Bài học theo chủ đề'
+      : 'Bài học nhỏ';
+  if (session.loading)
     return (
       <ReviewScreen onExit={onFinish} queueLabel={queueLabel}>
         <ReviewSkeleton />
       </ReviewScreen>
     );
-  }
-
-  if (session.loadFailed) {
+  if (session.loadFailed)
     return (
       <ReviewScreen onExit={onFinish} queueLabel={queueLabel}>
         <ReviewMessage
-          title="Không tải được danh sách thẻ"
+          title="Không tải được bài học"
           note="Kiểm tra mạng rồi thử lại."
           actionLabel="Thử lại"
           onAction={session.reload}
         />
       </ReviewScreen>
     );
-  }
-
-  if (!session.card) {
-    // Ôn thêm không trả thẻ nào: không mời ôn thêm nữa, bấm lại cũng rỗng.
-    if (source === 'extra' && session.total === 0) {
-      return (
-        <ReviewScreen onExit={onFinish} queueLabel={queueLabel}>
-          <ReviewMessage
-            title="Chưa có thẻ nào để ôn thêm"
-            note="Hôm nay chưa có thêm thẻ phù hợp để ôn. Hẹn bạn vào lượt tiếp theo nhé."
-            actionLabel="Về trang chủ"
-            onAction={onFinish}
-          />
-        </ReviewScreen>
-      );
-    }
-
+  if (session.session === null || session.session.status === 'abandoned')
     return (
       <ReviewScreen onExit={onFinish} queueLabel={queueLabel}>
         <ReviewMessage
-          title={copy.doneTitle}
-          note={copy.doneNote}
-          actionLabel={copy.exitLabel}
+          title="Chưa có thêm thẻ phù hợp"
+          note="Bạn có thể nghỉ hôm nay và quay lại vào ngày tiếp theo."
+          actionLabel="Về trang chủ"
           onAction={onFinish}
-          details={
-            session.tally.reviewed > 0 ? (
-              <SessionSummary tally={session.tally} elapsedMs={session.elapsedMs} />
-            ) : null
-          }
+        />
+      </ReviewScreen>
+    );
+  if (session.session.status === 'completed')
+    return (
+      <ReviewScreen onExit={onFinish} queueLabel={queueLabel}>
+        <ReviewMessage
+          title="Bạn đã hoàn thành một bài học!"
+          note="Bạn có thể nghỉ tại đây hoặc chủ động học thêm một bài."
+          actionLabel="Kết thúc"
+          onAction={onFinish}
+          details={<SessionSummary tally={session.tally} />}
           extraAction={
-            <Button variant="primary" onClick={onExtra}>
-              Ôn thêm một lượt
+            <Button variant="primary" onClick={onNext}>
+              Học thêm một bài
             </Button>
           }
         >
-          {/* Vừa chấm nhầm thẻ cuối vẫn gỡ được, không phải quay lại từ đầu */}
           <UndoAction
             canUndo={session.canUndo}
             disabled={session.undoing}
@@ -187,18 +120,22 @@ function ReviewRun({ source, topicId, topicName }: ReviewRunProps) {
         </ReviewMessage>
       </ReviewScreen>
     );
-  }
-
+  if (!session.card)
+    return (
+      <ReviewScreen onExit={onFinish} queueLabel={queueLabel}>
+        <ReviewMessage
+          title="Bài học đã thay đổi"
+          note="Tải lại để tiếp tục từ kết quả đã lưu."
+          actionLabel="Tải lại"
+          onAction={session.reload}
+        />
+      </ReviewScreen>
+    );
   return (
     <ReviewScreen
       onExit={onFinish}
       queueLabel={queueLabel}
-      progress={{
-        position: session.position,
-        reviewed: session.reviewed,
-        total: session.total,
-        remainingMinutes: session.remainingMinutes,
-      }}
+      progress={{ position: session.position, reviewed: session.reviewed, total: session.total }}
     >
       <ReviewSession {...session} card={session.card} />
     </ReviewScreen>

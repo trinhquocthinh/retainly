@@ -1,132 +1,113 @@
-import { Fragment } from 'react';
 import { Link } from 'react-router';
-
-import { IconArrowRight, IconCheck, IconClock, IconNewCard } from '@src/shared/ui/Icons/Icons';
-
-import { summarizeDueTopics, type DueTopicSummary, type HomeOverview } from '../../../domain/home';
-import { estimateRemainingMinutes } from '../../../domain/session';
+import { IconArrowRight, IconCheck, IconNewCard } from '@src/shared/ui/Icons/Icons';
+import { summarizeDueTopics, type HomeOverview } from '../../../domain/home';
+import type { PracticeOverview } from '../../../domain/practice';
 import { TodayProgressBar } from '../TodayProgress/TodayProgress';
-
 import './DueHero.css';
 
-/** "4 thẻ **A**, 3 thẻ **B** và 2 thẻ khác" */
-function DueTopicList({ summary }: { summary: DueTopicSummary }) {
-  const parts = summary.groups.map((group) => (
-    <>
-      {group.count} thẻ {group.name ? <strong>{group.name}</strong> : 'chưa có chủ đề'}
-    </>
-  ));
+type Props = { dueCount: number; overview: HomeOverview; practice?: PracticeOverview };
 
-  if (summary.otherCount > 0) parts.push(<>{summary.otherCount} thẻ khác</>);
-
-  return parts.map((part, index) => (
-    <Fragment key={index}>
-      {index === 0 ? '' : index === parts.length - 1 ? ' và ' : ', '}
-      {part}
-    </Fragment>
-  ));
-}
-
-function ProgressSummary({ progress }: { progress: HomeOverview['todayProgress'] }) {
-  return (
-    <div className="due-hero__progress">
-      <div className="due-hero__progress-label text-small">
-        <span>Đã ôn hôm nay</span>
-        <span className="due-hero__progress-count">
-          {progress.reviewed}/{progress.total} thẻ
-        </span>
-      </div>
-      <TodayProgressBar progress={progress} />
-    </div>
-  );
-}
-
-function FirstCardPrompt() {
-  return (
-    <section className="due-hero due-hero--quiet surface-raised">
-      <span className="due-hero__icon" aria-hidden="true">
-        <IconNewCard size={22} />
-      </span>
-      <div className="due-hero__text">
-        <h2 className="text-h2">Bắt đầu với thẻ đầu tiên</h2>
-        <p className="text-small">
-          Ghi lại điều bạn vừa học thành thẻ hỏi–đáp. Retainly sẽ đưa thẻ trở lại vào những lần ôn
-          phù hợp.
-        </p>
-      </div>
-      <div className="due-hero__actions">
+export function DueHero({ dueCount, overview, practice }: Props) {
+  if (overview.library.totalCards === 0)
+    return (
+      <section className="due-hero due-hero--quiet surface-raised">
+        <div className="due-hero__text">
+          <h2 className="text-h2">Bắt đầu với thẻ đầu tiên</h2>
+          <p className="text-small">
+            Ghi lại điều bạn vừa học thành thẻ hỏi–đáp. Retainly sẽ đưa thẻ trở lại vào những lần ôn
+            phù hợp.
+          </p>
+        </div>
         <Link className="link-button link-button--accent" to="/cards/new">
           <IconNewCard />
           Tạo thẻ mới
         </Link>
-      </div>
-    </section>
-  );
-}
+      </section>
+    );
 
-function CaughtUp({ progress }: { progress: HomeOverview['todayProgress'] }) {
+  const active = practice?.activeSessionId;
+  const completed = practice?.completedToday ?? 0;
+  const available = practice?.availableCount;
+  const canStart = available === undefined || available > 0;
+  const count = available === undefined ? null : Math.min(15, available);
+  const title = active
+    ? 'Tiếp tục bài đang học'
+    : completed > 0
+      ? 'Đã hoàn thành bài học hôm nay'
+      : canStart
+        ? 'Bài học hôm nay'
+        : 'Hôm nay chưa có thêm thẻ phù hợp';
+  const progress = overview.todayProgress;
+  const topics = summarizeDueTopics(overview.dueByTopic);
+
   return (
-    <section className="due-hero due-hero--quiet surface-raised">
-      <span className="due-hero__icon due-hero__icon--done" aria-hidden="true">
-        <IconCheck size={24} />
-      </span>
-      <div className="due-hero__text">
-        <h2 className="text-h2">Bạn đã hoàn thành hôm nay</h2>
-        <p className="text-small">
-          Bạn đã xong phần cần ôn hôm nay. Nếu còn thời gian, hãy ôn thêm một lượt hoặc tạo thẻ mới.
-        </p>
-        {progress.total > 0 ? <ProgressSummary progress={progress} /> : null}
+    <section className="due-hero surface-raised" aria-labelledby="due-hero-title">
+      <div className="due-hero__meta text-small">
+        <span>
+          {completed > 0 ? (
+            <>
+              <IconCheck /> Đã hoàn thành {completed} bài hôm nay
+            </>
+          ) : (
+            'Một bài học nhỏ mỗi ngày'
+          )}
+        </span>
       </div>
+      <div className="due-hero__text">
+        <h2 id="due-hero-title" className="text-h2">
+          {title}
+        </h2>
+        {!active && canStart ? (
+          <p className="text-small">
+            {count === null ? 'Tối đa 15 thẻ' : `${count} thẻ`} · Ôn kiến thức cũ và học thêm thẻ
+            chưa học, tuỳ thư viện của bạn.
+          </p>
+        ) : null}
+        {!canStart && !active ? (
+          <p className="text-small">Bạn có thể nghỉ tại đây và quay lại vào ngày tiếp theo.</p>
+        ) : null}
+        {topics ? (
+          <p className="text-small">
+            Chủ đề đến hạn: {topics.groups.map((g) => g.name ?? 'Chưa có chủ đề').join(', ')}.
+          </p>
+        ) : null}
+        {dueCount > 0 ? (
+          <p className="text-small">
+            Thư viện còn {dueCount} thẻ đến hạn; bạn có thể chia thành nhiều bài.
+          </p>
+        ) : null}
+      </div>
+      {progress.total > 0 ? (
+        <div className="due-hero__progress">
+          <div className="due-hero__progress-label text-small">
+            <span>Đã ôn hôm nay</span>
+            <span className="due-hero__progress-count">
+              {progress.reviewed}/{progress.total} thẻ
+            </span>
+          </div>
+          <TodayProgressBar progress={progress} />
+        </div>
+      ) : null}
       <div className="due-hero__actions">
-        <Link className="link-button link-button--accent" to="/review/extra">
-          Ôn thêm một lượt
-          <IconArrowRight />
-        </Link>
+        {active || canStart ? (
+          <Link
+            className="link-button link-button--accent"
+            to={active ? `/review?session=${encodeURIComponent(active)}` : '/review'}
+          >
+            {active ? 'Tiếp tục bài học' : completed > 0 ? 'Học thêm một bài' : 'Bắt đầu bài học'}
+            <IconArrowRight />
+          </Link>
+        ) : null}
+        {!active && canStart ? (
+          <Link className="link-button link-button--outline" to="/review?size=10">
+            Bài ngắn · 10 thẻ
+          </Link>
+        ) : null}
         <Link className="link-button link-button--outline" to="/cards/new">
           <IconNewCard />
           Tạo thẻ mới
         </Link>
       </div>
-    </section>
-  );
-}
-
-/** Khối chính của Trang chủ: hàng đợi hôm nay, hết việc, hoặc chưa có thẻ nào. */
-export function DueHero({ dueCount, overview }: { dueCount: number; overview: HomeOverview }) {
-  if (overview.library.totalCards === 0) return <FirstCardPrompt />;
-  if (dueCount === 0) return <CaughtUp progress={overview.todayProgress} />;
-
-  const minutes = estimateRemainingMinutes({ remaining: dueCount, reviewed: 0, elapsedMs: 0 });
-  const summary = summarizeDueTopics(overview.dueByTopic);
-
-  return (
-    <section className="due-hero surface-raised" aria-labelledby="due-hero-title">
-      <div className="due-hero__meta text-small">
-        <span className="due-hero__estimate">
-          <IconClock />
-          Ước tính ~{minutes} phút
-        </span>
-        <span className="due-hero__engine text-caption">Nhịp ôn hôm nay</span>
-      </div>
-
-      <div>
-        <h2 id="due-hero-title" className="due-hero__count">
-          <strong className="text-display">{dueCount}</strong>
-          <span>thẻ cần ôn hôm nay</span>
-        </h2>
-        {summary ? (
-          <p className="due-hero__topics text-small">
-            Gồm <DueTopicList summary={summary} />.
-          </p>
-        ) : null}
-      </div>
-
-      <ProgressSummary progress={overview.todayProgress} />
-
-      <Link className="link-button link-button--accent due-hero__start" to="/review">
-        Bắt đầu ôn tập
-        <IconArrowRight />
-      </Link>
     </section>
   );
 }

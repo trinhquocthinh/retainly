@@ -35,6 +35,10 @@ function stubHomeApi(routes: Record<string, Reply>) {
   const all: Record<string, Reply> = {
     '/api/session': SESSION,
     '/api/cards/stats': STATS,
+    '/api/practice-sessions/overview': {
+      status: 200,
+      body: { activeSessionId: null, completedToday: 0, availableCount: 50 },
+    },
     ...routes,
   };
 
@@ -105,7 +109,7 @@ describe('E10-S1-T2 — Trang chủ design 0.1.2 (TC-071)', () => {
     expect(within(week).getByLabelText('CN: chưa tới')).toBeVisible();
   });
 
-  it('hàng đợi hiện số thẻ, tóm tắt theo Topic, tiến độ và CTA bắt đầu ôn', async () => {
+  it('bài học giới hạn 15 thẻ, giữ số thẻ đến hạn và tiến độ ở phần riêng', async () => {
     stubHomeApi({
       '/api/home/overview': overviewReply({
         todayProgress: { reviewed: 3, total: 15 },
@@ -120,25 +124,24 @@ describe('E10-S1-T2 — Trang chủ design 0.1.2 (TC-071)', () => {
 
     renderWithProviders(<HomePage />);
 
-    expect(await screen.findByRole('heading', { name: /12\s*thẻ cần ôn/ })).toBeVisible();
+    expect(await screen.findByRole('heading', { name: 'Bài học hôm nay' })).toBeVisible();
+    expect(screen.getByText(/15 thẻ · Ôn kiến thức cũ/)).toBeVisible();
     expect(
-      screen.getByText(
-        (_, node) =>
-          node?.tagName === 'P' &&
-          node.textContent ===
-            'Gồm 5 thẻ Kiến trúc Hexagonal, 4 thẻ Mô hình FSRS, 2 thẻ Distributed Systems và 1 thẻ khác.',
-      ),
+      screen.getByText('Thư viện còn 12 thẻ đến hạn; bạn có thể chia thành nhiều bài.'),
     ).toBeVisible();
-    expect(screen.getByText('Ước tính ~2 phút')).toBeVisible();
+    expect(screen.queryByText(/Ước tính ~/)).not.toBeInTheDocument();
     expect(screen.getByRole('progressbar', { name: 'Tiến độ hôm nay' })).toHaveAttribute(
       'aria-valuetext',
       'Đã ôn 3 trên 15 thẻ',
     );
     expect(screen.getByText('3/15 thẻ')).toBeVisible();
-    expect(screen.getByRole('link', { name: /Bắt đầu ôn tập/ })).toHaveAttribute('href', '/review');
+    expect(screen.getByRole('link', { name: /Bắt đầu bài học/ })).toHaveAttribute(
+      'href',
+      '/review',
+    );
   });
 
-  it('không thẻ nào gắn Topic thì bỏ câu tóm tắt', async () => {
+  it('bài học không phụ thuộc việc thư viện đã gắn Topic', async () => {
     stubHomeApi({
       '/api/home/overview': overviewReply({
         todayProgress: { reviewed: 0, total: 4 },
@@ -148,7 +151,7 @@ describe('E10-S1-T2 — Trang chủ design 0.1.2 (TC-071)', () => {
 
     renderWithProviders(<HomePage />);
 
-    expect(await screen.findByRole('heading', { name: /4\s*thẻ cần ôn/ })).toBeVisible();
+    expect(await screen.findByRole('heading', { name: 'Bài học hôm nay' })).toBeVisible();
     expect(screen.queryByText(/^Gồm/)).not.toBeInTheDocument();
   });
 
@@ -217,18 +220,22 @@ describe('E10-S1-T2 — Trang chủ design 0.1.2 (TC-071)', () => {
     );
   });
 
-  it('không có thẻ đến hạn thì mời ôn thêm hoặc tạo thẻ (TC-065)', async () => {
+  it('hoàn thành một bài vẫn có thể chủ động mở bài tiếp theo', async () => {
     stubHomeApi({
       '/api/home/overview': overviewReply({ todayProgress: { reviewed: 6, total: 6 } }),
+      '/api/practice-sessions/overview': {
+        status: 200,
+        body: { activeSessionId: null, completedToday: 1, availableCount: 12 },
+      },
     });
 
     renderWithProviders(<HomePage />);
 
-    expect(await screen.findByText('Bạn đã hoàn thành hôm nay')).toBeVisible();
+    expect(await screen.findByText('Đã hoàn thành bài học hôm nay')).toBeVisible();
     expect(screen.getByText('6/6 thẻ')).toBeVisible();
-    expect(screen.getByRole('link', { name: /Ôn thêm một lượt/ })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /Học thêm một bài/ })).toHaveAttribute(
       'href',
-      '/review/extra',
+      '/review',
     );
     expect(screen.getByRole('link', { name: /Tạo thẻ mới/ })).toHaveAttribute('href', '/cards/new');
     expect(screen.queryByRole('region', { name: 'Sắp tới' })).not.toBeInTheDocument();

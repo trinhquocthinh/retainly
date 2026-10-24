@@ -2,7 +2,7 @@ import { formatDuration, type SessionTally } from '../../../domain/session';
 
 import './SessionSummary.css';
 
-type SessionSummaryProps = { tally: SessionTally; elapsedMs: number };
+type SessionSummaryProps = { tally: SessionTally; elapsedMs?: number };
 
 /**
  * Tổng kết phiên ở màn hoàn thành. Chỉ dùng số đếm ngay trên máy khách, không
@@ -23,10 +23,12 @@ export function SessionSummary({ tally, elapsedMs }: SessionSummaryProps) {
           <span className="session-summary__forgotten">{tally.forgotten}</span>
         </dd>
       </div>
-      <div className="session-summary__item">
-        <dt className="text-caption">Thời gian</dt>
-        <dd>{formatDuration(elapsedMs)}</dd>
-      </div>
+      {elapsedMs !== undefined ? (
+        <div className="session-summary__item">
+          <dt className="text-caption">Thời gian</dt>
+          <dd>{formatDuration(elapsedMs)}</dd>
+        </div>
+      ) : null}
     </dl>
   );
 }

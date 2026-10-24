@@ -11,7 +11,7 @@ type ReviewScreenProps = {
   onExit: () => void;
   /** Nguồn thẻ của phiên, hiện ở chip góc phải: đến hạn hay Ôn thêm. */
   queueLabel: string;
-  progress?: { position: number; reviewed: number; total: number; remainingMinutes: number };
+  progress?: { position: number; reviewed: number; total: number; remainingMinutes?: number };
   children: ReactNode;
 };
 
@@ -43,9 +43,11 @@ export function ReviewScreen({ onExit, queueLabel, progress, children }: ReviewS
           <div className="review-screen__progress">
             <div className="review-screen__progress-head text-caption">
               <span className="review-screen__progress-label">Tiến độ</span>
-              <span className="review-screen__eta">
-                <IconClock size={12} />~{progress.remainingMinutes} phút còn lại
-              </span>
+              {progress.remainingMinutes !== undefined ? (
+                <span className="review-screen__eta">
+                  <IconClock size={12} />~{progress.remainingMinutes} phút còn lại
+                </span>
+              ) : null}
               <span className="review-screen__counter">
                 {progress.position} / {progress.total}
               </span>

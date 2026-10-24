@@ -1,4 +1,6 @@
 import { buildApp } from './app';
+import { registerPracticeRoutes } from './features/review/presentation/practice-routes';
+import { prismaPracticeRepository } from './features/review/infrastructure/prisma-practice-repository';
 import { prismaCardRepository } from './features/cards/infrastructure/prisma-card-repository';
 import { registerCardsRoutes } from './features/cards/presentation/cards-routes';
 import { prismaDueCardQuery } from './features/review/infrastructure/prisma-due-card-query';
@@ -52,6 +54,7 @@ registerAuthRoutes(app, {
 });
 
 registerHealthRoutes(app, { probe: prismaHealthProbe });
+registerPracticeRoutes(app, { practices: prismaPracticeRepository, now: () => new Date() });
 registerCardsRoutes(app, {
   cards: prismaCardRepository,
   cardList: prismaCardListQuery,

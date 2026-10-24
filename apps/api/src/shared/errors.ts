@@ -1,4 +1,6 @@
 export const errorCatalog = {
+  ERR_PRACTICE_NOT_FOUND: { status: 404, message: 'Không tìm thấy bài học này' },
+  ERR_PRACTICE_CONFLICT: { status: 409, message: 'Bài học đã thay đổi. Hãy tải lại để tiếp tục.' },
   // SDD — bảng mã lỗi chung
   ERR_INVALID_URL: { status: 400, message: 'Liên kết chưa đúng. Hãy kiểm tra rồi thử lại.' },
   ERR_FETCH_FAILED: { status: 502, message: 'Chưa đọc được nội dung từ liên kết này' },

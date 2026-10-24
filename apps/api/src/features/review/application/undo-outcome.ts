@@ -6,7 +6,7 @@ import type { ReviewRepository } from './review-repository';
 /** BR-024: hoàn tác outcome mới nhất của thẻ — khôi phục lịch cũ và xoá hẳn outcome. */
 export async function undoOutcome(
   deps: { reviews: ReviewRepository; now: () => Date },
-  input: { userId: string; outcomeId: string },
+  input: { userId: string; outcomeId: string; practiceSessionId?: string },
 ): Promise<{ restoredSchedule: Schedule }> {
   return deps.reviews.inTransaction(async (store) => {
     const target = await store.findOutcome(input.userId, input.outcomeId);
@@ -21,6 +21,7 @@ export async function undoOutcome(
     const { previousSchedule } = target;
     const isLatest = (await store.latestOutcomeId(target.cardId)) === target.id;
     if (
+      (target.practiceSessionId != null && target.practiceSessionId !== input.practiceSessionId) ||
       !isLatest ||
       previousSchedule === null ||
       !isWithinUndoWindow(target.reviewedAt, deps.now())

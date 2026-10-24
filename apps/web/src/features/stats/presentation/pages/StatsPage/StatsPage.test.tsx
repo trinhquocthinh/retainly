@@ -202,26 +202,72 @@ describe('E10-S1-T4 — TC-073 màn Thống kê đầy đủ', () => {
   it('"Ôn ngay" mở phiên chỉ gồm thẻ của nhánh, xong thì quay về Thống kê', async () => {
     const fetchMock = mockApi({
       '/api/stats?range=30d': POPULATED,
-      '/api/cards/due?topicId=topic-memory': {
+      '/api/practice-sessions': {
         status: 200,
         body: {
-          dueCount: 1,
-          dueCards: [
-            {
-              id: 'card-1',
-              front: 'Hỏi trí nhớ',
-              back: 'Đáp trí nhớ',
-              note: null,
-              dueDate: '2026-09-24T00:00:00.000Z',
-              memory: {
-                stability: 0,
-                difficulty: 0,
-                retrievability: 0,
-                lastReviewedAt: null,
-                forecastDays: { remembered: 3, forgotten: 1 },
+          session: {
+            id: 'topic-session',
+            size: 15,
+            canUndo: false,
+            topicId: 'topic-memory',
+            status: 'active',
+            createdAt: '2026-09-24T00:00:00Z',
+            closedAt: null,
+            items: [
+              {
+                id: 'topic-item',
+                answer: null,
+                card: {
+                  id: 'card-1',
+                  front: 'Hỏi trí nhớ',
+                  back: 'Đáp trí nhớ',
+                  note: null,
+                  dueDate: '2026-09-24T00:00:00Z',
+                  memory: {
+                    stability: 0,
+                    difficulty: 0,
+                    retrievability: 0,
+                    lastReviewedAt: null,
+                    forecastDays: { remembered: 3, forgotten: 1 },
+                  },
+                },
               },
-            },
-          ],
+            ],
+          },
+        },
+      },
+      '/api/practice-sessions/topic-session': {
+        status: 200,
+        body: {
+          session: {
+            id: 'topic-session',
+            size: 15,
+            canUndo: false,
+            topicId: 'topic-memory',
+            status: 'active',
+            createdAt: '2026-09-24T00:00:00Z',
+            closedAt: null,
+            items: [
+              {
+                id: 'topic-item',
+                answer: null,
+                card: {
+                  id: 'card-1',
+                  front: 'Hỏi trí nhớ',
+                  back: 'Đáp trí nhớ',
+                  note: null,
+                  dueDate: '2026-09-24T00:00:00Z',
+                  memory: {
+                    stability: 0,
+                    difficulty: 0,
+                    retrievability: 0,
+                    lastReviewedAt: null,
+                    forecastDays: { remembered: 3, forgotten: 1 },
+                  },
+                },
+              },
+            ],
+          },
         },
       },
     });
